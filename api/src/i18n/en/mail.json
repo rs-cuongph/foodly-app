@@ -1,0 +1,6 @@
+{
+  "reset_password": {
+    "subject": "Your password has been changed!",
+    "content": "Your new password is: {password}"
+  }
+}
