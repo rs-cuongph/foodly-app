@@ -24,29 +24,28 @@ model User {
   maxOrderNotPay                  Int                       @default(5)
   createdAt                       DateTime                  @default(now())
   updatedAt                       DateTime                  @updatedAt
-  orderCreated                    Order[]                   @relation("orderCreated")
-  orderUpdated                    Order[]                   @relation("orderUpdated")
-  orderGroupCreated               OrderGroup?               @relation("orderGroupCreated")
-  orderGroupUpdated               OrderGroup?               @relation("orderGroupUpdated")
-  orderGroupTemplateCreated       OrderGroupTemplate[]      @relation("orderGroupTemplateCreated")
-  menuItemCreated                 MenuItem[]                @relation("menuItemCreated")
-  StatisticUser                   Statistic[]               @relation("StatisticUser")
-  RequestAddCoinHistoriesCreated  RequestAddCoinHistories[] @relation("RequestAddCoinHistoriesCreated")
-  RequestAddCoinHistoriesApproved RequestAddCoinHistories[] @relation("RequestAddCoinHistoriesApproved")
+  orderCreated                    Order[]                   @relation("Order_createdBy")
+  orderUpdated                    Order[]                   @relation("Order_updatedBy")
+  orderGroupCreated               OrderGroup?               @relation("OrderGroup_createdBy")
+  orderGroupTemplateCreated       OrderGroupTemplate[]      @relation("OrderGroupTemplate_createdBy")
+  menuItemCreated                 MenuItem[]                @relation("MenuItem_createdBy")
+  statisticUser                   Statistic[]               @relation("Statistic_user")
+  requestAddCoinHistoriesCreated  RequestAddCoinHistories[] @relation("RequestAddCoinHistories_createdBy")
+  requestAddCoinHistoriesApproved RequestAddCoinHistories[] @relation("RequestAddCoinHistories_approvedBy")
 }
 
 model Order {
   id           Int        @id @default(autoincrement())
   orderGroupId Int
-  created      User       @relation("orderCreated", fields: [createdBy], references: [id])
-  createdBy    Int
-  updated      User       @relation("orderUpdated", fields: [updatedBy], references: [id])
-  updatedBy    Int
+  createdBy    User       @relation("Order_createdBy", fields: [createdById], references: [id])
+  createdById  Int
+  updatedBy    User       @relation("Order_updatedBy", fields: [updatedById], references: [id])
+  updatedById  Int
   quantity     Int
-  status       OderStatus @default(PROCESSING)
+  status       OrderStatus @default(PROCESSING)
   payment      String     @db.VarChar()
   price        Int
-  Amount       Int
+  amount       Int
   menu         Json
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -55,10 +54,8 @@ model Order {
 model OrderGroup {
   id              Int        @id @default(autoincrement())
   code            String     @db.VarChar()
-  created         User       @relation("orderGroupCreated", fields: [createdBy], references: [id])
-  createdBy       Int        @unique
-  updated         User       @relation("orderGroupUpdated", fields: [updatedBy], references: [id])
-  updatedBy       Int        @unique
+  createdBy       User       @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
+  createdById     Int        @unique
   publicStartTime DateTime
   publicEndTime   DateTime
   price           BigInt
@@ -74,15 +71,15 @@ model OrderGroup {
 model OrderGroupTemplate {
   id           Int  @id @default(autoincrement())
   templateJson Json
-  created      User @relation("orderGroupTemplateCreated", fields: [createdBy], references: [id])
-  createdBy    Int
+  createdBy    User @relation("OrderGroupTemplate_createdBy", fields: [createdById], references: [id])
+  createdById  Int
 }
 
 model MenuItem {
   id           Int        @id @default(autoincrement())
   name         Int
-  created      User       @relation("menuItemCreated", fields: [createdBy], references: [id])
-  createdBy    Int
+  createdBy    User       @relation("MenuItem_createdBy", fields: [createdById], references: [id])
+  createdById  Int
   price        Int
   discount     Int
   orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id])
@@ -97,18 +94,18 @@ model Statistic {
   countOrder      Int
   monthYear       Int
   amount          BigInt
-  user            User   @relation("StatisticUser", fields: [userId], references: [id])
+  user            User   @relation("Statistic_user", fields: [userId], references: [id])
   userId          Int
 }
 
 model RequestAddCoinHistories {
-  id         Int                  @id @default(autoincrement())
-  coin       Int
-  status     RequestAddCoinStatus @default(INIT)
-  created    User                 @relation("RequestAddCoinHistoriesCreated", fields: [createdBy], references: [id])
-  createdBy  Int
-  approved   User                 @relation("RequestAddCoinHistoriesApproved", fields: [approvedBy], references: [id])
-  approvedBy Int
+  id           Int                  @id @default(autoincrement())
+  coin         Int
+  status       RequestAddCoinStatus @default(INIT)
+  createdBy    User                 @relation("RequestAddCoinHistories_createdBy", fields: [createdById], references: [id])
+  createdById  Int
+  approvedBy   User                 @relation("RequestAddCoinHistories_approvedBy", fields: [approvedById], references: [id])
+  approvedById Int
 }
 
 model PaymentHistory {
@@ -124,18 +121,28 @@ enum Role {
   ADMIN
 }
 
-enum OderStatus {
+enum OrderStatus {
   PROCESSING
+  INIT
+  CANCELED
+  COMPLETED
 }
 
 enum ShareScope {
   PUBLIC
+  PRIVATE
 }
 
 enum RequestAddCoinStatus {
+  PROCESSING
   INIT
+  CANCELED
+  COMPLETED
 }
 
 enum PaymentHistoryStatus {
+  PROCESSING
   INIT
+  CANCELED
+  COMPLETED
 }
