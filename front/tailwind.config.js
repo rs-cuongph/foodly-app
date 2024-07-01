@@ -8,6 +8,28 @@ module.exports = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
+    screens: {
+      'xs': '320px',
+      // => @media (min-width: 350px) { ... }
+
+      'xss': '425px',
+      // => @media (min-width: 425px) { ... }
+
+      'sm': '576px',
+      // => @media (min-width: 576px) { ... }
+
+      'md': '768px',
+      // => @media (min-width: 768px) { ... }
+
+      'lg': '1024px',
+      // => @media (min-width: 1024px) { ... }
+
+      'xl': '1280px',
+      // => @media (min-width: 1280px) { ... }
+
+      '2xl': '1536px',
+      // => @media (min-width: 1536px) { ... }
+    },
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -23,33 +45,11 @@ module.exports = {
     defaultExtendTheme: "light", // default theme to extend on custom themes
     layout: {}, // common layout tokens (applied to all themes)
     themes: {
-      screens: {
-        'xs': '320px',
-        // => @media (min-width: 350px) { ... }
-  
-        'xss': '425px',
-        // => @media (min-width: 425px) { ... }
-  
-        'sm': '576px',
-        // => @media (min-width: 576px) { ... }
-  
-        'md': '768px',
-        // => @media (min-width: 768px) { ... }
-  
-        'lg': '1024px',
-        // => @media (min-width: 1024px) { ... }
-  
-        'xl': '1280px',
-        // => @media (min-width: 1280px) { ... }
-  
-        '2xl': '1536px',
-        // => @media (min-width: 1536px) { ... }
-      },
       light: {
         layout: {}, // light theme layout tokens
         colors: {
-          background: "#ffffff",
-          foreground: "#ffffff",
+          // background: "#ffffff",
+          // foreground: "#ffffff",
           primary: {
             50: "#ffece4",
             100: "#ffd8cd",
@@ -85,7 +85,6 @@ module.exports = {
         layout: {}, // dark theme layout tokens
         colors: {}, // dark theme colors
       },
-      // ... custom themes
     },
   })],
 }
