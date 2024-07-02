@@ -16,9 +16,13 @@ import { Icon } from "@iconify/react";
 
 import { FormLoginType, useLoginForm } from "./validate";
 
+import { useModelLogin } from "@/provider/auth";
+
 export default function ModalLogin() {
+  const stateModalLogin = useModelLogin((state) => state.openModal);
+  const setOpenModalLogin = useModelLogin((state) => state.setOpenModalLogin);
+
   const form = useLoginForm();
-  const [stateModalLogin, setStateModalLogin] = useState(true);
   const { formState, getValues, setValue, register, reset, watch } = form;
   const { errors } = formState;
   const [isLoading, setIsLoading] = useState(false);
@@ -26,12 +30,12 @@ export default function ModalLogin() {
   const [isVisible2, setIsVisible2] = useState(false);
 
   const onSubmit = async (values: FormLoginType) => {
-    setStateModalLogin(false);
+    setOpenModalLogin();
     // Todo Login and register
   };
 
   const onClose = () => {
-    setStateModalLogin(false);
+    setOpenModalLogin();
   };
 
   const handleChageModeRegester = () => {
@@ -47,6 +51,13 @@ export default function ModalLogin() {
       is_sign_in: getValues("is_sign_in"),
     });
   }, [watch("is_sign_in"), getValues]);
+
+  useEffect(() => {
+    if (stateModalLogin) {
+      setValue("is_sign_in", true);
+      setIsVisible(false);
+    }
+  }, [stateModalLogin, setValue]);
 
   return (
     <Modal
