@@ -1,4 +1,4 @@
-import {nextui} from '@nextui-org/theme'
+import { nextui } from '@nextui-org/theme'
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -61,7 +61,7 @@ module.exports = {
             700: "#e32e00",
             800: "#cb2700",
             900: "#b11c00",
-            default: "#fe6137",
+            DEFAULT: "#fe724c",
             foreground: "#fff"
           },
           danger: {
@@ -75,7 +75,7 @@ module.exports = {
             700: "#d8070b",
             800: "#c10008",
             900: "#a90003",
-            default: "#f21616",
+            DEFAULT: "#dc2626",
             foreground: "#fff"
           },
           focus: "#fe6137",
