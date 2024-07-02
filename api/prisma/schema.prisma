@@ -14,21 +14,135 @@ datasource db {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
-  email             String   @unique
-  displayName       String?
-  role              Role      @default(USER)
-  blockTo           DateTime? 
-  myCoin            Int       @db.Integer @default(0)  // "số coin hiện tại còn trong account"
-  paymentSettings   Json?     // Note: Assumes you have a Prisma Json provider
-  maxOrderNotPay    Int       @default(5) 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  /// Define any relationships here (if applicable)
+  id                              Int                       @id @default(autoincrement())
+  email                           String                    @unique
+  displayName                     String?
+  role                            Role                      @default(USER)
+  blockTo                         DateTime?
+  myCoin                          Int                       @default(0) @db.Integer // "số coin hiện tại còn trong account"
+  paymentSettings                 Json? // Note: Assumes you have a Prisma Json provider
+  maxOrderNotPay                  Int                       @default(5)
+  createdAt                       DateTime                  @default(now())
+  updatedAt                       DateTime                  @updatedAt
+  orderCreated                    Order[]                   @relation("Order_createdBy")
+  orderUpdated                    Order[]                   @relation("Order_updatedBy")
+  orderGroupCreated               OrderGroup?               @relation("OrderGroup_createdBy")
+  orderGroupTemplateCreated       OrderGroupTemplate[]      @relation("OrderGroupTemplate_createdBy")
+  menuItemCreated                 MenuItem[]                @relation("MenuItem_createdBy")
+  statisticUser                   Statistic[]               @relation("Statistic_user")
+  requestAddCoinHistoriesCreated  RequestAddCoinHistories[] @relation("RequestAddCoinHistories_createdBy")
+  requestAddCoinHistoriesApproved RequestAddCoinHistories[] @relation("RequestAddCoinHistories_approvedBy")
+}
+
+model Order {
+  id           Int        @id @default(autoincrement())
+  orderGroupId Int
+  createdBy    User       @relation("Order_createdBy", fields: [createdById], references: [id])
+  createdById  Int
+  updatedBy    User       @relation("Order_updatedBy", fields: [updatedById], references: [id])
+  updatedById  Int
+  quantity     Int
+  status       OrderStatus @default(PROCESSING)
+  payment      String     @db.VarChar()
+  price        Int
+  amount       Int
+  menu         Json
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model OrderGroup {
+  id              Int        @id @default(autoincrement())
+  code            String     @db.VarChar()
+  createdBy       User       @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
+  createdById     Int        @unique
+  publicStartTime DateTime
+  publicEndTime   DateTime
+  price           BigInt
+  shareScope      ShareScope @default(PUBLIC)
+  inviteId        Int
+  menuId          Int
+  discount        Int
+  menuItem        MenuItem[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model OrderGroupTemplate {
+  id           Int  @id @default(autoincrement())
+  templateJson Json
+  createdBy    User @relation("OrderGroupTemplate_createdBy", fields: [createdById], references: [id])
+  createdById  Int
+}
+
+model MenuItem {
+  id           Int        @id @default(autoincrement())
+  name         Int
+  createdBy    User       @relation("MenuItem_createdBy", fields: [createdById], references: [id])
+  createdById  Int
+  price        Int
+  discount     Int
+  orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id])
+  orderGroupId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Statistic {
+  id              Int    @id @default(autoincrement())
+  countOrderGroup Int
+  countOrder      Int
+  monthYear       Int
+  amount          BigInt
+  user            User   @relation("Statistic_user", fields: [userId], references: [id])
+  userId          Int
+}
+
+model RequestAddCoinHistories {
+  id           Int                  @id @default(autoincrement())
+  coin         Int
+  status       RequestAddCoinStatus @default(INIT)
+  createdBy    User                 @relation("RequestAddCoinHistories_createdBy", fields: [createdById], references: [id])
+  createdById  Int
+  approvedBy   User                 @relation("RequestAddCoinHistories_approvedBy", fields: [approvedById], references: [id])
+  approvedById Int
+}
+
+model PaymentHistory {
+  id        Int                  @id @default(autoincrement())
+  amount    BigInt
+  order_id  Int
+  bank_json Json
+  status    PaymentHistoryStatus @default(INIT)
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum OrderStatus {
+  PROCESSING
+  INIT
+  CANCELED
+  COMPLETED
+}
+
+enum ShareScope {
+  PUBLIC
+  PRIVATE
+}
+
+enum RequestAddCoinStatus {
+  PROCESSING
+  INIT
+  CANCELED
+  COMPLETED
+}
+
+enum PaymentHistoryStatus {
+  PROCESSING
+  INIT
+  CANCELED
+  COMPLETED
 }
