@@ -1,10 +1,10 @@
 export const LABEL = {
-  loginForm: {
-    email: "email",
-    password: "mật khẩu",
-    re_password: "xác nhận mật khẩu",
-    first_name: "họ",
-    last_name: "tên",
+  LOGIN_FORM: {
+    EMAIL: "email",
+    PASSWORD: "mật khẩu",
+    RE_PASSWORD: "xác nhận mật khẩu",
+    FIRST_NAME: "họ",
+    LAST_NAME: "tên",
   },
 };
 

@@ -31,10 +31,6 @@ module.exports = {
       // => @media (min-width: 1536px) { ... }
     },
     extend: {
-      colors: {
-        primary: "#fe724c",
-        danger: "#dc2626"
-      },
       fontFamily: {
         sans: ["var(--font-sans)"],
         mono: ["var(--font-geist-mono)"],
@@ -65,7 +61,7 @@ module.exports = {
             700: "#e32e00",
             800: "#cb2700",
             900: "#b11c00",
-            default: "#fe6137",
+            DEFAULT: "#fe724c",
             foreground: "#fff"
           },
           danger: {
@@ -79,7 +75,7 @@ module.exports = {
             700: "#d8070b",
             800: "#c10008",
             900: "#a90003",
-            default: "#f21616",
+            DEFAULT: "#dc2626",
             foreground: "#fff"
           },
           focus: "#fe6137",

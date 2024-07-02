@@ -67,6 +67,7 @@ export default function ModalLogin() {
                 <div className="md:px-[25px] min-h-[200px]">
                   <div className="flex gap-6 py-4 items-center ">
                     <Button
+                      isDisabled
                       className="w-full border-1"
                       radius="full"
                       startContent={<Icon icon="logos:google-icon" />}
@@ -75,6 +76,7 @@ export default function ModalLogin() {
                       Google
                     </Button>
                     <Button
+                      isDisabled
                       className="w-full  border-1"
                       radius="full"
                       startContent={<Icon icon="logos:twitter" />}
@@ -86,7 +88,7 @@ export default function ModalLogin() {
 
                   <div className="flex gap-2 justify-center items-center py-4">
                     <Divider className="flex-1" />
-                    Or continue with email
+                    Hoặc tiếp tục với email
                     <Divider className="flex-1" />
                   </div>
                   <div className="flex gap-4 flex-col ">
