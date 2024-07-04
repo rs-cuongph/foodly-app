@@ -1,23 +1,13 @@
-import { useLayoutEffect, useState } from "react";
+import { useScreen } from "usehooks-ts";
 
 function useWindowSize() {
-  const [size, setSize] = useState([0, 0]);
-
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener("resize", updateSize);
-    updateSize();
-
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
+  const screen = useScreen();
 
   return {
-    screenWidth: size[0],
-    screenHeight: size[1],
-    isMobile: size[0] < 768,
-    isDesktop: size[0] >= 768,
+    screenWidth: screen.width,
+    screenHeight: screen.height,
+    isMobile: screen.width < 768,
+    isDesktop: screen.width >= 768,
   };
 }
 
