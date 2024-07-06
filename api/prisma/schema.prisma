@@ -22,8 +22,11 @@ model User {
   myCoin                          Int                       @default(0) @db.Integer // "số coin hiện tại còn trong account"
   paymentSettings                 Json? // Note: Assumes you have a Prisma Json provider
   maxOrderNotPay                  Int                       @default(5)
+  currentRefreshToken             String?                
+  password                        String?                   @db.VarChar()                  
   createdAt                       DateTime                  @default(now())
   updatedAt                       DateTime                  @updatedAt
+  deletedAt                       DateTime?                 
   orderCreated                    Order[]                   @relation("Order_createdBy")
   orderUpdated                    Order[]                   @relation("Order_updatedBy")
   orderGroupCreated               OrderGroup?               @relation("OrderGroup_createdBy")

@@ -8,12 +8,14 @@ import {
   i18nValidationErrorFactory,
 } from 'nestjs-i18n';
 import { formatErrors } from './shared/format-error-http';
+import { configSwagger } from '@configs/api-docs.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
     logger: ['error', 'warn', 'debug', 'log'],
   });
+  configSwagger(app);
   app.useLogger(app.get(Logger));
   app.setGlobalPrefix('/api');
   app.enableCors();
