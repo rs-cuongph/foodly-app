@@ -1,4 +1,4 @@
-import { UsersService } from '@modules/users/users.service';
+import { UserService } from '@modules/users/user.service';
 import * as bcrypt from 'bcryptjs';
 import {
   ConflictException,
@@ -14,13 +14,13 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   private SALT_ROUND = 11;
   constructor(
-    private readonly usersService: UsersService,
+    private readonly UserService: UserService,
     private configService: ConfigService,
     private readonly jwtService: JwtService,
   ) { }
   async signUp(signUpDto: SignUpDto) {
     try {
-      const existedUser = await this.usersService.findOneByCondition(signUpDto.email);
+      const existedUser = await this.UserService.findOneByCondition(signUpDto.email);
       if (existedUser) {
         throw new ConflictException('Email already existed!!');
       }
@@ -29,7 +29,7 @@ export class AuthService {
         signUpDto.password,
         this.SALT_ROUND,
       );
-      const user = await this.usersService.createUser({
+      const user = await this.UserService.createUser({
         ...signUpDto,
         password: hashedPassword,
       });
@@ -71,7 +71,7 @@ export class AuthService {
   async storeRefreshToken(userId: string, token: string): Promise<void> {
     try {
       const hashedToken = await bcrypt.hash(token, this.SALT_ROUND);
-      await this.usersService.setCurrentRefreshToken(userId, hashedToken);
+      await this.UserService.setCurrentRefreshToken(userId, hashedToken);
     } catch (error) {
       throw error;
     }

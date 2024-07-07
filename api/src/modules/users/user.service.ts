@@ -1,19 +1,19 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
-import { UsersRepository } from "./users.repository";
-import { UsersInterface } from "./users.interface";
+import { UserRepository } from "./user.repository";
+import { UserInterface } from "./user.interface";
 
 @Injectable()
-export class UsersService {
+export class UserService {
     constructor(
-        @Inject('UsersInterface')
-        private readonly usersRepository: UsersInterface,
+        @Inject('UserInterface')
+        private readonly UserRepository: UserInterface,
     ) {
 
     }
     async findOneByCondition(email: string): Promise<User> {
         try {
-            return await this.usersRepository.findOneByCondition({
+            return await this.UserRepository.findOneByCondition({
                 email,
             });
         } catch (error) {
@@ -21,9 +21,9 @@ export class UsersService {
         }
     }
 
-    async createUser(userDto: Prisma.UserCreateInput): Promise<User> {
+    async createUser(userDto: Partial<Prisma.UserCreateInput>): Promise<User> {
         try {
-            const user = await this.usersRepository.create(userDto);
+            const user = await this.UserRepository.create(userDto);
             if (!user) {
                 throw new NotFoundException();
             }
@@ -38,7 +38,7 @@ export class UsersService {
         hashedToken: string,
     ): Promise<void> {
         try {
-            await this.usersRepository.update(id, {
+            await this.UserRepository.update(id, {
                 currentRefreshToken: hashedToken,
             });
         } catch (error) {

@@ -4,7 +4,7 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
-export class UsersRepository {
+export class UserRepository {
     constructor(private prisma: PrismaService) { }
     async findOneByCondition(condition: Prisma.UserWhereInput): Promise<User> {
         return await this.prisma.user.findFirst({
@@ -21,9 +21,12 @@ export class UsersRepository {
     async create(
         dto: Prisma.UserCreateInput,
     ): Promise<User> {
+        const { displayName, email, password } = dto;
         return await this.prisma.user.create({
             data: {
-                ...dto
+                displayName,
+                email,
+                password, 
             },
         });
     }
