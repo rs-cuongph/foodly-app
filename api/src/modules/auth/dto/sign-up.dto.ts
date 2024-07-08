@@ -1,34 +1,35 @@
+import { StringField } from '@guards/field.decorator';
 import {
-  IsDefined,
-  IsEmail,
   IsNotEmpty,
-  IsString,
-  Matches,
-  MaxLength,
-  ValidateIf,
 } from 'class-validator';
 export class SignUpDto {
-  @IsNotEmpty()
-  @MaxLength(50)
-  displayName?: string | null;
+  @StringField({
+    maxLength: 50,
+    allowEmpty: false,
+  })
+  displayName: string;
 
-  @IsNotEmpty()
-  @MaxLength(50)
-  @IsEmail()
+  @StringField({
+    email: true,
+    maxLength: 50,
+    allowEmpty: false
+  })
   email: string;
 
-  @IsString()
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z\d@$!%*?&]{8,}$/, {
-    message: 'Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one digit, and one special character.',
+  @StringField({
+    maxLength: 50,
+    allowEmpty: false,
+    password: true,
   })
   password: string;
 
-  @IsString()
+  @StringField({
+    maxLength: 50,
+    allowEmpty: false,
+    password: true,
+    passwordConfirm: true
+  }, ['Confirm Password', 'Password'], 'password')
   confirmPassword: string;
-
-  @ValidateIf(o => o.password !== o.confirmPassword)
-  @IsDefined({message: 'Password and Confirm Password do not match'})
-  protected readonly passwordAuthentication: string;
 }
 
 
