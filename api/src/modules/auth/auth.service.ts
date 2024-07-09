@@ -20,7 +20,7 @@ export class AuthService {
   ) { }
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     try {
-      const existedUser = await this.UserService.findOneByCondition(signUpDto.email);
+      const existedUser = this.UserService.findOneByCondition(signUpDto.email);
       if (existedUser) {
         throw new ConflictException('Email already existed!!');
       }

@@ -24,9 +24,6 @@ export class UserService {
     async createUser(userDto: Partial<Prisma.UserCreateInput>): Promise<User> {
         try {
             const user = await this.UserRepository.create(userDto);
-            if (!user) {
-                throw new NotFoundException();
-            }
             return user;
         } catch (error) {
             throw error;
