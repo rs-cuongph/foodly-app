@@ -51,6 +51,7 @@ const configService = new ConfigService(configs());
 export function StringField(
   options: IStringFieldOptions = {},
   property?: Array<string>,
+  field?: string
 ): PropertyDecorator {
   const decorators = [
     IsString({
@@ -171,6 +172,17 @@ export function StringField(
     );
   }
 
+  if (options.passwordConfirm) {
+    decorators.push(
+      IsMatch(field, {
+        message: i18nValidationMessage('validation.IsMatch', {
+          property: property?.[0],
+          constraints: [property?.[1]],
+        }),
+      }),
+    );
+  }
+
   if (options?.toLowerCase) {
     decorators.push(ToLowerCase());
   }
@@ -248,6 +260,28 @@ export function IsPassword(
           const passwordPattern: string =
             validationArguments.constraints[0] || '';
           return `Password doesn't match with pattern ${passwordPattern}`;
+        },
+      },
+    },
+    validationOptions,
+  );
+}
+
+export function IsMatch(property: string, validationOptions?: ValidationOptions): PropertyDecorator {
+  return ValidateBy(
+    {
+      name: 'IsMatch',
+      constraints: [property],
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const [relatedPropertyName] = args.constraints;
+          const relatedValue = args.object[relatedPropertyName];
+          
+          return value === relatedValue;
+        },
+
+        defaultMessage(): string {
+          return `Confirm Password doesn't match with Password`;
         },
       },
     },

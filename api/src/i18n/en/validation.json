@@ -26,6 +26,7 @@
   "ArrayMinSize": "{property} number of files at least {constraints.0}",
   "IsEqualTo": "{property} is not equal with {constraints.0} field",
   "IsPassword": "{property} doesn't match with pattern {constraints.0}",
+  "IsMatch": "{property} doesn't match with {constraints.0}",
   "IsArray": "{property} needs to be an array",
   "IsObject": "{property} needs to be an object"
 }
