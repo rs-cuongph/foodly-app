@@ -21,6 +21,8 @@ interface CommonState {
   };
   showNotifyAction: (payload: any) => void;
   clearNotify: (id?: string | number) => void;
+  showLoading: () => void;
+  hideLoading: () => void;
 }
 
 const initialState = {
@@ -33,7 +35,7 @@ const initialState = {
   },
 };
 
-export const showNotify = create<CommonState>()((set) => ({
+export const commonState = create<CommonState>()((set) => ({
   ...initialState,
   showNotifyAction: (payload) => {
     set((prev) => {
@@ -61,5 +63,11 @@ export const showNotify = create<CommonState>()((set) => ({
 
       return { ...prev, notify: notify };
     });
+  },
+  showLoading() {
+    set((prev) => ({ ...prev, loading: true }));
+  },
+  hideLoading() {
+    set((prev) => ({ ...prev, loading: true }));
   },
 }));
