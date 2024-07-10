@@ -51,8 +51,6 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
   const { errors } = formState;
   const [users, setUsers] = useState<{ label: string; value: string }[]>([]);
 
-  console.log(errors);
-
   const onClose = () => {
     setOpenModalCreateRoom(false);
   };
