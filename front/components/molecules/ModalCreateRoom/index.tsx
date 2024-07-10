@@ -88,7 +88,7 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
         });
       });
     }
-  }, [watch("is_same_price"), fields.length, watch("price")]);
+  }, [watch("is_same_price"), watch("price")]);
 
   const onSubmit = async (values: FormCreateRoomType) => {
     showLoading();
@@ -279,17 +279,18 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                   </div>
                   <div className="text-right">
                     {isInputLink ? (
-                      <Button color="default" isLoading={false} type="submit">
+                      <Button color="default" isLoading={false}>
                         Lấy data
                       </Button>
                     ) : (
                       <button
                         className="text-blue-500 text-base cursor-pointer"
+                        type="button"
                         onClick={() =>
                           append({
                             name: "",
                             price: getValues("is_same_price")
-                              ? getValues("price") || 0
+                              ? getValues("price") ?? 0
                               : 0,
                           })
                         }
