@@ -12,6 +12,7 @@ export function configSwagger(app: INestApplication) {
     .setTitle('Foodly project')
     .setDescription('## The foodly API description')
     .setVersion('1.0')
+    .addServer('http://localhost:8080/api')
     .addSecurity('token', { type: 'http', scheme: 'bearer' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
