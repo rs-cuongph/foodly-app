@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { isBefore } from 'date-fns';
+import { TokenType } from 'src/enums/token.enum';
 
 @Injectable()
 export class AuthService {
@@ -60,7 +61,15 @@ export class AuthService {
         userId,
       });
       await this.storeRefreshToken(userId, refresh_token);
+      // Return token along with iat and exp
+      const decodedToken = this.jwtService.decode(access_token) as { [key: string]: any };
+      const iat = decodedToken?.iat;
+      const exp = decodedToken?.exp;
       return {
+        iat,
+        exp,
+        type: TokenType.BEARER,
+        userId,
         access_token,
         refresh_token,
       };

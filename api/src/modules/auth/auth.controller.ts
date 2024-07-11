@@ -10,6 +10,7 @@ import { SignUpDto, SignUpResponse } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { RequestWithUser } from 'src/types/requests.type';
+import { SignInDto, SignInResponse } from './dto/sign-in.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -52,19 +53,20 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('sign-in')
   @ApiBody({
-    type: SignUpDto,
+    type: SignInDto,
     examples: {
       user_1: {
         value: {
           email: 'johndoe@example.com',
           password: '1232@asdS',
-        } as SignUpDto,
+        } as SignInDto,
       },
     },
   })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized',
+    type: SignInResponse,
     content: {
       'application/json': {
         example: {
