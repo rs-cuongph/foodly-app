@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'tracking-payment-service',
+      name: 'foodly-app-v2',
       script: 'dist/main.js',
       // exec_mode: 'cluster', // Use cluster mode for better performance, not show log
       restart_delay: 4000,
