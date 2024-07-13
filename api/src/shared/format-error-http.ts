@@ -6,7 +6,6 @@ type ErrorMessage = {
 };
 
 export function formatErrors(errors: ValidationError[]): ErrorMessage[] {
-  // console.log(errors);
   return errors.flatMap((error) => formatError(error, []));
 }
 

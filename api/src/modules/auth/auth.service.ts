@@ -1,6 +1,10 @@
 import { UserService } from '@modules/user/user.service';
 import * as bcrypt from 'bcryptjs';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { SignUpDto, SignUpResponse } from './dto/sign-up.dto';
 import { TokenPayload } from './interfaces/token.interface';
 import {
@@ -9,6 +13,8 @@ import {
 } from '@constants/jwt.constraints';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+import { TokenType } from 'src/enums/token.enum';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +26,9 @@ export class AuthService {
   ) {}
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     try {
-      const existedUser = this.UserService.findOneByCondition(signUpDto.email);
+      const existedUser = await this.UserService.findOneByCondition(
+        signUpDto.email,
+      );
       if (existedUser) {
         throw new ConflictException('Email already existed!!');
       }
@@ -45,6 +53,61 @@ export class AuthService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async signIn(userId: string) {
+    try {
+      const access_token = this.generateAccessToken({
+        userId,
+      });
+      const refresh_token = this.generateRefreshToken({
+        userId,
+      });
+      await this.storeRefreshToken(userId, refresh_token);
+      // Return token along with iat and exp
+      const decodedToken = this.jwtService.decode(access_token) as {
+        [key: string]: any;
+      };
+      const iat = decodedToken?.iat;
+      const exp = decodedToken?.exp;
+      return {
+        iat,
+        exp,
+        type: TokenType.BEARER,
+        userId,
+        access_token,
+        refresh_token,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAuthenticatedUser(email: string, password: string): Promise<User> {
+    try {
+      const user = await this.UserService.findOneByCondition(email);
+      // if (user?.blockTo && isBefore(new Date(), user.blockTo)) {
+      //   throw new BadRequestException(
+      //     'This user be blocked by admin, please contact admin to unlock',
+      //   );
+      // }
+      await this.verifyPlainContentWithHashedContent(password, user.password);
+      return user;
+    } catch (error) {
+      throw new BadRequestException(
+        error?.response?.message || 'Wrong credentials!!',
+      );
+    }
+  }
+
+  private async verifyPlainContentWithHashedContent(
+    plain_text: string,
+    hashed_text: string,
+  ) {
+    const is_matching = await bcrypt.compare(plain_text, hashed_text);
+    if (!is_matching) {
+      throw new BadRequestException();
     }
   }
 
