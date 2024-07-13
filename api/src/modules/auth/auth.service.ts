@@ -1,12 +1,12 @@
 import { UserService } from '@modules/user/user.service';
 import * as bcrypt from 'bcryptjs';
-import {
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { SignUpDto, SignUpResponse } from './dto/sign-up.dto';
 import { TokenPayload } from './interfaces/token.interface';
-import { access_token_private_key, refresh_token_private_key } from '@constants/jwt.constraints';
+import {
+  access_token_private_key,
+  refresh_token_private_key,
+} from '@constants/jwt.constraints';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -17,7 +17,7 @@ export class AuthService {
     private readonly UserService: UserService,
     private configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     try {
       const existedUser = this.UserService.findOneByCondition(signUpDto.email);
@@ -76,5 +76,4 @@ export class AuthService {
       throw error;
     }
   }
-
 }

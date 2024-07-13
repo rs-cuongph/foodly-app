@@ -1,3 +1,5 @@
+import { WebhookModule } from './modules/webhook/webhook.module';
+import { TransactionController } from './modules/transaction/transaction.controller';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -35,6 +37,9 @@ import { ScheduleModule } from '@nestjs/schedule';
         JWT_REFRESH_SECRET: Joi.string().required(),
         JWT_EXPIRES_IN: Joi.string().required(),
         JWT_REFRESH_IN: Joi.string().required(),
+        PAYOS_CLIENT_ID: Joi.string().required(),
+        PAYOS_API_KEY: Joi.string().required(),
+        PAYOS_CHECKSUM_KEY: Joi.string().required(),
       }),
       isGlobal: true,
       load: [configs],
@@ -81,7 +86,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     ...modules,
   ],
-  controllers: [AppController],
+  controllers: [TransactionController, AppController],
   providers: [
     AppService,
     {

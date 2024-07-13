@@ -51,7 +51,7 @@ const configService = new ConfigService(configs());
 export function StringField(
   options: IStringFieldOptions = {},
   property?: Array<string>,
-  field?: string
+  field?: string,
 ): PropertyDecorator {
   const decorators = [
     IsString({
@@ -267,7 +267,10 @@ export function IsPassword(
   );
 }
 
-export function IsMatch(property: string, validationOptions?: ValidationOptions): PropertyDecorator {
+export function IsMatch(
+  property: string,
+  validationOptions?: ValidationOptions,
+): PropertyDecorator {
   return ValidateBy(
     {
       name: 'IsMatch',
@@ -276,7 +279,7 @@ export function IsMatch(property: string, validationOptions?: ValidationOptions)
         validate(value: any, args: ValidationArguments) {
           const [relatedPropertyName] = args.constraints;
           const relatedValue = args.object[relatedPropertyName];
-          
+
           return value === relatedValue;
         },
 

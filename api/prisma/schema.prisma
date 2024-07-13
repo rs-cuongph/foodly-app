@@ -22,11 +22,11 @@ model User {
   myCoin                          Int                       @default(0) @db.Integer // "số coin hiện tại còn trong account"
   paymentSettings                 Json? // Note: Assumes you have a Prisma Json provider
   maxOrderNotPay                  Int                       @default(5)
-  currentRefreshToken             String?                
-  password                        String?                   @db.VarChar()                  
+  currentRefreshToken             String?
+  password                        String?                   @db.VarChar()
   createdAt                       DateTime                  @default(now())
   updatedAt                       DateTime                  @updatedAt
-  deletedAt                       DateTime?                 
+  deletedAt                       DateTime?
   orderCreated                    Order[]                   @relation("Order_createdBy")
   orderUpdated                    Order[]                   @relation("Order_updatedBy")
   orderGroupCreated               OrderGroup?               @relation("OrderGroup_createdBy")
@@ -38,20 +38,20 @@ model User {
 }
 
 model Order {
-  id           Int        @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   orderGroupId Int
-  createdBy    User       @relation("Order_createdBy", fields: [createdById], references: [id])
+  createdBy    User        @relation("Order_createdBy", fields: [createdById], references: [id])
   createdById  Int
-  updatedBy    User       @relation("Order_updatedBy", fields: [updatedById], references: [id])
+  updatedBy    User        @relation("Order_updatedBy", fields: [updatedById], references: [id])
   updatedById  Int
   quantity     Int
   status       OrderStatus @default(PROCESSING)
-  payment      String     @db.VarChar()
+  payment      String      @db.VarChar()
   price        Int
   amount       Int
   menu         Json
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model OrderGroup {
@@ -111,12 +111,13 @@ model RequestAddCoinHistories {
   approvedById Int
 }
 
-model PaymentHistory {
-  id        Int                  @id @default(autoincrement())
-  amount    BigInt
-  order_id  Int
-  bank_json Json
-  status    PaymentHistoryStatus @default(INIT)
+model Transaction {
+  id            Int               @id @default(autoincrement())
+  status        TransactionStatus @default(INIT)
+  paymentLinkId String
+  metadata      Json
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
 enum Role {
@@ -131,19 +132,19 @@ enum OrderStatus {
   COMPLETED
 }
 
+enum TransactionStatus {
+  INIT
+  PROCESSING
+  CANCELED
+  COMPLETED
+}
+
 enum ShareScope {
   PUBLIC
   PRIVATE
 }
 
 enum RequestAddCoinStatus {
-  PROCESSING
-  INIT
-  CANCELED
-  COMPLETED
-}
-
-enum PaymentHistoryStatus {
   PROCESSING
   INIT
   CANCELED

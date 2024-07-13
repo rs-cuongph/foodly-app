@@ -6,6 +6,7 @@ export interface Config {
   jwt: JwtConfig;
   mail: MailConfig;
   aws: AwsConfig;
+  payos: PayOSConfig;
 }
 
 export interface AwsConfig {
@@ -47,4 +48,11 @@ export interface MailConfig {
   queue: {
     name: string;
   };
+}
+
+export interface PayOSConfig {
+  clientId: string;
+  apiKey: string;
+  checksumKey: string;
+  webhookUrl: string;
 }
