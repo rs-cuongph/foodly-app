@@ -6,6 +6,19 @@ export const LABEL = {
     FIRST_NAME: "họ",
     LAST_NAME: "tên",
   },
+  room: {
+    name: "tên nhóm",
+    description: "mô tả",
+    public_time: "thời gian",
+    price: "giá",
+    link: "đường dẫn",
+    share_scope: "phạm vi",
+    invited_people: "lời mời",
+    list_menu: {
+      name: "tên món ăn",
+      price: "giá",
+    },
+  },
 };
 
 export const MESSAGES = {
