@@ -14,9 +14,9 @@ export class WebhookController {
   @HttpCode(HttpStatus.OK)
   async confirmTransaction(@Body() body: WebhookResponseDataType) {
     console.log(' =>  =>  => ', body);
-    await this.webhookService.confirmTransaction(body);
+    const result = await this.webhookService.confirmTransaction(body);
     return {
-      success: true,
+      success: result,
     };
   }
 }

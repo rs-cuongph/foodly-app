@@ -4,12 +4,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { TransactionInterface } from '@modules/transaction/transaction.repositiory.interface';
-import {
-  BadGatewayException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { TransactionStatus } from '@prisma/client';
 import { WebhookResponseDataType } from 'src/types/payos.type';
 
@@ -25,24 +20,29 @@ export class WebhookService {
       const find = await this.transactionRepository.findByCondition({
         paymentLinkId: body.data.paymentLinkId,
       });
-      if (!find) throw new NotFoundException('not found');
-      console.log('===> find:', find);
-      const metadata = JSON.parse(JSON.stringify(find.metadata));
-      await this.transactionRepository.update(
-        {
-          id: find.id,
-        },
-        {
-          status: TransactionStatus.COMPLETED,
-        },
-      );
-      if (metadata?.callbackURL) {
-        await this.httpService.post(metadata.callbackURL, metadata).toPromise();
+      if (find) {
+        console.log('===> find:', find);
+        const metadata = JSON.parse(JSON.stringify(find.metadata));
+        await this.transactionRepository.update(
+          {
+            id: find.id,
+          },
+          {
+            status: TransactionStatus.COMPLETED,
+          },
+        );
+        if (metadata?.callbackURL) {
+          console.log('====>', metadata?.callbackURL);
+          await this.httpService
+            .post(metadata.callbackURL, metadata)
+            .toPromise();
+        }
+        return true;
+      } else {
+        return false;
       }
-
-      return true;
     } catch (e) {
-      throw new BadGatewayException(e);
+      throw new BadRequestException(e);
     }
   }
 }
