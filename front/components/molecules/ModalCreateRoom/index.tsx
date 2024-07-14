@@ -181,7 +181,7 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                       <Button
                         disabled
                         isIconOnly
-                        className="h-14 w-[70px] text-xl"
+                        className="text-xl"
                         color="default"
                         isLoading={false}
                         onClick={handleSearchLink}
@@ -269,7 +269,7 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                         control={control}
                         formField={"is_same_price"}
                       >
-                        đồng giá
+                        Đồng giá
                       </ControlledCheckbox>
                       {isSamePrice && (
                         <ControlledInput
