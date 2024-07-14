@@ -11,9 +11,10 @@ type FormCreateRoomType = {
   public_time?: string;
   is_same_price: boolean;
   is_link_menu: string;
+  share_scope: SHARE_SCOPE;
+  save_as_template: boolean;
   link: string;
   price?: number;
-  share_scope: SHARE_SCOPE;
   invited_people: [] | string[];
   list_menu: {
     name: string;
@@ -28,6 +29,7 @@ type FormEditRoomType = {
   public_time_start?: string;
   price?: number;
   share_scope: SHARE_SCOPE;
+  save_as_template: boolean;
   invited_people: [] | string[];
 };
 
@@ -104,6 +106,7 @@ const useCreateRoomForm = () => {
       share_scope: SHARE_SCOPE.PUBLIC,
       invited_people: [],
       list_menu: [{ name: "", price: 0 }],
+      save_as_template: false,
     },
   });
 };

@@ -6,6 +6,7 @@ import {
   FieldValues,
   Path,
 } from "react-hook-form";
+import { I18nProvider } from "@react-aria/i18n";
 
 interface OwnProps<Type extends FieldValues>
   extends Omit<DateRangePickerProps, "value"> {
@@ -22,15 +23,17 @@ export default function ControlledDateRangePicker<T extends FieldValues>({
       control={control}
       name={formField}
       render={({ field }) => (
-        <DateRangePicker
-          {...props}
-          {...field}
-          errorMessage={props?.errorMessage}
-          value={field.value}
-          onChange={(value) => {
-            field.onChange(value);
-          }}
-        />
+        <I18nProvider locale="en-GB">
+          <DateRangePicker
+            {...props}
+            {...field}
+            errorMessage={props?.errorMessage}
+            value={field.value}
+            onChange={(value) => {
+              field.onChange(value);
+            }}
+          />
+        </I18nProvider>
       )}
     />
   );

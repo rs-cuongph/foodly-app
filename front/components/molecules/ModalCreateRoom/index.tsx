@@ -29,7 +29,6 @@ interface CreateRoomProps {
 
 export default function ModalCreateRoom({ editData }: CreateRoomProps) {
   const showLoading = commonState((state) => state.showLoading);
-  const [mode, setMode] = useState(false);
   const form = useCreateRoomForm();
   const usersState = roomState((state) => state.users);
   const open = roomState((state) => state.isOpenModalCreateOrder);
@@ -44,7 +43,6 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
     watch,
     reset,
     control,
-    register,
     getValues,
     handleSubmit,
   } = form;
@@ -55,7 +53,7 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
     setOpenModalCreateRoom(false);
   };
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "list_menu",
   });
@@ -66,34 +64,24 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
     return false;
   }, [watch("is_link_menu")]);
 
+  const isSamePrice = useMemo(() => {
+    return getValues("is_same_price");
+  }, [watch("is_same_price")]);
+
   useEffect(() => {
     if (isInputLink) {
       setValue("link", "");
     }
   }, [isInputLink]);
 
-  useEffect(() => {
-    if (getValues("is_same_price")) {
-      fields.forEach((field, index) => {
-        update(index, {
-          price: getValues("price") ?? 0,
-          name: watch("list_menu")[0].name,
-        });
-      });
-    } else {
-      fields.forEach((field, index) => {
-        update(index, {
-          price: 0,
-          name: watch("list_menu")[0].name,
-        });
-      });
-    }
-  }, [watch("is_same_price"), watch("price")]);
-
   const onSubmit = async (values: FormCreateRoomType) => {
     showLoading();
     // Todo
     hideLoading();
+  };
+
+  const handleSearchLink = async () => {
+    // Todo
   };
 
   useEffect(() => {
@@ -124,18 +112,24 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
 
   return (
     <>
-      <Modal backdrop="blur" isOpen={open} size="2xl" onClose={onClose}>
+      <Modal
+        backdrop="blur"
+        isOpen={open}
+        scrollBehavior="inside"
+        size="2xl"
+        onClose={onClose}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <form
-                className="modal-create-group-element"
-                onSubmit={handleSubmit(onSubmit)}
-              >
-                <ModalHeader className="flex flex-col gap-1 text-center">
-                  <div>{editData ? "Chỉnh Sửa" : "Tạo Mới"} </div>
-                </ModalHeader>
-                <ModalBody>
+              <ModalHeader className="flex flex-col gap-1 text-center">
+                <div>{editData ? "Chỉnh Sửa" : "Tạo Mới"} </div>
+              </ModalHeader>
+              <ModalBody>
+                <form
+                  className="modal-create-group-element flex gap-3 flex-col"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
                   <ControlledInput
                     control={control}
                     errorMessage={errors?.name?.message}
@@ -145,11 +139,12 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                   />
                   <div className="flex items-start gap-3">
                     <ControlledDateRangePicker
-                      className="max-w-xs"
+                      hideTimeZone
+                      className="max-w-md"
                       control={control}
                       errorMessage={errors?.public_time?.message}
                       formField="public_time"
-                      label="Ngày"
+                      granularity="second"
                     />
                   </div>
                   <div className="flex justify-start gap-4 items-center">
@@ -158,40 +153,125 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                         control={control}
                         defaultValue="1"
                         formField="is_link_menu"
+                        label="Loại"
                         options={[
                           {
-                            description: "lấy data từ shoppe",
                             value: "1",
-                            label: "Link",
+                            label: "Thủ công",
                           },
                           {
-                            description: "Nhập tự động",
                             value: "2",
-                            label: "Manual",
+                            label: "Tự động",
                           },
                         ]}
                         orientation="horizontal"
                       />
                     </div>
                   </div>
-                  {isInputLink ? (
-                    <ControlledInput
-                      control={control}
-                      errorMessage={errors?.link?.message}
-                      formField="link"
-                      label="Link đường dẫn"
-                      type="url"
-                    />
-                  ) : (
+                  {isInputLink && (
+                    <div className="flex gap-3 items-center">
+                      <ControlledInput
+                        disabled
+                        control={control}
+                        errorMessage={errors?.link?.message}
+                        formField="link"
+                        label="URL"
+                        type="url"
+                      />
+                      <Button
+                        disabled
+                        isIconOnly
+                        className="h-14 w-[70px] text-xl"
+                        color="default"
+                        isLoading={false}
+                        onClick={handleSearchLink}
+                      >
+                        <Icon icon="clarity:search-line" />
+                      </Button>
+                    </div>
+                  )}
+
+                  {isInputLink
+                    ? null
+                    : fields.map((field, index) => (
+                        <div key={field.id} className="gap-3 flex flex-col">
+                          <div className="flex items-baseline justify-center gap-3">
+                            <ControlledInput
+                              control={control}
+                              errorMessage={
+                                errors?.list_menu &&
+                                errors?.list_menu[index]?.name?.message
+                              }
+                              formField={`list_menu.${index}.name`}
+                              label="Món ăn"
+                              type="text"
+                            />
+                            {!isSamePrice && (
+                              <ControlledInput
+                                className="w-[200px]"
+                                control={control}
+                                disabled={isSamePrice}
+                                formField={`list_menu.${index}.price`}
+                                label={"Giá"}
+                                labelPlacement="inside"
+                                maxLength={7}
+                                type="text"
+                                onChange={(value) => {
+                                  let _value = value.replace(/[^0-9]/g, "");
+
+                                  if (!_value?.length) _value = "0";
+                                  if (parseInt(_value) > 1000000)
+                                    _value = "1000000";
+                                  setValue(
+                                    `list_menu.${index}.price`,
+                                    parseInt(_value),
+                                  );
+                                }}
+                              />
+                            )}
+                            {fields.length > 1 ? (
+                              <Button
+                                isIconOnly
+                                className="text-xl"
+                                color="danger"
+                                onClick={() => remove(index)}
+                              >
+                                <Icon icon="clarity:remove-solid" />
+                              </Button>
+                            ) : (
+                              <div />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  <div className="text-left">
+                    {!isInputLink && (
+                      <Button
+                        isIconOnly
+                        className="text-xl text-[#fff]"
+                        color="success"
+                        isLoading={false}
+                        onClick={() =>
+                          append({
+                            name: "",
+                            price: isSamePrice ? getValues("price") ?? 0 : 0,
+                          })
+                        }
+                      >
+                        <Icon icon="ic:outline-plus" />
+                      </Button>
+                    )}
+                  </div>
+                  {!isInputLink && (
                     <div className="flex items-center gap-3">
                       <ControlledCheckbox
                         color="primary"
                         control={control}
                         formField={"is_same_price"}
                       >
-                        Chọn đồng giá
+                        đồng giá
                       </ControlledCheckbox>
-                      {!mode && (
+                      {isSamePrice && (
                         <ControlledInput
                           className="w-[200px]"
                           control={control}
@@ -213,102 +293,40 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                     </div>
                   )}
 
-                  <div className="overflow-x-hidden overflow-y-auto max-h-[200px] gap-3 flex flex-col">
-                    {isInputLink
-                      ? null
-                      : fields.map((field, index) => (
-                          <div key={field.id} className="gap-3 flex flex-col">
-                            <div className="flex items-center justify-center">
-                              <ControlledInput
-                                control={control}
-                                endContent={
-                                  <div className="flex items-center justify-center absolute bottom-0 right-0 top-0">
-                                    <ControlledInput
-                                      className="w-[200px]"
-                                      control={control}
-                                      disabled={getValues("is_same_price")}
-                                      formField={`list_menu.${index}.price`}
-                                      label={"Giá"}
-                                      labelPlacement="inside"
-                                      maxLength={7}
-                                      radius={
-                                        fields.length == 1 ? "md" : "none"
-                                      }
-                                      type="text"
-                                      onChange={(value) => {
-                                        let _value = value.replace(
-                                          /[^0-9]/g,
-                                          "",
-                                        );
-
-                                        if (!_value?.length) _value = "0";
-                                        if (parseInt(_value) > 1000000)
-                                          _value = "1000000";
-                                        setValue(
-                                          `list_menu.${index}.price`,
-                                          parseInt(_value),
-                                        );
-                                      }}
-                                    />
-                                    {fields.length > 1 ? (
-                                      <button
-                                        className="p-2 cursor-pointer h-full flex items-center"
-                                        onClick={() => remove(index)}
-                                      >
-                                        <Icon
-                                          className="red"
-                                          icon="clarity:remove-solid"
-                                        />
-                                      </button>
-                                    ) : (
-                                      <div />
-                                    )}
-                                  </div>
-                                }
-                                errorMessage={
-                                  errors?.list_menu &&
-                                  errors?.list_menu[index]?.name?.message
-                                }
-                                formField={`list_menu.${index}.name`}
-                                label="Món ăn"
-                                type="text"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                  </div>
-                  <div className="text-right">
-                    {isInputLink ? (
-                      <Button color="default" isLoading={false}>
-                        Lấy data
-                      </Button>
-                    ) : (
-                      <button
-                        className="text-blue-500 text-base cursor-pointer"
-                        type="button"
-                        onClick={() =>
-                          append({
-                            name: "",
-                            price: getValues("is_same_price")
-                              ? getValues("price") ?? 0
-                              : 0,
-                          })
-                        }
-                      >
-                        Thêm
-                      </button>
-                    )}
-                  </div>
-                </ModalBody>
-                <ModalFooter className="modal-create-group-footer-element">
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Đóng
-                  </Button>
-                  <Button color="primary" isLoading={false} type="submit">
-                    Lưu
-                  </Button>
-                </ModalFooter>
-              </form>
+                  <ControlledRadioGroup
+                    control={control}
+                    defaultValue="public"
+                    formField="share_scope"
+                    label="Phạm vi chia sẻ"
+                    options={[
+                      {
+                        value: "public",
+                        label: "Công khai",
+                      },
+                      {
+                        value: "limit",
+                        label: "Riêng tư",
+                      },
+                    ]}
+                    orientation="horizontal"
+                  />
+                  <ControlledCheckbox
+                    color="primary"
+                    control={control}
+                    formField={"save_as_template"}
+                  >
+                    Lưu template
+                  </ControlledCheckbox>
+                </form>
+              </ModalBody>
+              <ModalFooter className="modal-create-group-footer-element">
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Đóng
+                </Button>
+                <Button color="primary" isLoading={false} type="submit">
+                  Lưu
+                </Button>
+              </ModalFooter>
             </>
           )}
         </ModalContent>
