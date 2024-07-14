@@ -7,8 +7,8 @@ import { CreateTransactionDto } from './dto/create.dto';
 import { TransactionInterface } from './transaction.repositiory.interface';
 import * as dayjs from 'dayjs';
 import { PayOSService } from 'src/services/payos.service';
-import { map } from 'rxjs';
 import { TRANSACTION_ENUM } from 'src/enums/status.enum';
+import { Transaction } from '@prisma/client';
 
 @Injectable()
 export class TransactionService {
@@ -24,34 +24,37 @@ export class TransactionService {
         amount: body.amount,
         orderIds: body.orderIds,
         createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        callbackURL: body.callbackURL,
       };
-
-      return this.payosService
-        .createPaymentLink({
-          amount: metadata.amount,
-          orderCode: 1,
-          description: '',
-          cancelUrl: '',
-          returnUrl: '',
-          expiredAt: dayjs().add(30, 'minutes').unix() * 1000,
-        })
-        .pipe(
-          map(async (res) => {
-            await this.transactionRepository.create({
-              metadata: {
-                ...metadata,
-                payos: res.data,
-              },
-              paymentLinkId: res.data.paymentLinkId,
-              status: TRANSACTION_ENUM.PROCESSING,
-            });
-            return {
-              message: 'success',
-              data: {},
-            };
-          }),
-        )
-        .subscribe();
+      const callback = async (trans: Transaction) => {
+        const result = await this.payosService
+          .createPaymentLink({
+            amount: trans.metadata['amount'],
+            orderCode: trans.id,
+            description: '',
+            cancelUrl: '',
+            returnUrl: '',
+            expiredAt: dayjs().add(30, 'minutes').unix(),
+          })
+          .toPromise();
+        if (result?.code == '00') {
+          return {
+            message: 'success',
+            data: result,
+          };
+        } else {
+          throw new BadRequestException(result?.desc || 'API ERROR');
+        }
+      };
+      return this.transactionRepository.create(
+        {
+          metadata: {
+            ...metadata,
+          },
+          status: TRANSACTION_ENUM.PROCESSING,
+        },
+        callback,
+      );
     } catch (e) {
       throw new BadRequestException(e);
     }

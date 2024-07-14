@@ -34,21 +34,30 @@ export class PayOSService {
     this.headers['x-api-key'] = xApiKey;
   }
 
-  private createSignature(data: object) {
-    // Sắp xếp dữ liệu theo thứ tự bảng chữ cái của key
+  private createSignature(data: {
+    amount: number;
+    cancelUrl: string;
+    returnUrl: string;
+    orderCode: number;
+    description: string;
+  }) {
     const checksumKey = this.configService.get<string>('payos.checksumKey');
-    const sortedData = Object.keys(data)
-      .sort()
-      .reduce((acc, key) => {
-        acc[key] = data[key];
-        return acc;
-      }, {});
-    // Chuyển đổi dữ liệu đã sắp xếp thành chuỗi query string
-    const queryString = new URLSearchParams(sortedData).toString();
+    const amount = data.amount.toString();
+    const cancelUrl = data.cancelUrl;
+    const description = data.description;
+    const orderCode = data.orderCode.toString();
+    const returnUrl = data.returnUrl;
+
+    const dataStr = 'amount='
+      .concat(amount, '&cancelUrl=')
+      .concat(cancelUrl, '&description=')
+      .concat(description, '&orderCode=')
+      .concat(orderCode, '&returnUrl=')
+      .concat(returnUrl);
 
     // Tạo HMAC SHA256 hash
     const hmac = crypto.createHmac('sha256', checksumKey);
-    hmac.update(queryString);
+    hmac.update(dataStr);
     const signature = hmac.digest('hex');
 
     return signature;
