@@ -30,12 +30,12 @@ export default function ModalLogin() {
   const [isVisible2, setIsVisible2] = useState(false);
 
   const onSubmit = async (values: FormLoginType) => {
-    setOpenModalLogin();
+    setOpenModalLogin(false);
     // Todo Login and register
   };
 
   const onClose = () => {
-    setOpenModalLogin();
+    setOpenModalLogin(false);
   };
 
   const handleChageModeRegester = () => {
