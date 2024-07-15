@@ -67,7 +67,7 @@ const initialState = {
     updated_at: "",
     id: "",
   },
-  isOpenModalCreateOrder: true,
+  isOpenModalCreateOrder: false,
 };
 
 export const roomState = create<roomState>()((set) => ({

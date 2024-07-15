@@ -1,9 +1,12 @@
 import { template } from "lodash";
 import * as yup from "yup";
+import dayjs from "dayjs";
+import IsSameOrAfter from "dayjs/plugin/isSameOrAfter";
 
 import { regexValidate } from "../constants/regex";
 
 import { LABEL, MESSAGES } from "./message";
+dayjs.extend(IsSameOrAfter);
 
 export function getValue(obj: Record<string, any>, keyString?: string) {
   if (!keyString) return "";
@@ -242,6 +245,22 @@ yup.addMethod<yup.StringSchema>(
       errorMsg || getMessageAddMethod.sameAs,
       function (value) {
         return value === this.parent[field];
+      },
+    );
+  },
+);
+
+yup.addMethod<yup.StringSchema>(
+  yup.string,
+  "minDate",
+  function (this: yup.StringSchema, field: string, errorMsg?: string) {
+    return this.test(
+      "min-date",
+      errorMsg || getMessageAddMethod.minDate,
+      function (value) {
+        if (!value) return true;
+
+        return dayjs(value).isSameOrAfter(dayjs(this.parent[field]));
       },
     );
   },
