@@ -17,6 +17,7 @@ interface InputProps {
   className?: string;
   labelPlacement?: "inside" | "outside" | "outside-left";
   size?: "sm" | "md" | "lg";
+  radius?: "sm" | "md" | "lg" | "none" | "full";
   classNames?:
     | SlotsToClasses<
         | "description"
@@ -64,6 +65,7 @@ export default function ControlledInput<T extends FieldValues>({
           type={props?.type || "text"}
           {...field}
           isDisabled={props?.disabled}
+          radius={props?.radius}
           onBlur={props.onBlur}
           onValueChange={(value) => {
             field.onChange(value);
