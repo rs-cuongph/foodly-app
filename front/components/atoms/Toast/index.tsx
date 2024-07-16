@@ -4,11 +4,11 @@ import clsx from "clsx";
 import { useCallback, useEffect, useMemo } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
-import { showNotify } from "@/provider/common";
+import { commonState } from "@/provider/common";
 
 export default function ToastLayout() {
-  const notify = showNotify((state) => state.notify);
-  const clearNotify = showNotify((state) => state.clearNotify);
+  const notify = commonState((state) => state.notify);
+  const clearNotify = commonState((state) => state.clearNotify);
 
   const iconSuccess = useMemo(() => {
     return (

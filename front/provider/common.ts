@@ -21,6 +21,8 @@ interface CommonState {
   };
   showNotifyAction: (payload: any) => void;
   clearNotify: (id?: string | number) => void;
+  setOpenModalOrder: (open: boolean) => void;
+  setRoomIForModalOrder: (room: Room) => void;
   showLoading: () => void;
   hideLoading: () => void;
 }
@@ -62,6 +64,35 @@ export const commonState = create<CommonState>()((set) => ({
       }
 
       return { ...prev, notify: notify };
+    });
+  },
+  setOpenModalOrder(payload: boolean) {
+    set((prev) => {
+      const modalOrderState = prev.modalOrderState;
+
+      return {
+        ...prev,
+        modalOrderState: {
+          ...modalOrderState,
+          open: payload,
+        },
+      };
+    });
+  },
+  setRoomIForModalOrder(payload: Room) {
+    set((prev) => {
+      const modalOrderState = prev.modalOrderState;
+
+      return {
+        ...prev,
+        modalOrderState: {
+          ...modalOrderState,
+          room: {
+            ...modalOrderState.room,
+            ...payload,
+          },
+        },
+      };
     });
   },
   showLoading() {
