@@ -18,3 +18,12 @@ export const upsertResponse = (id: number, isSuccess = true) => {
     id,
   };
 };
+
+export const transformDataByTemplate = (payload, template) => {
+  Object.keys(payload).map((key) => {
+    if (!Object.keys(template).includes(key)) {
+      delete payload[key];
+    }
+  })
+  return payload;
+}

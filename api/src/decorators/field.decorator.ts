@@ -16,6 +16,8 @@ import {
   IsEnum,
   Max,
   Min,
+  IsArray,
+  registerDecorator,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import {
@@ -44,6 +46,12 @@ interface IStringFieldOptions {
   password?: boolean;
   passwordConfirm?: boolean;
   isStringNumber?: boolean;
+}
+
+interface IArrayFieldOptions {
+  minLength?: number;
+  maxLength?: number;
+  valueType?: InstanceType<typeof String> | InstanceType<typeof Number> | InstanceType<typeof Object> ;
 }
 
 const configService = new ConfigService(configs());
@@ -315,4 +323,43 @@ export function EnumFieldOptional<TEnum>(
   options: Partial<{ each: boolean }> = {},
 ): PropertyDecorator {
   return applyDecorators(IsOptional(), EnumField(getEnum, { ...options }));
+}
+
+export function ArrayField(
+  options: IArrayFieldOptions = {},
+  property?: Array<string>
+): PropertyDecorator {
+  const decorators = [
+    IsArray({
+      message: i18nValidationMessage('validation.IsArray', {
+        property: property?.[0],
+      }),
+    }),
+  ];
+
+  if (options.valueType) {
+    const isValueArrayValid = function (object: Object, propertyName: string) {
+      registerDecorator({
+          name: 'isValueArrayValid',
+          target: object.constructor,
+          propertyName: propertyName,
+          validator: {
+              validate(value: any, args: ValidationArguments) {
+                  // Check if value is an array
+                  if (!Array.isArray(value)) {
+                      return false;
+                  }
+                  // Check each item in the array
+                  return value.every(item => typeof item === options.valueType && item !== null);
+              },
+              defaultMessage(args: ValidationArguments) {
+                  return `${propertyName} must be an array of ${options.valueType}`;
+              }
+          },
+      });
+    };
+    decorators.push(isValueArrayValid);
+  }
+
+  return applyDecorators(...decorators);
 }

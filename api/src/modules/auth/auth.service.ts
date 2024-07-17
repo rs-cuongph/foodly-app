@@ -24,7 +24,7 @@ export class AuthService {
   ) { }
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     try {
-      const existedUser = await this.UserService.findOneByCondition(signUpDto.email);
+      const existedUser = await this.UserService.findOneByCondition({ email: signUpDto.email });
       if (existedUser) {
         throw new ConflictException('Email already existed!!');
       }
@@ -80,7 +80,7 @@ export class AuthService {
 
   async getAuthenticatedUser(email: string, password: string): Promise<User> {
     try {
-      const user = await this.UserService.findOneByCondition(email);
+      const user = await this.UserService.findOneByCondition({ email });
       // if (user?.blockTo && isBefore(new Date(), user.blockTo)) {
       //   throw new BadRequestException(
       //     'This user be blocked by admin, please contact admin to unlock',
