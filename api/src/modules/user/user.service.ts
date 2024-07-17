@@ -8,10 +8,12 @@ export class UserService {
     @Inject('UserInterface')
     private readonly UserRepository: UserInterface,
   ) {}
-  async findOneByCondition(email: string): Promise<User> {
+  async findOneByCondition(
+    conditions: Prisma.UserWhereUniqueInput,
+  ): Promise<User> {
     try {
       return await this.UserRepository.findOneByCondition({
-        email,
+        ...conditions,
       });
     } catch (error) {
       throw error;

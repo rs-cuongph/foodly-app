@@ -20,15 +20,15 @@ import { TokenType } from 'src/enums/token.enum';
 export class AuthService {
   private SALT_ROUND = 11;
   constructor(
-    private readonly UserService: UserService,
+    private readonly userService: UserService,
     private configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     try {
-      const existedUser = await this.UserService.findOneByCondition(
-        signUpDto.email,
-      );
+      const existedUser = await this.userService.findOneByCondition({
+        email: signUpDto.email,
+      });
       if (existedUser) {
         throw new ConflictException('Email already existed!!');
       }
@@ -37,7 +37,7 @@ export class AuthService {
         signUpDto.password,
         this.SALT_ROUND,
       );
-      const user = await this.UserService.createUser({
+      const user = await this.userService.createUser({
         ...signUpDto,
         password: hashedPassword,
       });
@@ -86,7 +86,7 @@ export class AuthService {
 
   async getAuthenticatedUser(email: string, password: string): Promise<User> {
     try {
-      const user = await this.UserService.findOneByCondition(email);
+      const user = await this.userService.findOneByCondition({ email });
       // if (user?.blockTo && isBefore(new Date(), user.blockTo)) {
       //   throw new BadRequestException(
       //     'This user be blocked by admin, please contact admin to unlock',
@@ -134,7 +134,7 @@ export class AuthService {
   async storeRefreshToken(userId: string, token: string): Promise<void> {
     try {
       const hashedToken = await bcrypt.hash(token, this.SALT_ROUND);
-      await this.UserService.setCurrentRefreshToken(userId, hashedToken);
+      await this.userService.setCurrentRefreshToken(userId, hashedToken);
     } catch (error) {
       throw error;
     }

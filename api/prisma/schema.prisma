@@ -55,20 +55,21 @@ model Order {
 }
 
 model OrderGroup {
-  id              Int        @id @default(autoincrement())
-  code            String     @db.VarChar()
-  createdBy       User       @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
-  createdById     Int        @unique
+  id              Int            @id @default(autoincrement())
+  code            String         @db.VarChar()
+  createdBy       User           @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
+  createdById     Int            @unique
   publicStartTime DateTime
   publicEndTime   DateTime
   price           BigInt
-  shareScope      ShareScope @default(PUBLIC)
+  shareScope      ShareScope     @default(PUBLIC)
   inviteId        Int
   menuId          Int
   discount        Int
   menuItem        MenuItem[]
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  type            OrderGroupType @default(MANUAL)
 }
 
 model OrderGroupTemplate {
@@ -149,4 +150,16 @@ enum RequestAddCoinStatus {
   INIT
   CANCELED
   COMPLETED
+}
+
+enum PaymentHistoryStatus {
+  PROCESSING
+  INIT
+  CANCELED
+  COMPLETED
+}
+
+enum OrderGroupType {
+  MANUAL
+  AUTO
 }
