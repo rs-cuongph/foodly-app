@@ -7,7 +7,10 @@ import {
 } from '@nestjs/common';
 import { SignUpDto, SignUpResponse } from './dto/sign-up.dto';
 import { TokenPayload } from './interfaces/token.interface';
-import { access_token_private_key, refresh_token_private_key } from '@constants/jwt.constraints';
+import {
+  access_token_private_key,
+  refresh_token_private_key,
+} from '@constants/jwt.constraints';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
@@ -21,10 +24,12 @@ export class AuthService {
     private readonly UserService: UserService,
     private configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
   async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     try {
-      const existedUser = await this.UserService.findOneByCondition({ email: signUpDto.email });
+      const existedUser = await this.UserService.findOneByCondition({
+        email: signUpDto.email,
+      });
       if (existedUser) {
         throw new ConflictException('Email already existed!!');
       }
@@ -62,7 +67,9 @@ export class AuthService {
       });
       await this.storeRefreshToken(userId, refresh_token);
       // Return token along with iat and exp
-      const decodedToken = this.jwtService.decode(access_token) as { [key: string]: any };
+      const decodedToken = this.jwtService.decode(access_token) as {
+        [key: string]: any;
+      };
       const iat = decodedToken?.iat;
       const exp = decodedToken?.exp;
       return {
@@ -109,9 +116,7 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       algorithm: 'RS256',
       privateKey: access_token_private_key,
-      expiresIn: `${this.configService.get<string>(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}s`,
+      expiresIn: `${this.configService.get<string>('jwt.expiresIn')}`,
     });
   }
 
@@ -119,9 +124,7 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       algorithm: 'RS256',
       privateKey: refresh_token_private_key,
-      expiresIn: `${this.configService.get<string>(
-        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      )}s`,
+      expiresIn: `${this.configService.get<string>('jwt.refreshIn')}`,
     });
   }
 
@@ -133,5 +136,4 @@ export class AuthService {
       throw error;
     }
   }
-
 }
