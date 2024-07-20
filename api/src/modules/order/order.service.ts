@@ -1,10 +1,4 @@
-import { Injectable } from "@nestjs/common";
-import { CreateOrderDto } from "./dto/create.dto";
-import { User } from "@prisma/client";
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class OrdersService {
-  async createOrder(body: CreateOrderDto, roomId: string, currentUser: User) {
-
-  }
-}
+export class OrdersService {}

@@ -1,7 +1,7 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
-import { User } from "@prisma/client";
-import { CreateOrderGroupDto } from "./dto/create.dto";
-import { OrderGroupInterface } from "./order_group.interface";
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { CreateOrderGroupDto } from './dto/create.dto';
+import { OrderGroupInterface } from './order_group.interface';
 import * as winston from 'winston';
 import * as _ from 'lodash';
 
@@ -13,9 +13,7 @@ export class OrderGroupService {
     private readonly orderGroupRepository: OrderGroupInterface,
   ) {
     this.winstonLogger = winston.createLogger({
-      transports: [
-        new winston.transports.Console(),
-      ]
+      transports: [new winston.transports.Console()],
     });
   }
 
@@ -28,23 +26,21 @@ export class OrderGroupService {
       }
       body.publicStartTime = new Date(body.publicStartTime);
       body.publicEndTime = new Date(body.publicEndTime);
-      const id = await this.orderGroupRepository.create(
-        {
-          ...body,
-          code: nextID,
-          createdBy: {
-            connect: {
-              id: currentUser.id
-            }
-          }
-        }
-      );
+      const id = await this.orderGroupRepository.create({
+        ...body,
+        code: nextID,
+        createdBy: {
+          connect: {
+            id: currentUser.id,
+          },
+        },
+      });
       return {
         message: 'Success',
         data: {
           id: id,
-        }
-      }
+        },
+      };
     } catch (error) {
       this.winstonLogger.error(error);
       throw new BadRequestException(error);

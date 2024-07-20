@@ -24,6 +24,6 @@ export const transformDataByTemplate = (payload, template) => {
     if (!Object.keys(template).includes(key)) {
       delete payload[key];
     }
-  })
+  });
   return payload;
-}
+};

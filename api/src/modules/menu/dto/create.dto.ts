@@ -1,10 +1,5 @@
 import { StringField } from '@guards/field.decorator';
 
-export enum GROUP_TYPE {
-  AUTO = 'auto',
-  MANUAL = 'manual',
-}
-
 export class CreateMenuDto {
   @StringField({
     maxLength: 255,
@@ -15,5 +10,5 @@ export class CreateMenuDto {
   @StringField({
     allowEmpty: false,
   })
-  price: Number;
+  price: number;
 }

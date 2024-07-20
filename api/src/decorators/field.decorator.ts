@@ -51,7 +51,10 @@ interface IStringFieldOptions {
 interface IArrayFieldOptions {
   minLength?: number;
   maxLength?: number;
-  valueType?: InstanceType<typeof String> | InstanceType<typeof Number> | InstanceType<typeof Object> ;
+  valueType?:
+    | InstanceType<typeof String>
+    | InstanceType<typeof Number>
+    | InstanceType<typeof Object>;
 }
 
 const configService = new ConfigService(configs());
@@ -330,7 +333,7 @@ export function EnumFieldOptional<TEnum>(
 
 export function ArrayField(
   options: IArrayFieldOptions = {},
-  property?: Array<string>
+  property?: Array<string>,
 ): PropertyDecorator {
   const decorators = [
     IsArray({
@@ -341,24 +344,26 @@ export function ArrayField(
   ];
 
   if (options.valueType) {
-    const isValueArrayValid = function (object: Object, propertyName: string) {
+    const isValueArrayValid = function (object: object, propertyName: string) {
       registerDecorator({
-          name: 'isValueArrayValid',
-          target: object.constructor,
-          propertyName: propertyName,
-          validator: {
-              validate(value: any, args: ValidationArguments) {
-                  // Check if value is an array
-                  if (!Array.isArray(value)) {
-                      return false;
-                  }
-                  // Check each item in the array
-                  return value.every(item => typeof item === options.valueType && item !== null);
-              },
-              defaultMessage(args: ValidationArguments) {
-                  return `${propertyName} must be an array of ${options.valueType}`;
-              }
+        name: 'isValueArrayValid',
+        target: object.constructor,
+        propertyName: propertyName,
+        validator: {
+          validate(value: any) {
+            // Check if value is an array
+            if (!Array.isArray(value)) {
+              return false;
+            }
+            // Check each item in the array
+            return value.every(
+              (item) => typeof item === options.valueType && item !== null,
+            );
           },
+          defaultMessage() {
+            return `${propertyName} must be an array of ${options.valueType}`;
+          },
+        },
       });
     };
     decorators.push(isValueArrayValid);

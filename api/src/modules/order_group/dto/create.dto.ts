@@ -2,7 +2,7 @@ import { ArrayField, EnumField, StringField } from '@guards/field.decorator';
 import { MenuItem, OrderGroupType, Prisma } from '@prisma/client';
 import { IsBoolean, IsNumber } from 'class-validator';
 
-export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {  
+export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   @StringField({
     maxLength: 500,
     allowEmpty: false,
