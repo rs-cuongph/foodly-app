@@ -29,9 +29,8 @@ model User {
   deletedAt                       DateTime?
   orderCreated                    Order[]                   @relation("Order_createdBy")
   orderUpdated                    Order[]                   @relation("Order_updatedBy")
-  orderGroupCreated               OrderGroup?               @relation("OrderGroup_createdBy")
+  orderGroupCreated               OrderGroup[]              @relation("OrderGroup_createdBy")
   orderGroupTemplateCreated       OrderGroupTemplate[]      @relation("OrderGroupTemplate_createdBy")
-  menuItemCreated                 MenuItem[]                @relation("MenuItem_createdBy")
   statisticUser                   Statistic[]               @relation("Statistic_user")
   requestAddCoinHistoriesCreated  RequestAddCoinHistories[] @relation("RequestAddCoinHistories_createdBy")
   requestAddCoinHistoriesApproved RequestAddCoinHistories[] @relation("RequestAddCoinHistories_approvedBy")
@@ -56,16 +55,16 @@ model Order {
 
 model OrderGroup {
   id              Int            @id @default(autoincrement())
-  code            String         @db.VarChar()
-  createdBy       User           @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
-  createdById     Int            @unique
+  code            String?        @db.VarChar()
+  name            String         @db.VarChar()
+  createdBy       User?          @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
+  createdById     Int            
   publicStartTime DateTime
   publicEndTime   DateTime
-  price           BigInt
-  shareScope      ShareScope     @default(PUBLIC)
-  inviteId        Int
-  menuId          Int
-  discount        Int
+  price           Float
+  shareScope      ShareScope?     @default(PUBLIC)
+  inviteId        Int?
+  discount        Int?
   menuItem        MenuItem[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
@@ -81,11 +80,9 @@ model OrderGroupTemplate {
 
 model MenuItem {
   id           Int        @id @default(autoincrement())
-  name         Int
-  createdBy    User       @relation("MenuItem_createdBy", fields: [createdById], references: [id])
-  createdById  Int
+  name         String
   price        Int
-  discount     Int
+  discount     Int?
   orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id])
   orderGroupId Int
   createdAt    DateTime   @default(now())
