@@ -9,11 +9,8 @@ import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 @Module({
   imports: [UserModule, JwtModule.register({})],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtAccessTokenStrategy,
-  ],
-  exports: [JwtAccessTokenStrategy]
+
+  providers: [AuthService, LocalStrategy, JwtAccessTokenStrategy],
+  exports: [JwtAccessTokenStrategy],
 })
-export class AuthModule { }
+export class AuthModule {}

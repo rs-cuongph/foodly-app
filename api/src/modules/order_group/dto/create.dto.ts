@@ -22,7 +22,7 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   @IsNumber({
     allowNaN: false,
   })
-  price: number;
+      price: number;
 
   @StringField({
     allowEmpty: false,
