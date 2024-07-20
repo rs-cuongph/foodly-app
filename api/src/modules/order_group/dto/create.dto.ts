@@ -1,17 +1,13 @@
 import { ArrayField, EnumField, StringField } from '@guards/field.decorator';
-import { Prisma } from '@prisma/client';
+import { MenuItem, OrderGroupType, Prisma } from '@prisma/client';
+import { IsBoolean, IsNumber } from 'class-validator';
 
-export enum GROUP_TYPE {
-  AUTO = 'auto',
-  MANUAL = 'manual',
-}
-
-export class CreateOrderGroupDto {
+export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {  
   @StringField({
     maxLength: 500,
     allowEmpty: false,
   })
-  groupName: string;
+  name: string;
 
   @StringField({
     allowEmpty: false,
@@ -23,14 +19,22 @@ export class CreateOrderGroupDto {
   })
   publicEndTime: Date;
 
+  @IsNumber({
+    allowNaN: false,
+  })
+  price: number;
+
   @StringField({
     allowEmpty: false,
   })
-  @EnumField(() => GROUP_TYPE)
-  type: GROUP_TYPE;
+  @EnumField(() => OrderGroupType)
+  type: OrderGroupType;
 
   @ArrayField({
     valueType: 'object',
   })
-  menuItems?: Array<Object> | null;
+  menuItems?: Array<MenuItem> | null;
+
+  @IsBoolean()
+  isSaveTemplate: boolean;
 }

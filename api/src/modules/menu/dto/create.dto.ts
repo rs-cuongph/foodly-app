@@ -1,4 +1,4 @@
-import { EnumField, StringField } from '@guards/field.decorator';
+import { StringField } from '@guards/field.decorator';
 
 export enum GROUP_TYPE {
   AUTO = 'auto',
@@ -16,19 +16,4 @@ export class CreateMenuDto {
     allowEmpty: false,
   })
   price: Number;
-
-  @StringField({
-    allowEmpty: false,
-  })
-  discount: Number;
-
-  @StringField({
-    allowEmpty: false,
-  })
-  orderGroupId: string;
-
-  @StringField({
-    allowEmpty: false,
-  })
-  createdById: string;
 }
