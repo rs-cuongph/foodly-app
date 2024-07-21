@@ -30,6 +30,7 @@ export class AuthController {
           displayName: 'John Doe',
           email: 'johndoe@example.com',
           password: '1232@asdS',
+          confirmPassword: '1232@asdS',
         } as SignUpDto,
       },
     },

@@ -18,8 +18,6 @@ import {
   Min,
   IsArray,
   registerDecorator,
-  MinDate,
-  MaxDate,
   IsISO8601,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
@@ -57,7 +55,7 @@ interface IStringFieldOptions {
   passwordConfirm?: boolean;
   isStringNumber?: boolean;
   isDate?: boolean;
-  dateOption?: IsDateFieldOptions;
+  dateOptions?: IsDateFieldOptions;
 }
 
 interface IArrayFieldOptions {
@@ -213,10 +211,10 @@ export function StringField(
   if (options.max) {
     decorators.push(
       ToInt(),
-      Max(options.max, {
+      Min(options.max, {
         message: i18nValidationMessage('validation.Max', {
           property: property?.[0],
-          constraints: [property?.[1]],
+          constraints: [options.max],
         }),
       }),
     );
@@ -225,10 +223,10 @@ export function StringField(
   if (options.min) {
     decorators.push(
       ToInt(),
-      Min(options.min, {
-        message: i18nValidationMessage('validation.Max', {
+      Max(options.min, {
+        message: i18nValidationMessage('validation.Min', {
           property: property?.[0],
-          constraints: [property?.[1]],
+          constraints: [options.min],
         }),
       }),
     );
@@ -253,8 +251,8 @@ export function StringField(
         },
       ),
     );
-    if (options?.dateOption?.minDate) {
-      if (options?.dateOption?.minDate === 'now') {
+    if (options?.dateOptions?.minDate) {
+      if (options?.dateOptions?.minDate === 'now') {
         decorators.push(
           IsFutureOrPastDate('future', {
             message: i18nValidationMessage('validation.IsFutureDate', {
@@ -262,11 +260,9 @@ export function StringField(
             }),
           }),
         );
-      } else if (options?.dateOption?.minDate instanceof Date) {
-        console.log(options?.dateOption?.minDate);
+      } else if (options?.dateOptions?.minDate instanceof Date) {
         decorators.push(
-          // Type(() => Date),
-          MinDate(new Date(options?.dateOption?.minDate), {
+          IsMinOrMaxDate(options?.dateOptions?.minDate, 'min', {
             message: i18nValidationMessage('validation.MinDate', {
               property: property?.[0],
             }),
@@ -274,8 +270,8 @@ export function StringField(
         );
       }
     }
-    if (options?.dateOption?.maxDate) {
-      if (options?.dateOption?.maxDate === 'now') {
+    if (options?.dateOptions?.maxDate) {
+      if (options?.dateOptions?.maxDate === 'now') {
         decorators.push(
           IsFutureOrPastDate('past', {
             message: i18nValidationMessage('validation.IsPastDate', {
@@ -283,9 +279,9 @@ export function StringField(
             }),
           }),
         );
-      } else if (options?.dateOption?.maxDate instanceof Date) {
+      } else if (options?.dateOptions?.maxDate instanceof Date) {
         decorators.push(
-          MaxDate(options?.dateOption?.maxDate, {
+          IsMinOrMaxDate(options?.dateOptions?.maxDate, 'max', {
             message: i18nValidationMessage('validation.MaxDate', {
               property: property?.[0],
             }),
@@ -294,9 +290,9 @@ export function StringField(
       }
     }
 
-    if (options?.dateOption?.smallerThan) {
+    if (options?.dateOptions?.smallerThan) {
       decorators.push(
-        IsSmallerThan(options?.dateOption?.smallerThan, {
+        IsSmallerThan(options?.dateOptions?.smallerThan, {
           message: i18nValidationMessage('validation.SmallerDate', {
             property: property?.[0],
             constraints: [property?.[1]],
@@ -367,7 +363,6 @@ export function IsFutureOrPastDate(
           const [type] = args.constraints;
           const now = new Date();
           const newValue = new Date(value);
-          console.log('type', type);
           if (type === 'future') {
             return newValue > now;
           }
@@ -395,6 +390,32 @@ export function IsSmallerThan(
           const endDate = args.object[args.constraints[0]];
 
           return startDate < endDate;
+        },
+        defaultMessage(args: ValidationArguments) {
+          return `${args.property} must be a date in the future`;
+        },
+      },
+    },
+    validationOptions,
+  );
+}
+
+export function IsMinOrMaxDate(
+  configDate: Date,
+  type: 'min' | 'max' = 'min',
+  validationOptions?: ValidationOptions,
+): PropertyDecorator {
+  return ValidateBy(
+    {
+      name: 'IsMaxDate',
+      constraints: [configDate, type],
+      validator: {
+        validate(date: Date, args: ValidationArguments) {
+          const configDate = args.constraints[0];
+          if (args.constraints[1] === 'min') {
+            return new Date(date) > new Date(configDate);
+          }
+          return new Date(date) < new Date(configDate);
         },
         defaultMessage(args: ValidationArguments) {
           return `${args.property} must be a date in the future`;

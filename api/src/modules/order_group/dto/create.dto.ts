@@ -1,7 +1,7 @@
 import { ArrayField, EnumField, StringField } from '@guards/field.decorator';
 import { MenuItem, OrderGroupType, Prisma } from '@prisma/client';
 // import { Transform } from 'class-transformer';
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean } from 'class-validator';
 
 export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   @StringField({
@@ -14,8 +14,8 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
     {
       allowEmpty: false,
       isDate: true,
-      dateOption: {
-        minDate: new Date('2024-07-21T07:00:44.005Z'),
+      dateOptions: {
+        maxDate: 'now',
         smallerThan: 'publicEndTime',
       },
     },
@@ -27,16 +27,18 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
     {
       allowEmpty: false,
       isDate: true,
-      dateOption: {
-        minDate: new Date('2024-07-21T07:00:44.005Z'),
+      dateOptions: {
+        maxDate: 'now',
       },
     },
     ['publicEndTime'],
   )
   publicEndTime: Date;
 
-  @IsNumber({
-    allowNaN: false,
+  @StringField({
+    isStringNumber: false,
+    min: 1000,
+    max: 10000000,
   })
   price: number;
 
@@ -52,5 +54,5 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   menuItems?: Array<MenuItem> | null;
 
   @IsBoolean()
-  isSaveTemplate: boolean;
+  isSaveTemplate?: boolean = false;
 }
