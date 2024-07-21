@@ -18,6 +18,9 @@ import {
   Min,
   IsArray,
   registerDecorator,
+  MinDate,
+  MaxDate,
+  IsISO8601,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import {
@@ -28,6 +31,13 @@ import {
   ToUpperCase,
   Trim,
 } from './transform.decorator';
+
+interface IsDateFieldOptions {
+  minDate?: Date | 'now';
+  maxDate?: Date | 'now';
+  smallerThan?: string;
+  greaterThan?: string;
+}
 
 interface IStringFieldOptions {
   length?: number;
@@ -46,6 +56,8 @@ interface IStringFieldOptions {
   password?: boolean;
   passwordConfirm?: boolean;
   isStringNumber?: boolean;
+  isDate?: boolean;
+  dateOption?: IsDateFieldOptions;
 }
 
 interface IArrayFieldOptions {
@@ -230,6 +242,70 @@ export function StringField(
     decorators.push(ToInt());
   }
 
+  if (options?.isDate) {
+    decorators.push(
+      IsISO8601(
+        { strict: true },
+        {
+          message: i18nValidationMessage('validation.IsDate', {
+            property: property?.[0],
+          }),
+        },
+      ),
+    );
+    if (options?.dateOption?.minDate) {
+      if (options?.dateOption?.minDate === 'now') {
+        decorators.push(
+          IsFutureOrPastDate('future', {
+            message: i18nValidationMessage('validation.IsFutureDate', {
+              property: property?.[0],
+            }),
+          }),
+        );
+      } else if (options?.dateOption?.minDate instanceof Date) {
+        console.log(options?.dateOption?.minDate);
+        decorators.push(
+          // Type(() => Date),
+          MinDate(new Date(options?.dateOption?.minDate), {
+            message: i18nValidationMessage('validation.MinDate', {
+              property: property?.[0],
+            }),
+          }),
+        );
+      }
+    }
+    if (options?.dateOption?.maxDate) {
+      if (options?.dateOption?.maxDate === 'now') {
+        decorators.push(
+          IsFutureOrPastDate('past', {
+            message: i18nValidationMessage('validation.IsPastDate', {
+              property: property?.[0],
+            }),
+          }),
+        );
+      } else if (options?.dateOption?.maxDate instanceof Date) {
+        decorators.push(
+          MaxDate(options?.dateOption?.maxDate, {
+            message: i18nValidationMessage('validation.MaxDate', {
+              property: property?.[0],
+            }),
+          }),
+        );
+      }
+    }
+
+    if (options?.dateOption?.smallerThan) {
+      decorators.push(
+        IsSmallerThan(options?.dateOption?.smallerThan, {
+          message: i18nValidationMessage('validation.SmallerDate', {
+            property: property?.[0],
+            constraints: [property?.[1]],
+          }),
+        }),
+      );
+    }
+  }
+
   return applyDecorators(...decorators);
 }
 
@@ -271,6 +347,57 @@ export function IsPassword(
           const passwordPattern: string =
             validationArguments.constraints[0] || '';
           return `Password doesn't match with pattern ${passwordPattern}`;
+        },
+      },
+    },
+    validationOptions,
+  );
+}
+
+export function IsFutureOrPastDate(
+  property: 'future' | 'past',
+  validationOptions?: ValidationOptions,
+): PropertyDecorator {
+  return ValidateBy(
+    {
+      name: 'IsFutureOrPastDate',
+      constraints: [property],
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const [type] = args.constraints;
+          const now = new Date();
+          const newValue = new Date(value);
+          console.log('type', type);
+          if (type === 'future') {
+            return newValue > now;
+          }
+          return newValue < now;
+        },
+        defaultMessage(args: ValidationArguments) {
+          return `${args.property} must be a date in the future`;
+        },
+      },
+    },
+    validationOptions,
+  );
+}
+
+export function IsSmallerThan(
+  property: string,
+  validationOptions?: ValidationOptions,
+): PropertyDecorator {
+  return ValidateBy(
+    {
+      name: 'IsSmallerThan',
+      constraints: [property],
+      validator: {
+        validate(startDate: any, args: ValidationArguments) {
+          const endDate = args.object[args.constraints[0]];
+
+          return startDate < endDate;
+        },
+        defaultMessage(args: ValidationArguments) {
+          return `${args.property} must be a date in the future`;
         },
       },
     },

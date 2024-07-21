@@ -24,8 +24,6 @@ export class OrderGroupService {
       if (lastRoom && lastRoom.code) {
         nextID = _.padStart((Number(lastRoom.code) + 1).toString(), 10, '0');
       }
-      body.publicStartTime = new Date(body.publicStartTime);
-      body.publicEndTime = new Date(body.publicEndTime);
       const id = await this.orderGroupRepository.create({
         ...body,
         code: nextID,

@@ -28,5 +28,9 @@
   "IsPassword": "{property} doesn't match with pattern {constraints.0}",
   "IsMatch": "{property} doesn't match with {constraints.0}",
   "IsArray": "{property} needs to be an array",
-  "IsObject": "{property} needs to be an object"
+  "IsObject": "{property} needs to be an object",
+  "IsDate": "{property} is invalid date format",
+  "IsFutureDate": "{property} needs to be in the future",
+  "IsPastDate": "{property} needs to be in the past",
+  "SmallerDate": "{property} needs to be smaller than {constraints.0}"
 }
