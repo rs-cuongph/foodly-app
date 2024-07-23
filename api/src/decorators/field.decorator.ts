@@ -19,6 +19,7 @@ import {
   IsArray,
   registerDecorator,
   IsISO8601,
+  IsNumber,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import {
@@ -56,6 +57,11 @@ interface IStringFieldOptions {
   isStringNumber?: boolean;
   isDate?: boolean;
   dateOptions?: IsDateFieldOptions;
+}
+
+interface INumberFieldOptions {
+  min?: number;
+  max?: number;
 }
 
 interface IArrayFieldOptions {
@@ -300,6 +306,48 @@ export function StringField(
         }),
       );
     }
+  }
+
+  return applyDecorators(...decorators);
+}
+
+export function NumberField(
+  options: INumberFieldOptions = {},
+  property?: Array<string>,
+): PropertyDecorator {
+  const decorators = [
+    IsNumber(
+      {
+        allowNaN: false,
+      },
+      {
+        message: i18nValidationMessage('validation.IsNumber', {
+          property: property?.[0],
+        }),
+      },
+    ),
+  ];
+
+  if (options?.min) {
+    decorators.push(
+      Min(options.min, {
+        message: i18nValidationMessage('validation.Min', {
+          property: property?.[0],
+          constraints: [options.min],
+        }),
+      }),
+    );
+  }
+
+  if (options?.max) {
+    decorators.push(
+      Max(options.max, {
+        message: i18nValidationMessage('validation.Max', {
+          property: property?.[0],
+          constraints: [options.max],
+        }),
+      }),
+    );
   }
 
   return applyDecorators(...decorators);

@@ -1,7 +1,14 @@
-import { ArrayField, EnumField, StringField } from '@guards/field.decorator';
-import { MenuItem, OrderGroupType, Prisma } from '@prisma/client';
+import {
+  ArrayField,
+  EnumField,
+  NumberField,
+  StringField,
+} from '@guards/field.decorator';
+import { CreateMenuDto } from '@modules/menu/dto/create.dto';
+import { OrderGroupType, Prisma } from '@prisma/client';
+import { Type } from 'class-transformer';
 // import { Transform } from 'class-transformer';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsNotEmpty, ValidateNested } from 'class-validator';
 
 export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   @StringField({
@@ -35,8 +42,7 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   )
   publicEndTime: Date;
 
-  @StringField({
-    isStringNumber: false,
+  @NumberField({
     min: 1000,
     max: 10000000,
   })
@@ -51,8 +57,18 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   @ArrayField({
     valueType: 'object',
   })
-  menuItems?: Array<MenuItem> | null;
+  @ValidateNested({ each: true })
+  @Type(() => CreateMenuDto)
+  menuItems?: Array<CreateMenuDto> | null;
 
   @IsBoolean()
   isSaveTemplate?: boolean = false;
+}
+
+export class OrderGroupResponse {
+  @IsNotEmpty()
+  message?: string;
+
+  @IsNotEmpty()
+  data?: object;
 }

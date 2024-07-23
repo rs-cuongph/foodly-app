@@ -1,4 +1,4 @@
-import { StringField } from '@guards/field.decorator';
+import { NumberField, StringField } from '@guards/field.decorator';
 
 export class CreateMenuDto {
   @StringField({
@@ -7,8 +7,9 @@ export class CreateMenuDto {
   })
   name: string;
 
-  @StringField({
-    allowEmpty: false,
+  @NumberField({
+    min: 1000,
+    max: 10000000,
   })
   price: number;
 }

@@ -6,17 +6,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { RequestWithUser } from 'src/types/requests.type';
 import { SignUpDto, SignUpResponse } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
-import { RequestWithUser } from 'src/types/requests.type';
 import { SignInDto, SignInResponse } from './dto/sign-in.dto';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
   @ApiOperation({
     summary: 'User sign up to platform',
     description: 'User sign up',
