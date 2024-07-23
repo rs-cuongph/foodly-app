@@ -25,7 +25,8 @@
       "@modules/*": ["src/modules/*"],
       "@guards/*": ["src/decorators/*"],
       "@decorators/*": ["src/decorators/*"],
-      "@commands/*": ["src/commands/*"]
+      "@commands/*": ["src/commands/*"],
+      "@types/*": ["src/types/*"]
     }
   }
 }

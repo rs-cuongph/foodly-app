@@ -1,12 +1,10 @@
 import { StringField } from '@guards/field.decorator';
-import {
-  IsNotEmpty,
-} from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 export class SignInDto {
   @StringField({
     email: true,
     maxLength: 50,
-    allowEmpty: false
+    allowEmpty: false,
   })
   email: string;
 
@@ -17,7 +15,6 @@ export class SignInDto {
   })
   password: string;
 }
-
 
 export class SignInResponse {
   @IsNotEmpty()

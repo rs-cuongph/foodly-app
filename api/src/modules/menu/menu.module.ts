@@ -9,4 +9,4 @@ import { Module } from '@nestjs/common';
   controllers: [],
   providers: [],
 })
-export class OrderGroupModule {}
+export class MenuModule {}
