@@ -254,7 +254,7 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                         onClick={() =>
                           append({
                             name: "",
-                            price: isSamePrice ? getValues("price") ?? 0 : 0,
+                            price: isSamePrice ? (getValues("price") ?? 0) : 0,
                           })
                         }
                       >

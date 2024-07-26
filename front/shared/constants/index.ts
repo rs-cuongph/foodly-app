@@ -1,10 +1,7 @@
 export const ROUTES = {
   HOME: "/home",
-  LIST_GROUP_ORDER: "/orders",
-  DETAIL_GROUP_ORDER: "/orders/:id",
-  MY_ORDERS: "/my-orders",
-  HISTORY: "/credit-histories",
-  DETAIL_HISTORY: "/histories/:id",
+  PAYMENT: "/payment",
+  GROUPS: "/groups",
   MY_PAGE: "/my-page",
 };
 
