@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Icon } from "@iconify/react";
 
 import { ROUTES } from "@/shared/constants";
+import CustomIcon from "@/components/atoms/CustomIcon";
 
 export default function Sidebar() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function Sidebar() {
   const items = [
     {
       name: "Trang Chủ",
-      icon: <Icon className="h-6 w-6 text-[#fe724c]" icon="healthicons:home" />,
+      icon: <CustomIcon name="home" />,
       key: 1,
       pathRegex: new RegExp(/^\/home+$/g),
       authenticate: false,
@@ -28,9 +29,7 @@ export default function Sidebar() {
     },
     {
       name: "Thanh Toán",
-      icon: (
-        <Icon className="h-6 w-6 text-[#fe724c]" icon="basil:invoice-solid" />
-      ),
+      icon: <CustomIcon name="payment" />,
       key: 2,
       pathRegex: new RegExp(/^\/payment/g),
       authenticate: true,
@@ -40,9 +39,7 @@ export default function Sidebar() {
     },
     {
       name: "Nhóm Của Tôi",
-      icon: (
-        <Icon className="h-6 w-6 text-[#fe724c]" icon="ic:sharp-group-add" />
-      ),
+      icon: <CustomIcon name="groups" />,
       key: 3,
       pathRegex: new RegExp(/^\/groups/g),
       authenticate: true,
@@ -52,9 +49,7 @@ export default function Sidebar() {
     },
     {
       name: "Tôi",
-      icon: (
-        <Icon className="h-6 w-6 text-[#fe724c]" icon="ph:user-circle-fill" />
-      ),
+      icon: <CustomIcon name="me" />,
       key: 4,
       pathRegex: new RegExp(/^\/my-page+$/g),
       authenticate: true,

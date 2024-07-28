@@ -39,7 +39,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // <ReduxProvider>
     <html suppressHydrationWarning lang="en">
       <Head>
         <link
@@ -70,13 +69,11 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          {/* <ToastLayout /> */}
           {/* <NextAuthProvider> */}
           <div className="relative">{children}</div>
           {/* </NextAuthProvider> */}
         </Providers>
       </body>
     </html>
-    // </ReduxProvider>
   );
 }
