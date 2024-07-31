@@ -1,9 +1,11 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { OrderGroup, User } from '@prisma/client';
 import { CreateOrderGroupDto } from './dto/create.dto';
 import { OrderGroupInterface } from './order_group.interface';
 import * as winston from 'winston';
 import * as _ from 'lodash';
+import { PrismaService } from 'nestjs-prisma';
+import { paginate } from 'src/shared/pagination';
 
 @Injectable()
 export class OrderGroupService {
@@ -11,6 +13,7 @@ export class OrderGroupService {
   constructor(
     @Inject('OrderGroupInterface')
     private readonly orderGroupRepository: OrderGroupInterface,
+    private prisma: PrismaService,
   ) {
     this.winstonLogger = winston.createLogger({
       transports: [new winston.transports.Console()],
@@ -39,6 +42,33 @@ export class OrderGroupService {
           id: id,
         },
       };
+    } catch (error) {
+      this.winstonLogger.error(error);
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getOrderGroups(currentUser: User, page: number, pageSize: number) {
+    try {
+      const totalCount = await this.prisma.orderGroup.count();
+      const orderGroups = await this.orderGroupRepository.getOrderGroups(
+        currentUser.id,
+        page,
+        pageSize,
+      );
+      return paginate<OrderGroup>(page, pageSize, totalCount, orderGroups);
+    } catch (error) {
+      this.winstonLogger.error(error);
+      throw new BadRequestException(error);
+    }
+  }
+
+  async getOrderGroupsById(id: number, currentUser: User) {
+    try {
+      return await this.orderGroupRepository.getOrderGroupsById(
+        id,
+        currentUser.id,
+      );
     } catch (error) {
       this.winstonLogger.error(error);
       throw new BadRequestException(error);

@@ -5,10 +5,16 @@ import {
   StringField,
 } from '@guards/field.decorator';
 import { CreateMenuDto } from '@modules/menu/dto/create.dto';
-import { OrderGroupType, Prisma } from '@prisma/client';
+import { OrderGroupType, Prisma, ShareScope } from '@prisma/client';
 import { Type } from 'class-transformer';
-// import { Transform } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, ValidateNested } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   @StringField({
@@ -63,6 +69,17 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
 
   @IsBoolean()
   isSaveTemplate?: boolean = false;
+
+  @StringField({
+    allowEmpty: false,
+  })
+  @EnumField(() => ShareScope)
+  shareScope?: ShareScope;
+
+  @ArrayField({
+    valueType: 'number',
+  })
+  inviteds?: Array<number>;
 }
 
 export class OrderGroupResponse {
@@ -71,4 +88,15 @@ export class OrderGroupResponse {
 
   @IsNotEmpty()
   data?: object;
+}
+
+export class InviteUsersDto {
+  @IsInt()
+  @IsNotEmpty()
+  orderGroupId: number;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsInt({ each: true })
+  userIds: number[];
 }
