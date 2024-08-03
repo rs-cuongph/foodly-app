@@ -76,8 +76,6 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
   }, [isInputLink]);
 
   const onSubmit = async (values: FormCreateRoomType) => {
-    console.log();
-
     showLoading();
     // Todo
     hideLoading();
@@ -123,10 +121,7 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
       >
         <ModalContent>
           {(onClose) => (
-            <form
-              className="modal-create-group-element flex gap-3 flex-col"
-              onSubmit={handleSubmit(onSubmit)}
-            >
+            <>
               <ModalHeader className="flex flex-col gap-1 text-center">
                 <div>{editData ? "Chỉnh Sửa" : "Tạo Mới"} </div>
               </ModalHeader>
@@ -317,11 +312,15 @@ export default function ModalCreateRoom({ editData }: CreateRoomProps) {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Đóng
                 </Button>
-                <Button color="primary" type="submit">
+                <Button
+                  color="primary"
+                  type="button"
+                  onClick={handleSubmit(onSubmit)}
+                >
                   Xác nhận
                 </Button>
               </ModalFooter>
-            </form>
+            </>
           )}
         </ModalContent>
       </Modal>
