@@ -7,7 +7,6 @@ import { SHARE_SCOPE } from "@/shared/constants";
 
 type FormCreateRoomType = {
   name: string;
-  description?: string | null;
   public_time?: string;
   is_same_price: boolean;
   is_link_menu: string;
@@ -25,8 +24,7 @@ type FormCreateRoomType = {
 type FormEditRoomType = {
   id: string;
   name: string;
-  description?: string | null;
-  public_time_start?: string;
+  public_time?: string;
   price?: number;
   share_scope: SHARE_SCOPE;
   save_as_template: boolean;
@@ -38,15 +36,14 @@ const useCreateRoomForm = () => {
     () =>
       yup.object().shape({
         name: yup.string().label("room.name").max(255).required(),
-        description: yup.string().label("room.description").max(255),
         is_same_price: yup.boolean(),
-        public_time: yup.string().label("room.public_time"),
+        public_time: yup.string().label("room.public_time").required(),
         link: yup
           .string()
           .label("room.link")
           .when("is_link_menu", {
             is: (value?: any) => {
-              if (value == "1") return true;
+              if (value == "2") return true;
 
               return false;
             },
@@ -66,7 +63,7 @@ const useCreateRoomForm = () => {
           .label("room.invited_people"),
         list_menu: yup.array().when("is_link_menu", {
           is: (value?: any) => {
-            if (value == "1") return false;
+            if (value == "2") return false;
 
             return true;
           },
