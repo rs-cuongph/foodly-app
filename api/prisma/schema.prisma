@@ -34,6 +34,7 @@ model User {
   statisticUser                   Statistic[]               @relation("Statistic_user")
   requestAddCoinHistoriesCreated  RequestAddCoinHistories[] @relation("RequestAddCoinHistories_createdBy")
   requestAddCoinHistoriesApproved RequestAddCoinHistories[] @relation("RequestAddCoinHistories_approvedBy")
+  invited                         InvitedUser[]             @relation("Invited_user")
 }
 
 model Order {
@@ -58,17 +59,25 @@ model OrderGroup {
   code            String?        @db.VarChar()
   name            String         @db.VarChar()
   createdBy       User?          @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
-  createdById     Int            
+  createdById     Int
   publicStartTime DateTime
   publicEndTime   DateTime
   price           Float
-  shareScope      ShareScope?     @default(PUBLIC)
-  inviteId        Int?
+  shareScope      ShareScope?    @default(PUBLIC)
+  invited         InvitedUser[]  @relation("Order_group")
   discount        Int?
   menuItem        MenuItem[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   type            OrderGroupType @default(MANUAL)
+}
+
+model InvitedUser {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation("Invited_user", fields: [userId], references: [id])
+  userId       Int
+  orderGroup   OrderGroup @relation("Order_group", fields: [orderGroupId], references: [id])
+  orderGroupId Int
 }
 
 model OrderGroupTemplate {
