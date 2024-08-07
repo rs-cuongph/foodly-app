@@ -38,6 +38,14 @@ module.exports = {
       backgroundImage: {
         banner: "url('/images/banner-img.jpeg')",
       },
+      colors: {
+        "dark-gray": "#1E1E1E",
+        "coral-orange": "#FE724C",
+        "translucent-black": "#00000040",
+      },
+      boxShadow: {
+        "sunset": "0px 2px 4px 0px #FE724C"
+      },
     },
   },
   darkMode: "class",
