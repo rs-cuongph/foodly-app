@@ -26,7 +26,7 @@ export default function DetailOrderHeaderGroup() {
   ];
 
   return (
-    <div className="h-full grid w-full h-[167px] grid-cols-12 gap-[15px]">
+    <div className="h-full grid w-full min-h-[167px] grid-cols-12 gap-[15px]">
       <div className="bg-image-default w-full col-span-12 md:col-span-3 rounded-xl h-full">
         <Image
           alt="Default Image"
