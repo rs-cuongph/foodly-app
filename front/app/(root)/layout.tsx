@@ -56,7 +56,7 @@ export default function RootLayout({
         <Header />
         <div className="flex flex-row w-full max-w-[1440px] mx-auto gap-4">
           <Sidebar />
-          <div className="content overscroll-y-auto">{children}</div>
+          <div className="content overscroll-y-auto w-full">{children}</div>
         </div>
         <ModalLogin />
         <Contributors />
