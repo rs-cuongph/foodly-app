@@ -55,3 +55,22 @@ export const DETAIL_ORDER_DROPDOWN_ITEMS = [
   },
 ];
 
+export const STATUS = {
+  success: {
+    label: "Thành công",
+    color: "success"
+  } ,
+  open: {
+    label:  "Khởi tạo",
+    color: "primary"
+  },
+  doing: {
+    label:  "Đang TT",
+    color: "warning"
+  },
+  cancel: {
+    label: "Đã hủy",
+    color: "danger"
+  },
+};
+

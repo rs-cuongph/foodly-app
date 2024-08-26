@@ -41,7 +41,11 @@ module.exports = {
       colors: {
         "dark-gray": "#1E1E1E",
         "coral-orange": "#FE724C",
+        "coral-orange-40": "#FE724C40",
         "translucent-black": "#00000040",
+        "semi-translucent-black": "#0000008C",
+        "light-gray": "#D9D9D980",
+        "primary-default": "#205FFE",
       },
       boxShadow: {
         "sunset": "0px 2px 4px 0px #FE724C"
