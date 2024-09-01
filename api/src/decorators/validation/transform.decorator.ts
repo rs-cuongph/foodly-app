@@ -62,6 +62,27 @@ export function ToInt(): PropertyDecorator {
   );
 }
 
+export function ToNumber(): PropertyDecorator {
+  return Transform(
+    (params) => {
+      const value = params.value as string;
+
+      return Number(value);
+    },
+    { toClassOnly: true },
+  );
+}
+
+export function ToFloat(): PropertyDecorator {
+  return Transform(
+    (params) => {
+      const value = params.value as string;
+      return Number.parseFloat(value);
+    },
+    { toClassOnly: true },
+  );
+}
+
 export function ToLowerCase(): PropertyDecorator {
   return Transform(
     (params) => {

@@ -1,43 +1,31 @@
-import { StringField } from '@guards/field.decorator';
-import { IsNotEmpty } from 'class-validator';
+import { StringField } from '@decorators/validation/string.decorator';
+
 export class SignUpDto {
   @StringField({
-    maxLength: 50,
+    maxLength: 255,
     allowEmpty: false,
   })
-  displayName: string;
+  display_name: string;
 
   @StringField({
     email: true,
-    maxLength: 50,
+    maxLength: 255,
     allowEmpty: false,
   })
   email: string;
 
   @StringField({
-    maxLength: 50,
+    maxLength: 255,
     allowEmpty: false,
     password: true,
   })
   password: string;
 
-  @StringField(
-    {
-      maxLength: 50,
-      allowEmpty: false,
-      password: true,
-      passwordConfirm: true,
-    },
-    ['Confirm Password', 'Password'],
-    'password',
-  )
-  confirmPassword: string;
-}
-
-export class SignUpResponse {
-  @IsNotEmpty()
-  accessToken?: string;
-
-  @IsNotEmpty()
-  refreshToken?: string;
+  @StringField({
+    maxLength: 255,
+    allowEmpty: false,
+    password: true,
+    sameAs: 'password',
+  })
+  confirm_password: string;
 }

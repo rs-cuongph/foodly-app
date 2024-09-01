@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { WebhookService } from './webhook.service';
 /*
 https://docs.nestjs.com/controllers#controllers
@@ -13,10 +14,10 @@ export class WebhookController {
   @Post('confirm-transaction')
   @HttpCode(HttpStatus.OK)
   async confirmTransaction(@Body() body: WebhookResponseDataType) {
-    console.log(' =>  =>  => ', body);
-    const result = await this.webhookService.confirmTransaction(body);
-    return {
-      success: result,
-    };
+    // console.log(' =>  =>  => ', body);
+    // const result = await this.webhookService.confirmTransaction(body);
+    // return {
+    //   success: result,
+    // };
   }
 }

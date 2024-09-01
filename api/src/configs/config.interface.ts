@@ -7,6 +7,7 @@ export interface Config {
   mail: MailConfig;
   aws: AwsConfig;
   payos: PayOSConfig;
+  prisma: PrismaConfig;
 }
 
 export interface AwsConfig {
@@ -37,17 +38,11 @@ export interface JwtConfig {
 }
 
 export interface MailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  ignoreTLS: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-  queue: {
-    name: string;
-  };
+  transportUrl: string;
+}
+
+export interface PrismaConfig {
+  logLevel: string;
 }
 
 export interface PayOSConfig {

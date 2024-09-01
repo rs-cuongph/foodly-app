@@ -1,34 +1,17 @@
-import { StringField } from '@guards/field.decorator';
-import { IsNotEmpty } from 'class-validator';
+import { StringField } from '@decorators/validation/string.decorator';
+
 export class SignInDto {
   @StringField({
     email: true,
-    maxLength: 50,
+    maxLength: 255,
     allowEmpty: false,
   })
   email: string;
 
   @StringField({
-    maxLength: 50,
+    maxLength: 255,
     allowEmpty: false,
     password: true,
   })
   password: string;
-}
-
-export class SignInResponse {
-  @IsNotEmpty()
-  userId?: string;
-
-  @IsNotEmpty()
-  exp?: number;
-
-  @IsNotEmpty()
-  iat?: number;
-
-  @IsNotEmpty()
-  accessToken?: string;
-
-  @IsNotEmpty()
-  refreshToken?: string;
 }

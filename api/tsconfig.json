@@ -23,10 +23,9 @@
       "@constants/*": ["src/constants/*"],
       "@enum/*": ["src/enum/*"],
       "@modules/*": ["src/modules/*"],
-      "@guards/*": ["src/decorators/*"],
+      "@guards/*": ["src/guards/*"],
       "@decorators/*": ["src/decorators/*"],
-      "@commands/*": ["src/commands/*"],
-      "@types/*": ["src/types/*"]
+      "@commands/*": ["src/commands/*"]
     }
   }
 }

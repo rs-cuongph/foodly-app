@@ -30,23 +30,16 @@ const configs = (): Config => {
       s3BucketName: process.env.AWS_S3_BUCKET_NAME,
     },
     mail: {
-      host: process.env.SMTP_HOST || 'localhost',
-      port: parseInt(process.env.SMTP_PORT, 10) || 1025,
-      secure: process.env.SMTP_SECURE === 'true',
-      ignoreTLS: process.env.SMTP_SECURE !== 'false',
-      auth: {
-        user: process.env.SMTP_AUTH_USER || 'username',
-        pass: process.env.SMTP_AUTH_PASS || 'password',
-      },
-      queue: {
-        name: 'email-queue',
-      },
+      transportUrl: process.env.TRANSPORT_URL,
     },
     payos: {
       clientId: process.env.PAYOS_CLIENT_ID,
       apiKey: process.env.PAYOS_API_KEY,
       checksumKey: process.env.PAYOS_CHECKSUM_KEY,
       webhookUrl: process.env.PAYOS_WEBHOOK_URL,
+    },
+    prisma: {
+      logLevel: process.env.PRISMA_LOG_LEVEL || 'log',
     },
   };
 };

@@ -17,10 +17,12 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import { join } from 'path';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { HttpExceptionFilter } from '@filters/http_exception.filter';
-import { PrismaModule } from 'nestjs-prisma';
+import { CustomPrismaModule, PrismaModule } from 'nestjs-prisma';
 import { ScheduleModule } from '@nestjs/schedule';
+import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
+import { ExtendedPrismaConfigService } from './services/prisma-config.service';
 
 @Module({
   imports: [
@@ -44,11 +46,16 @@ import { ScheduleModule } from '@nestjs/schedule';
       isGlobal: true,
       load: [configs],
     }),
+    CustomPrismaModule.forRootAsync({
+      isGlobal: true,
+      name: 'PrismaService',
+      useClass: ExtendedPrismaConfigService,
+    }),
     I18nModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         fallbackLanguage: configService.get<string>('app.fallbackLanguage'),
         loaderOptions: {
-          path: join(__dirname, 'i18n'),
+          path: join(__dirname, '..', 'i18n'),
           watch: true,
         },
       }),
@@ -84,15 +91,20 @@ import { ScheduleModule } from '@nestjs/schedule';
         },
       },
     }),
+
     ...modules,
   ],
   controllers: [TransactionController, AppController],
   providers: [
     AppService,
     {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      provide: APP_GUARD,
+      useClass: JwtAccessTokenGuard,
     },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpExceptionFilter,
+    // },
   ],
 })
 export class AppModule {}

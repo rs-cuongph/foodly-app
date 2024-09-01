@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi", "relationJoins", "nativeDistinct", "fullTextSearch"]
 }
 
 datasource db {
@@ -14,109 +15,79 @@ datasource db {
 }
 
 model User {
-  id                              Int                       @id @default(autoincrement())
-  email                           String                    @unique
-  displayName                     String?
-  role                            Role                      @default(USER)
-  blockTo                         DateTime?
-  myCoin                          Int                       @default(0) @db.Integer // "số coin hiện tại còn trong account"
-  paymentSettings                 Json? // Note: Assumes you have a Prisma Json provider
-  maxOrderNotPay                  Int                       @default(5)
-  currentRefreshToken             String?
-  password                        String?                   @db.VarChar()
-  createdAt                       DateTime                  @default(now())
-  updatedAt                       DateTime                  @updatedAt
-  deletedAt                       DateTime?
-  orderCreated                    Order[]                   @relation("Order_createdBy")
-  orderUpdated                    Order[]                   @relation("Order_updatedBy")
-  orderGroupCreated               OrderGroup[]              @relation("OrderGroup_createdBy")
-  orderGroupTemplateCreated       OrderGroupTemplate[]      @relation("OrderGroupTemplate_createdBy")
-  statisticUser                   Statistic[]               @relation("Statistic_user")
-  requestAddCoinHistoriesCreated  RequestAddCoinHistories[] @relation("RequestAddCoinHistories_createdBy")
-  requestAddCoinHistoriesApproved RequestAddCoinHistories[] @relation("RequestAddCoinHistories_approvedBy")
-}
-
-model Order {
-  id           Int         @id @default(autoincrement())
-  orderGroupId Int
-  createdBy    User        @relation("Order_createdBy", fields: [createdById], references: [id])
-  createdById  Int
-  updatedBy    User        @relation("Order_updatedBy", fields: [updatedById], references: [id])
-  updatedById  Int
-  quantity     Int
-  status       OrderStatus @default(PROCESSING)
-  payment      String      @db.VarChar()
-  price        Int
-  amount       Int
-  menu         Json
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id              Int          @id @default(autoincrement())
+  email           String       @unique @db.VarChar(255)
+  password        String?      @db.VarChar(255)
+  display_name    String?      @db.VarChar(255)
+  role            Role         @default(USER)
+  block_to        DateTime?
+  my_coin         Decimal      @default(0) @db.Decimal(15, 2)
+  payment_setting Json?
+  max_order       Float        @default(5.0)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  OrderGroup      OrderGroup[]
+  OrderCreated    Order[]      @relation("CreatedBy_Order")
+  OrderUpdated    Order[]      @relation("UpdatedBy_Order")
 }
 
 model OrderGroup {
-  id              Int            @id @default(autoincrement())
-  code            String?        @db.VarChar()
-  name            String         @db.VarChar()
-  createdBy       User?          @relation("OrderGroup_createdBy", fields: [createdById], references: [id])
-  createdById     Int            
-  publicStartTime DateTime
-  publicEndTime   DateTime
-  price           Float
-  shareScope      ShareScope?     @default(PUBLIC)
-  inviteId        Int?
-  discount        Int?
-  menuItem        MenuItem[]
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  type            OrderGroupType @default(MANUAL)
-}
-
-model OrderGroupTemplate {
-  id           Int  @id @default(autoincrement())
-  templateJson Json
-  createdBy    User @relation("OrderGroupTemplate_createdBy", fields: [createdById], references: [id])
-  createdById  Int
+  id                Int            @id @default(autoincrement())
+  code              String?        @db.VarChar()
+  name              String         @db.VarChar()
+  created_by_id     Int
+  created_by        User           @relation(fields: [created_by_id], references: [id])
+  public_start_time DateTime
+  public_end_time   DateTime
+  price             Decimal        @default(0) @db.Decimal(15, 2)
+  share_scope       ShareScope?    @default(PUBLIC)
+  type              OrderGroupType @default(MANUAL)
+  menu_items        MenuItem[]
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
 }
 
 model MenuItem {
-  id           Int        @id @default(autoincrement())
-  name         String
-  price        Int
-  discount     Int?
-  orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id])
-  orderGroupId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id              Int        @id @default(autoincrement())
+  name            String
+  price           Decimal    @default(0) @db.Decimal(15, 2)
+  order_groupd_id Int
+  order_group     OrderGroup @relation(fields: [order_groupd_id], references: [id])
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
 }
 
-model Statistic {
-  id              Int    @id @default(autoincrement())
-  countOrderGroup Int
-  countOrder      Int
-  monthYear       Int
-  amount          BigInt
-  user            User   @relation("Statistic_user", fields: [userId], references: [id])
-  userId          Int
+model Order {
+  id            Int         @id @default(autoincrement())
+  quantity      Int
+  status        OrderStatus @default(PROCESSING)
+  payment       String      @db.VarChar()
+  price         Decimal     @default(0) @db.Decimal(15, 2)
+  amount        Decimal     @default(0) @db.Decimal(15, 2)
+  menu          Json
+  created_by_id Int
+  created_by    User        @relation("CreatedBy_Order", fields: [created_by_id], references: [id])
+  updated_by_id Int
+  updated_by    User        @relation("UpdatedBy_Order", fields: [updated_by_id], references: [id])
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
 }
 
-model RequestAddCoinHistories {
-  id           Int                  @id @default(autoincrement())
-  coin         Int
-  status       RequestAddCoinStatus @default(INIT)
-  createdBy    User                 @relation("RequestAddCoinHistories_createdBy", fields: [createdById], references: [id])
-  createdById  Int
-  approvedBy   User                 @relation("RequestAddCoinHistories_approvedBy", fields: [approvedById], references: [id])
-  approvedById Int
-}
+// model OrderGroupTemplate {
+//   id           Int  @id @default(autoincrement())
+//   templateJson Json
+//   createdBy    User @relation("OrderGroupTemplate_createdBy", fields: [createdById], references: [id])
+//   createdById  Int
+// }
 
-model Transaction {
-  id            Int               @id @default(autoincrement())
-  status        TransactionStatus @default(INIT)
-  paymentLinkId String?
-  metadata      Json
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-}
+// model Transaction {
+//   id            Int               @id @default(autoincrement())
+//   status        TransactionStatus @default(INIT)
+//   paymentLinkId String?
+//   metadata      Json
+//   createdAt     DateTime          @default(now())
+//   updatedAt     DateTime          @updatedAt
+// }
 
 enum Role {
   USER

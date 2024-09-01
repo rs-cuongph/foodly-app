@@ -1,49 +1,31 @@
-import {
-  ArrayField,
-  EnumField,
-  NumberField,
-  StringField,
-} from '@guards/field.decorator';
+import { ArrayField } from '@decorators/validation/array.decorator';
+import { EnumField } from '@decorators/validation/enum.decorator';
+import { NumberField } from '@decorators/validation/number.decorator';
+import { StringField } from '@decorators/validation/string.decorator';
 import { CreateMenuDto } from '@modules/menu/dto/create.dto';
-import { OrderGroupType, Prisma } from '@prisma/client';
-import { Type } from 'class-transformer';
-// import { Transform } from 'class-transformer';
-import { IsBoolean, IsNotEmpty, ValidateNested } from 'class-validator';
+import { OrderGroupType } from '@prisma/client';
+import { IsBoolean } from 'class-validator';
 
-export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
+export class CreateOrderGroupDto {
   @StringField({
-    maxLength: 500,
-    allowEmpty: false,
+    maxLength: 255,
   })
   name: string;
 
-  @StringField(
-    {
-      allowEmpty: false,
-      isDate: true,
-      dateOptions: {
-        maxDate: 'now',
-        smallerThan: 'publicEndTime',
-      },
+  @StringField({
+    isDate: true,
+    dateOptions: {
+      maxDate: 'public_end_time',
     },
-    ['publicStartTime', 'publicEndTime'],
-  )
-  publicStartTime: Date;
+  })
+  public_start_time: Date;
 
-  @StringField(
-    {
-      allowEmpty: false,
-      isDate: true,
-      dateOptions: {
-        maxDate: 'now',
-      },
-    },
-    ['publicEndTime'],
-  )
-  publicEndTime: Date;
+  @StringField({
+    isDate: true,
+  })
+  public_end_time: Date;
 
   @NumberField({
-    min: 1000,
     max: 10000000,
   })
   price: number;
@@ -55,20 +37,11 @@ export class CreateOrderGroupDto implements Prisma.OrderGroupCreateInput {
   type: OrderGroupType;
 
   @ArrayField({
-    valueType: 'object',
+    type: () => CreateMenuDto,
+    isValidateNested: true,
   })
-  @ValidateNested({ each: true })
-  @Type(() => CreateMenuDto)
-  menuItems?: Array<CreateMenuDto> | null;
+  menu_items: CreateMenuDto[];
 
   @IsBoolean()
-  isSaveTemplate?: boolean = false;
-}
-
-export class OrderGroupResponse {
-  @IsNotEmpty()
-  message?: string;
-
-  @IsNotEmpty()
-  data?: object;
+  is_save_template: boolean;
 }

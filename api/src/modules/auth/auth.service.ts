@@ -2,9 +2,10 @@ import * as bcrypt from 'bcryptjs';
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
 } from '@nestjs/common';
-import { SignUpDto, SignUpResponse } from './dto/sign-up.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { TokenPayload } from './interfaces/token.interface';
 import {
   access_token_private_key,
@@ -12,44 +13,75 @@ import {
 } from '@constants/jwt.constraints';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
 import { TokenType } from 'src/enums/token.enum';
-import { UserService } from '@modules/user/user.service';
+import { RequestWithUser } from 'src/types/requests.type';
+import { CustomPrismaService } from 'nestjs-prisma';
+import { ExtendedPrismaClient } from 'src/services/prisma.extension';
+import { omit } from 'lodash';
 
 @Injectable()
 export class AuthService {
   private SALT_ROUND = 11;
   constructor(
-    private readonly userService: UserService,
+    @Inject('PrismaService')
+    private prismaService: CustomPrismaService<ExtendedPrismaClient>,
     private configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
-  async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
+  async findUserByEmail(email: string) {
+    return this.prismaService.client.user.findFirst({
+      where: {
+        email,
+      },
+    });
+  }
+
+  async findUserById(id: number) {
+    return this.prismaService.client.user.findFirst({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async signUp(signUpDto: SignUpDto) {
+    const { email } = signUpDto;
     try {
-      const existedUser = await this.userService.findOneByCondition({
-        email: signUpDto.email,
-      });
+      const existedUser = await this.findUserByEmail(email);
       if (existedUser) {
-        throw new ConflictException('Email already existed!!');
+        throw new ConflictException('Email already existed!');
       }
 
       const hashedPassword = await bcrypt.hash(
         signUpDto.password,
         this.SALT_ROUND,
       );
-      const user = await this.userService.createUser({
-        ...signUpDto,
-        password: hashedPassword,
+      const user = await this.prismaService.client.user.create({
+        data: {
+          email: signUpDto.email,
+          display_name: signUpDto.display_name,
+          password: hashedPassword,
+        },
       });
-      const refreshToken = this.generateRefreshToken({
-        userId: user.id.toString(),
+      const access_token = this.generateAccessToken({
+        userId: user.id,
       });
-      await this.storeRefreshToken(user.id.toString(), refreshToken);
+      const refresh_token = this.generateRefreshToken({
+        userId: user.id,
+      });
+
+      const decodedToken = this.jwtService.decode(access_token) as {
+        [key: string]: any;
+      };
+      const iat = decodedToken?.iat;
+      const exp = decodedToken?.exp;
       return {
-        accessToken: this.generateAccessToken({
-          userId: user.id.toString(),
-        }),
-        refreshToken,
+        iat,
+        exp,
+        type: TokenType.BEARER,
+        user_id: user.id,
+        access_token,
+        refresh_token,
       };
     } catch (error) {
       throw error;
@@ -64,8 +96,6 @@ export class AuthService {
       const refresh_token = this.generateRefreshToken({
         userId,
       });
-      await this.storeRefreshToken(userId, refresh_token);
-      // Return token along with iat and exp
       const decodedToken = this.jwtService.decode(access_token) as {
         [key: string]: any;
       };
@@ -75,7 +105,7 @@ export class AuthService {
         iat,
         exp,
         type: TokenType.BEARER,
-        userId,
+        user_id: userId,
         access_token,
         refresh_token,
       };
@@ -84,9 +114,9 @@ export class AuthService {
     }
   }
 
-  async getAuthenticatedUser(email: string, password: string): Promise<User> {
+  async getAuthenticatedUser(email: string, password: string) {
     try {
-      const user = await this.userService.findOneByCondition({ email });
+      const user = await this.findUserByEmail(email);
       // if (user?.blockTo && isBefore(new Date(), user.blockTo)) {
       //   throw new BadRequestException(
       //     'This user be blocked by admin, please contact admin to unlock',
@@ -115,9 +145,7 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       algorithm: 'RS256',
       privateKey: access_token_private_key,
-      expiresIn: `${this.configService.get<string>(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}s`,
+      expiresIn: `${this.configService.get<string>('jwt.refreshIn')}`,
     });
   }
 
@@ -125,18 +153,11 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       algorithm: 'RS256',
       privateKey: refresh_token_private_key,
-      expiresIn: `${this.configService.get<string>(
-        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      )}s`,
+      expiresIn: `${this.configService.get<string>('jwt.refreshIn')}`,
     });
   }
 
-  async storeRefreshToken(userId: string, token: string): Promise<void> {
-    try {
-      const hashedToken = await bcrypt.hash(token, this.SALT_ROUND);
-      await this.userService.setCurrentRefreshToken(userId, hashedToken);
-    } catch (error) {
-      throw error;
-    }
+  async getUserInfo(user: RequestWithUser['user']) {
+    return omit(user, ['password']);
   }
 }

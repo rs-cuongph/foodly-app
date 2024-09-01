@@ -1,0 +1,13 @@
+{
+  "code": "code",
+  "email": "email",
+  "password": "password",
+  "first_name": "first name",
+  "last_name": "last name",
+  "display_name": "display name",
+  "confirm_password": "confirm password",
+  "page": "page",
+  "size": "size",
+  "sort": "sort",
+  "keyword": "keyword"
+}

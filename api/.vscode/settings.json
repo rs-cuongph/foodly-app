@@ -9,7 +9,8 @@
   },
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
-  } // required to format on save
+  },
+  "typescript.tsdk": "node_modules/typescript/lib" // required to format on save
   // "files.autoSave": "onFocusChange", // optional but recommended
   // "vs-code-prettier-eslint.prettierLast": false // set as "true" to run 'prettier' last not first
 }
