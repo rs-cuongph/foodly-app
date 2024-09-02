@@ -1,3 +1,5 @@
+import { mapKeys, snakeCase } from 'lodash';
+
 export const convertVNDStringToNumber = (text?: string | null) => {
   if (!text) return 0;
   // Remove non-numeric characters (except for commas and periods)
@@ -27,3 +29,7 @@ export const transformDataByTemplate = (payload, template) => {
   });
   return payload;
 };
+
+export function camelToSnake(obj) {
+  return mapKeys(obj, (value, key) => snakeCase(key));
+}

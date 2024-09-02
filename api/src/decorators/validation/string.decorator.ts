@@ -23,7 +23,6 @@ import {
   ToUpperCase,
   Trim,
 } from './transform.decorator';
-import { REGEX_VALIDATE } from '@constants/index';
 import * as ValidatorJS from 'validator';
 import { ConfigService } from '@nestjs/config';
 import configs from '@configs/index';
@@ -31,6 +30,7 @@ import type { ValidationArguments, ValidationOptions } from 'class-validator';
 import * as dayjs from 'dayjs';
 import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { REGEX_VALIDATE } from '@constants/validation.constant';
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 

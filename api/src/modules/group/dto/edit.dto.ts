@@ -1,26 +1,29 @@
 import { ArrayField } from '@decorators/validation/array.decorator';
 import { EnumField } from '@decorators/validation/enum.decorator';
 import { NumberField } from '@decorators/validation/number.decorator';
-import { StringField } from '@decorators/validation/string.decorator';
-import { CreateMenuDto } from '@modules/menu/dto/create.dto';
-import { OrderGroupType } from '@prisma/client';
+import {
+  StringField,
+  StringFieldOptional,
+} from '@decorators/validation/string.decorator';
+import { EditMenuDto } from '@modules/menu/dto/edit.dto';
+import { GroupType, ShareScope } from '@prisma/client';
 import { IsBoolean } from 'class-validator';
 
-export class CreateOrderGroupDto {
+export class EditGroupDto {
   @StringField({
     maxLength: 255,
   })
   name: string;
 
-  @StringField({
+  @StringFieldOptional({
     isDate: true,
     dateOptions: {
-      maxDate: 'public_end_time',
+      maxDate: 'public_time_end',
     },
   })
   public_start_time: Date;
 
-  @StringField({
+  @StringFieldOptional({
     isDate: true,
   })
   public_end_time: Date;
@@ -33,14 +36,21 @@ export class CreateOrderGroupDto {
   @StringField({
     allowEmpty: false,
   })
-  @EnumField(() => OrderGroupType)
-  type: OrderGroupType;
+  @EnumField(() => GroupType)
+  type: GroupType;
 
   @ArrayField({
-    type: () => CreateMenuDto,
+    type: () => EditMenuDto,
     isValidateNested: true,
+    minLength: 1,
   })
-  menu_items: CreateMenuDto[];
+  menu_items: EditMenuDto[];
+
+  @StringField({
+    allowEmpty: false,
+  })
+  @EnumField(() => ShareScope)
+  share_scope: ShareScope;
 
   @IsBoolean()
   is_save_template: boolean;

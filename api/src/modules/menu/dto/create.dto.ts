@@ -1,4 +1,5 @@
-import { NumberField, StringField } from '@guards/field.decorator';
+import { NumberField } from '@decorators/validation/number.decorator';
+import { StringField } from '@decorators/validation/string.decorator';
 
 export class CreateMenuDto {
   @StringField({

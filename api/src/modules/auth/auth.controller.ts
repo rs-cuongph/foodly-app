@@ -13,7 +13,7 @@ import { RequestWithUser } from 'src/types/requests.type';
 import { SignUpDto } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
-import { Public } from '@guards/auth.decorator';
+import { Public } from '@decorators/auth.decorator';
 
 @Controller('auth')
 @ApiTags('auth')

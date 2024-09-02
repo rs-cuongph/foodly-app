@@ -9,5 +9,7 @@
   "page": "page",
   "size": "size",
   "sort": "sort",
-  "keyword": "keyword"
+  "keyword": "keyword",
+  "share_scope": "share scope",
+  "menu_items": "menu items"
 }

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Prisma } from '@prisma/client';
-import * as dayjs from 'dayjs';
 import { isUndefined } from 'lodash';
 
 export const SoftDeleteExt = () =>
@@ -12,30 +11,24 @@ export const SoftDeleteExt = () =>
         $allModels: {
           async $allOperations({ args, operation, query, model }) {
             const newArgs: any = args;
-            // if (
-            //   [
-            //     'findFirst',
-            //     'findFirstOrThrow',
-            //     'findMany',
-            //     'update',
-            //     'updateMany',
-            //     'count',
-            //   ].includes(operation)
-            // ) {
-            //   if (
-            //     ![
-            //       'Contract_Flow',
-            //       'Contract_Amount_Phase',
-            //       'Master_Field',
-            //       'Master_Sponsor_Type',
-            //       'Contract_Status',
-            //     ].includes(model) &&
-            //     newArgs?.where &&
-            //     isUndefined(newArgs?.where?.deleted_at)
-            //   ) {
-            //     newArgs['where']['deleted_at'] = null;
-            //   }
-            // }
+            if (
+              [
+                'findFirst',
+                'findFirstOrThrow',
+                'findMany',
+                'update',
+                'updateMany',
+                'count',
+              ].includes(operation)
+            ) {
+              if (
+                ['Group'].includes(model) &&
+                newArgs?.where &&
+                isUndefined(newArgs?.where?.is_deleted)
+              ) {
+                newArgs['where']['is_deleted'] = false;
+              }
+            }
             const result = await query(newArgs);
             return result;
           },
@@ -53,7 +46,7 @@ export const SoftDeleteExt = () =>
             return (context as any).update({
               where,
               data: {
-                deleted_at: dayjs().toDate(),
+                is_deleted: true,
               },
             });
           },
@@ -67,7 +60,7 @@ export const SoftDeleteExt = () =>
             return (context as any).updateMany({
               where,
               data: {
-                deleted_at: dayjs().toDate(),
+                is_deleted: true,
               },
             });
           },
@@ -80,7 +73,7 @@ export const SoftDeleteExt = () =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any -- There is no way to type a Prisma model
             const result = await (context as any).findUnique({ where });
 
-            return !!result.deleted_at;
+            return !!result.is_deleted;
           },
         },
       },
