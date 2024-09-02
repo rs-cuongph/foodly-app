@@ -5,7 +5,7 @@ import {
 import { StringField } from '@decorators/validation/string.decorator';
 import { IsBoolean, IsOptional } from 'class-validator';
 
-export class EditMenuDto {
+export class EditMenuDTO {
   @NumberFieldOptional()
   id?: number;
 

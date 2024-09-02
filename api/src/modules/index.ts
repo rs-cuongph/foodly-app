@@ -4,6 +4,7 @@ import { OrderModule } from './order/order.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { GroupModule } from './group/group.module';
 import { WebhookModule } from './webhook/webhook.module';
+import { OrganizationModule } from './organization/organization.module';
 
 export default [
   AuthModule,
@@ -12,4 +13,5 @@ export default [
   TransactionModule,
   WebhookModule,
   MenuModule,
+  OrganizationModule,
 ];

@@ -1,4 +1,8 @@
 {
   "wrong_account": "Your username or password is incorrect.",
-  "wrong_current_password": "The password you entered is incorrect."
+  "wrong_current_password": "The password you entered is incorrect.",
+  "locked": "This user be blocked by admin, please contact admin to unlock",
+  "wrong_menu_item": "Menu item is invalid",
+  "max_order": "You have an unpaid order, please pay!",
+  "wrong_credential_format": "Invalid credentials format"
 }

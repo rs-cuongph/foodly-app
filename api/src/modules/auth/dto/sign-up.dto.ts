@@ -1,6 +1,7 @@
+import { NumberField } from '@decorators/validation/number.decorator';
 import { StringField } from '@decorators/validation/string.decorator';
 
-export class SignUpDto {
+export class SignUpDTO {
   @StringField({
     maxLength: 255,
     allowEmpty: false,
@@ -28,4 +29,7 @@ export class SignUpDto {
     sameAs: 'password',
   })
   confirm_password: string;
+
+  @NumberField({})
+  organization_id: number;
 }

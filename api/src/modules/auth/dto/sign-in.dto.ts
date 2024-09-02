@@ -1,6 +1,7 @@
+import { NumberField } from '@decorators/validation/number.decorator';
 import { StringField } from '@decorators/validation/string.decorator';
 
-export class SignInDto {
+export class SignInDTO {
   @StringField({
     email: true,
     maxLength: 255,
@@ -14,4 +15,7 @@ export class SignInDto {
     password: true,
   })
   password: string;
+
+  @NumberField({})
+  organization_id: number;
 }

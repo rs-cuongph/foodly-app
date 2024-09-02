@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateTransactionDto } from './dto/create.dto';
+import { CreateTransactionDTO } from './dto/create.dto';
 import * as dayjs from 'dayjs';
 import { PayOSService } from 'src/services/payos.service';
 import { TRANSACTION_ENUM } from 'src/enums/status.enum';
@@ -13,7 +13,7 @@ import { TRANSACTION_ENUM } from 'src/enums/status.enum';
 export class TransactionService {
   constructor(private readonly payosService: PayOSService) {}
 
-  public async createTransaction(body: CreateTransactionDto) {
+  public async createTransaction(body: CreateTransactionDTO) {
     // try {
     //   const metadata = {
     //     amount: body.amount,

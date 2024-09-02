@@ -1,4 +1,4 @@
-export type CreateTransactionDto = {
+export type CreateTransactionDTO = {
   amount: number;
   orderIds: (string | number)[];
   callbackURL: string;

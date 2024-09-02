@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateGroupDto } from './dto/create.dto';
+import { CreateGroupDTO } from './dto/create.dto';
 import * as _ from 'lodash';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
 import { CustomPrismaService } from 'nestjs-prisma';
 import * as dayjs from 'dayjs';
 import { RequestWithUser } from 'src/types/requests.type';
-import { EditGroupDto } from './dto/edit.dto';
+import { EditGroupDTO } from './dto/edit.dto';
 import { SearchGroupDTO } from './dto/search.dto';
 import { Prisma } from '@prisma/client';
 import { camelToSnake } from 'src/shared/convert';
+import { QueryShowGroupDTO } from './dto/show.dto';
 
 @Injectable()
 export class GroupService {
@@ -18,7 +19,7 @@ export class GroupService {
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
   ) {}
 
-  async create(body: CreateGroupDto, user: RequestWithUser['user']) {
+  async create(body: CreateGroupDTO, user: RequestWithUser['user']) {
     try {
       let nextID = '0000000001';
       const lastGroup = await this.prismaService.client.group.findFirst({
@@ -73,7 +74,7 @@ export class GroupService {
     }
   }
 
-  async edit(id: string, body: EditGroupDto, user: RequestWithUser['user']) {
+  async edit(id: string, body: EditGroupDTO, user: RequestWithUser['user']) {
     return this.prismaService.client.$transaction(async (tx) => {
       const group = await tx.group.update({
         where: {
@@ -120,16 +121,22 @@ export class GroupService {
     });
   }
 
-  async delete(id: string) {
+  async delete(id: string, user: RequestWithUser['user']) {
     return this.prismaService.client.group.softDelete({
       id: Number(id),
+      created_by_id: user.id,
     });
   }
 
-  async show(id: string) {
+  async show(id: string, query: QueryShowGroupDTO) {
+    console.log(query?.with_orders);
     return this.prismaService.client.group.findFirstOrThrow({
       where: {
         id: Number(id),
+        is_deleted: false,
+      },
+      include: {
+        orders: query?.with_orders == 1,
       },
     });
   }

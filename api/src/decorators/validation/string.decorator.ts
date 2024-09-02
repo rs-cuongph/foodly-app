@@ -1,4 +1,3 @@
-import { property } from 'lodash';
 import { applyDecorators } from '@nestjs/common';
 import {
   IsDateString,
@@ -250,7 +249,7 @@ export function StringField(
     numericOptions,
     minLength,
     maxLength,
-  } = options;
+  } = options ?? {};
 
   const decorators = [
     IsString({

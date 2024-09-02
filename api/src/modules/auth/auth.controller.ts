@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestWithUser } from 'src/types/requests.type';
-import { SignUpDto } from './dto/sign-up.dto';
+import { SignUpDTO } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { Public } from '@decorators/auth.decorator';
@@ -22,8 +22,8 @@ export class AuthController {
 
   @Public()
   @Post('sign-up')
-  async signUp(@Body() signUpDto: SignUpDto) {
-    return await this.authService.signUp(signUpDto);
+  async signUp(@Body() signUpDTO: SignUpDTO) {
+    return await this.authService.signUp(signUpDTO);
   }
 
   @Public()
@@ -31,7 +31,7 @@ export class AuthController {
   @Post('sign-in')
   async signIn(@Req() request: RequestWithUser) {
     const { user } = request;
-    return await this.authService.signIn(user.id.toString());
+    return await this.authService.signIn(user);
   }
 
   @HttpCode(HttpStatus.OK)

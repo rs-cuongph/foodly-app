@@ -5,11 +5,11 @@ import {
   StringField,
   StringFieldOptional,
 } from '@decorators/validation/string.decorator';
-import { EditMenuDto } from '@modules/menu/dto/edit.dto';
+import { EditMenuDTO } from '@modules/menu/dto/edit.dto';
 import { GroupType, ShareScope } from '@prisma/client';
 import { IsBoolean } from 'class-validator';
 
-export class EditGroupDto {
+export class EditGroupDTO {
   @StringField({
     maxLength: 255,
   })
@@ -40,11 +40,11 @@ export class EditGroupDto {
   type: GroupType;
 
   @ArrayField({
-    type: () => EditMenuDto,
+    type: () => EditMenuDTO,
     isValidateNested: true,
     minLength: 1,
   })
-  menu_items: EditMenuDto[];
+  menu_items: EditMenuDTO[];
 
   @StringField({
     allowEmpty: false,

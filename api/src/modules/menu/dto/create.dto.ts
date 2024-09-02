@@ -1,7 +1,7 @@
 import { NumberField } from '@decorators/validation/number.decorator';
 import { StringField } from '@decorators/validation/string.decorator';
 
-export class CreateMenuDto {
+export class CreateMenuDTO {
   @StringField({
     maxLength: 255,
     allowEmpty: false,

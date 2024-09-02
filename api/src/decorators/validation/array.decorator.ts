@@ -3,7 +3,12 @@ import { Type, TypeHelpOptions } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayMinSize,
+  ArrayNotEmpty,
   IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
@@ -12,41 +17,86 @@ interface IArrayFieldOptions {
   minLength?: number;
   maxLength?: number;
   isValidateNested?: boolean;
+  enumType?: object;
+  isString?: boolean;
+  isNumber?: boolean;
+  allowEmpty?: boolean;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   type?: (type?: TypeHelpOptions) => Function;
 }
 export function ArrayField(
   options: IArrayFieldOptions = {},
 ): PropertyDecorator {
+  const {
+    minLength,
+    maxLength,
+    isValidateNested,
+    type,
+    enumType,
+    isString,
+    isNumber,
+    allowEmpty = true,
+  } = options;
+
   const decorators = [
     IsArray({
       message: i18nValidationMessage('validation.IsArray'),
     }),
   ];
 
-  if (options.minLength) {
+  if (!allowEmpty) {
     decorators.push(
-      ArrayMinSize(options.minLength, {
+      ArrayNotEmpty({
+        message: i18nValidationMessage('validation.ArrayNotEmpty'),
+      }),
+    );
+  }
+
+  if (minLength) {
+    decorators.push(
+      ArrayMinSize(minLength, {
         message: i18nValidationMessage('validation.ArrayMinSize'),
       }),
     );
   }
-  if (options.maxLength) {
+
+  if (maxLength) {
     decorators.push(
-      ArrayMaxSize(options.maxLength, {
+      ArrayMaxSize(maxLength, {
         message: i18nValidationMessage('validation.ArrayMaxSize'),
       }),
     );
   }
-  if (options.isValidateNested) {
+
+  if (enumType) {
+    decorators.push(IsEnum(enumType, { each: true }));
+  }
+
+  if (isString) {
+    decorators.push(IsString({ each: true }));
+  }
+
+  if (isNumber) {
+    decorators.push(IsNumber({}, { each: true }));
+  }
+
+  if (isValidateNested) {
     decorators.push(
       ValidateNested({
         each: true,
       }),
     );
   }
-  if (options.type) {
+
+  if (type) {
     decorators.push(Type(options.type));
   }
 
   return applyDecorators(...decorators);
+}
+
+export function ArrayFieldOptional(
+  options?: IArrayFieldOptions,
+): PropertyDecorator {
+  return applyDecorators(IsOptional(), ArrayField({ ...options }));
 }

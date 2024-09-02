@@ -1,4 +1,3 @@
-import { WebhookModule } from './modules/webhook/webhook.module';
 import { TransactionController } from './modules/transaction/transaction.controller';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -17,8 +16,8 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import { join } from 'path';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { HttpExceptionFilter } from '@filters/http_exception.filter';
+import { APP_GUARD } from '@nestjs/core';
+// import { HttpExceptionFilter } from '@filters/http_exception.filter';
 import { CustomPrismaModule, PrismaModule } from 'nestjs-prisma';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';

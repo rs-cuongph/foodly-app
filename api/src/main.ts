@@ -13,8 +13,8 @@ import {
 } from 'nestjs-i18n';
 import { formatErrors } from './shared/format-error-http';
 import { configSwagger } from '@configs/api-docs.config';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { useContainer } from 'class-validator';
+import { PrismaClientExceptionFilter } from '@filters/prisma-client-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -31,17 +31,16 @@ async function bootstrap() {
     new ValidationPipe({
       exceptionFactory: i18nValidationErrorFactory,
       whitelist: true,
-    }),
-  );
-  app.useGlobalFilters(
-    new I18nValidationExceptionFilter({
-      errorFormatter: formatErrors,
-      errorHttpStatusCode: 422,
+      stopAtFirstError: true,
     }),
   );
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(
+    new I18nValidationExceptionFilter({
+      errorFormatter: formatErrors,
+      errorHttpStatusCode: 422,
+    }),
     new PrismaClientExceptionFilter(httpAdapter, {
       // Prisma Error Code: HTTP Status Response
       P2000: HttpStatus.BAD_REQUEST,

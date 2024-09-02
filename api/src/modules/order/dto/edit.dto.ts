@@ -1,37 +1,42 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-} from 'class-validator';
-export class EditOrderDto {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(500)
-  content: string;
+import { ArrayField } from '@decorators/validation/array.decorator';
+import { NumberField } from '@decorators/validation/number.decorator';
 
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  note: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(1)
-  @Max(100)
+class Menu {
+  @NumberField()
+  id: number;
+}
+export class EditOrderDTO {
+  @NumberField({
+    max: 10,
+  })
   quanlity: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  @Max(1000000)
-  price: number;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  coupon_code: string;
+  @ArrayField({
+    type: () => Menu,
+    isValidateNested: true,
+    minLength: 1,
+  })
+  menu: Menu[];
 }
+
+export class MarkPaidDTO {}
+
+export class MarkPaidAllDTO {
+  @ArrayField({
+    isNumber: true,
+    isValidateNested: true,
+    minLength: 1,
+  })
+  ids: number[];
+}
+
+export class ConfirmPaidAllDTO {
+  @ArrayField({
+    isNumber: true,
+    isValidateNested: true,
+    minLength: 1,
+  })
+  ids: number[];
+}
+
+export class ConfirmPaidDTO {}

@@ -1,32 +1,28 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-} from 'class-validator';
-export class CreateOrderDto {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(500)
-  content: string;
+import { ArrayField } from '@decorators/validation/array.decorator';
+import { EnumField } from '@decorators/validation/enum.decorator';
+import { NumberField } from '@decorators/validation/number.decorator';
+import { PAYMENT_METHOD } from 'src/enums/payment.enum';
 
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  note: string;
+class Menu {
+  @NumberField()
+  id: number;
+}
+export class CreateOrderDTO {
+  @NumberField()
+  group_id: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(1)
-  @Max(100)
+  @NumberField({
+    max: 10,
+  })
   quanlity: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
-  @Max(1000000)
-  price: number;
+  @EnumField(() => PAYMENT_METHOD)
+  payment_method: PAYMENT_METHOD;
+
+  @ArrayField({
+    type: () => Menu,
+    isValidateNested: true,
+    minLength: 1,
+  })
+  menu: Menu[];
 }
