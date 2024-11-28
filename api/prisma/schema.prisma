@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["omitApi", "relationJoins", "nativeDistinct", "fullTextSearch"]
+  previewFeatures = ["relationJoins", "nativeDistinct", "fullTextSearch"]
 }
 
 datasource db {
@@ -25,7 +25,7 @@ model Organization {
 }
 
 model User {
-  id                   Int             @id @default(autoincrement())
+  id                   String          @id @default(uuid())
   email                String          @unique @db.VarChar(255)
   password             String?         @db.VarChar(255)
   display_name         String?         @db.VarChar(255)
@@ -45,10 +45,10 @@ model User {
 }
 
 model Group {
-  id                Int         @id @default(autoincrement())
+  id                String      @id @default(uuid())
   code              String?     @unique @db.VarChar(100)
   name              String      @db.VarChar(255)
-  created_by_id     Int
+  created_by_id     String
   created_by        User        @relation(fields: [created_by_id], references: [id])
   public_start_time DateTime
   public_end_time   DateTime
@@ -63,28 +63,28 @@ model Group {
 }
 
 model MenuItem {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   name       String
   price      Decimal  @default(0) @db.Decimal(15, 2)
-  group_id   Int
+  group_id   String
   group      Group    @relation(fields: [group_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
 model Order {
-  id             Int                  @id @default(autoincrement())
+  id             String               @id @default(uuid())
   quantity       Int
   status         OrderStatus          @default(PROCESSING)
   payment_method String               @db.VarChar(255)
   price          Decimal              @default(0) @db.Decimal(15, 2)
   amount         Decimal              @default(0) @db.Decimal(15, 2)
   menu           Json
-  group_id       Int
+  group_id       String
   group          Group                @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  created_by_id  Int
+  created_by_id  String
   created_by     User                 @relation("CreatedBy_Order", fields: [created_by_id], references: [id])
-  updated_by_id  Int
+  updated_by_id  String
   updated_by     User                 @relation("UpdatedBy_Order", fields: [updated_by_id], references: [id])
   created_at     DateTime             @default(now())
   updated_at     DateTime             @updatedAt
@@ -92,15 +92,15 @@ model Order {
 }
 
 model GroupTemplate {
-  id            Int  @id @default(autoincrement())
+  id            String @id @default(uuid())
   templateJson  Json
-  created_by_id Int
-  created_by    User @relation("CreatedBy_GroupTemplate", fields: [created_by_id], references: [id])
+  created_by_id String
+  created_by    User   @relation("CreatedBy_GroupTemplate", fields: [created_by_id], references: [id])
 }
 
 model OrderOnTransaction {
-  id             Int         @id @default(autoincrement())
-  order_id       Int
+  id             String      @id @default(uuid())
+  order_id       String
   order          Order       @relation(fields: [order_id], references: [id], onDelete: Cascade)
   transaction_id String
   transaction    Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)

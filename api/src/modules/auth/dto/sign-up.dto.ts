@@ -30,6 +30,9 @@ export class SignUpDTO {
   })
   confirm_password: string;
 
-  @NumberField({})
-  organization_id: number;
+  @StringField({
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  organization_id: string;
 }

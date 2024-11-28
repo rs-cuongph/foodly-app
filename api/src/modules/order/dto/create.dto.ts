@@ -1,15 +1,22 @@
 import { ArrayField } from '@decorators/validation/array.decorator';
 import { EnumField } from '@decorators/validation/enum.decorator';
 import { NumberField } from '@decorators/validation/number.decorator';
+import { StringField } from '@decorators/validation/string.decorator';
 import { PAYMENT_METHOD } from 'src/enums/payment.enum';
 
 class Menu {
-  @NumberField()
-  id: number;
+  @StringField({
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  id: string;
 }
 export class CreateOrderDTO {
-  @NumberField()
-  group_id: number;
+  @StringField({
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  group_id: string;
 
   @NumberField({
     max: 10,
