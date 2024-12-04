@@ -35,3 +35,42 @@ export const STORAGE_KEYS = {
   AUTHENTICATION: "AUTHENTICATION",
   REFRESH_TOKEN: "REFRESH_TOKEN",
 };
+
+export const DETAIL_ORDER_DROPDOWN_ITEMS = [
+  {
+    label: "Khóa",
+    icon: "lock",
+  },
+  {
+    label: "Chỉnh Sửa",
+    icon: "edit",
+  },
+  {
+    label: "Chia sẻ",
+    icon: "share",
+  },
+  {
+    label: "Xóa",
+    icon: "delete",
+  },
+];
+
+export const STATUS = {
+  success: {
+    label: "Thành công",
+    color: "success"
+  } ,
+  open: {
+    label:  "Khởi tạo",
+    color: "primary"
+  },
+  doing: {
+    label:  "Đang TT",
+    color: "warning"
+  },
+  cancel: {
+    label: "Đã hủy",
+    color: "danger"
+  },
+};
+

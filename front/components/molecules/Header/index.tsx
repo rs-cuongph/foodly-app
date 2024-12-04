@@ -28,11 +28,9 @@ export default function Header() {
       </div>
 
       <div className="flex flex-row  items-center gap-3 ">
-        {!isMobile && (
-          <h3 className="m-0 text-white font-bold text-[14px]">
-            abc@gmail.com
-          </h3>
-        )}
+        <h3 className="m-0 text-white font-bold text-[14px] hidden md:block">
+          abc@gmail.com
+        </h3>
         <Avatar
           isBordered
           color="primary"
