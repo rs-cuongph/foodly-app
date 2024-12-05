@@ -32,12 +32,6 @@ const configs = (): Config => {
     mail: {
       transportUrl: process.env.TRANSPORT_URL,
     },
-    payos: {
-      clientId: process.env.PAYOS_CLIENT_ID,
-      apiKey: process.env.PAYOS_API_KEY,
-      checksumKey: process.env.PAYOS_CHECKSUM_KEY,
-      webhookUrl: process.env.PAYOS_WEBHOOK_URL,
-    },
     prisma: {
       logLevel: process.env.PRISMA_LOG_LEVEL || 'log',
     },

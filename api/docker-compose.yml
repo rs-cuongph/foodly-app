@@ -1,6 +1,5 @@
 # docker-compose.yml
 
-version: '3.8'
 services:
   postgres:
     image: postgres:15.2
@@ -13,5 +12,25 @@ services:
     ports:
       - '5432:5432'
 
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+
+  maildev:
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    ports:
+      - 1080:1080
+      - 1025:1025
+    networks:
+      - nestjs-boilerplate-network
+
 volumes:
   postgres:
+
+networks:
+  nestjs-boilerplate-network:
+    driver: bridge

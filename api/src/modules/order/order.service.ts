@@ -133,7 +133,7 @@ export class OrderService {
     const now = dayjs().toDate();
     const order = await this.prismaService.client.order.findFirstOrThrow({
       where: {
-        id: Number(id),
+        id,
         status: OrderStatus.INIT,
         group: {
           public_start_time: {
@@ -176,7 +176,7 @@ export class OrderService {
 
       await tx.order.update({
         where: {
-          id: Number(id),
+          id,
         },
         data: {
           price,
@@ -192,7 +192,7 @@ export class OrderService {
   async show(id: string, user: RequestWithUser['user']) {
     const order = await this.prismaService.client.order.findFirstOrThrow({
       where: {
-        id: Number(id),
+        id,
         created_by_id: user.id,
       },
     });
@@ -205,7 +205,7 @@ export class OrderService {
     return this.prismaService.client.$transaction(async (tx) => {
       const order = await tx.order.delete({
         where: {
-          id: Number(id),
+          id,
           status: OrderStatus.INIT,
           created_by_id: user.id,
           group: {
@@ -286,7 +286,7 @@ export class OrderService {
   markPaid(id: string, body: MarkPaidDTO, user: RequestWithUser['user']) {
     return this.prismaService.client.order.update({
       where: {
-        id: Number(id),
+        id,
         status: OrderStatus.INIT,
         created_by_id: user.id,
       },
@@ -301,7 +301,7 @@ export class OrderService {
     return this.prismaService.client.$transaction(async (tx) => {
       const order = await tx.order.update({
         where: {
-          id: Number(id),
+          id,
           status: {
             in: [OrderStatus.INIT, OrderStatus.PROCESSING],
           },
@@ -353,7 +353,7 @@ export class OrderService {
       for await (const id of body.ids) {
         const order = await tx.order.update({
           where: {
-            id: Number(id),
+            id,
             status: {
               in: [OrderStatus.INIT, OrderStatus.PROCESSING],
             },

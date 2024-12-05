@@ -78,7 +78,7 @@ export class GroupService {
     return this.prismaService.client.$transaction(async (tx) => {
       const group = await tx.group.update({
         where: {
-          id: Number(id),
+          id,
         },
         data: {
           name: body.name,
@@ -108,7 +108,7 @@ export class GroupService {
 
           await tx.menuItem.upsert({
             where: {
-              id: item?.id ?? 0,
+              id: item?.id ?? '',
               group_id: group.id,
             },
             create: dataUpsert,
@@ -123,7 +123,7 @@ export class GroupService {
 
   async delete(id: string, user: RequestWithUser['user']) {
     return this.prismaService.client.group.softDelete({
-      id: Number(id),
+      id,
       created_by_id: user.id,
     });
   }
@@ -132,7 +132,7 @@ export class GroupService {
     console.log(query?.with_orders);
     return this.prismaService.client.group.findFirstOrThrow({
       where: {
-        id: Number(id),
+        id,
         is_deleted: false,
       },
       include: {

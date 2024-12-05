@@ -7,7 +7,7 @@ import { IsBoolean, IsOptional } from 'class-validator';
 
 export class EditMenuDTO {
   @NumberFieldOptional()
-  id?: number;
+  id?: string;
 
   @StringField({
     maxLength: 255,

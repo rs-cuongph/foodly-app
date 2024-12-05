@@ -15,7 +15,7 @@ datasource db {
 }
 
 model Organization {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   short_name  String   @db.VarChar(100)
   name        String   @db.VarChar(255)
   description String?  @db.VarChar(500)
@@ -34,7 +34,7 @@ model User {
   my_coin              Decimal         @default(0) @db.Decimal(15, 2)
   payment_setting      Json?
   max_order            Float           @default(5.0)
-  organization_id      Int
+  organization_id      String
   created_at           DateTime        @default(now())
   updated_at           DateTime        @updatedAt
   organization         Organization    @relation(fields: [organization_id], references: [id])

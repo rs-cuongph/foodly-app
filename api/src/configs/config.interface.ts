@@ -6,7 +6,6 @@ export interface Config {
   jwt: JwtConfig;
   mail: MailConfig;
   aws: AwsConfig;
-  payos: PayOSConfig;
   prisma: PrismaConfig;
 }
 
@@ -43,11 +42,4 @@ export interface MailConfig {
 
 export interface PrismaConfig {
   logLevel: string;
-}
-
-export interface PayOSConfig {
-  clientId: string;
-  apiKey: string;
-  checksumKey: string;
-  webhookUrl: string;
 }

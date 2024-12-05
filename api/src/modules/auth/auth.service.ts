@@ -113,7 +113,7 @@ export class AuthService {
   async getAuthenticatedUser(
     email: string,
     password: string,
-    organization_id: number,
+    organization_id: string,
   ) {
     const user = await this.findUser({
       email,
