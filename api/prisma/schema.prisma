@@ -58,18 +58,19 @@ model Group {
   menu_items        MenuItem[]
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
-  is_deleted        Boolean     @default(false)
+  deleted_at        DateTime?
   orders            Order[]
 }
 
 model MenuItem {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   name       String
-  price      Decimal  @default(0) @db.Decimal(15, 2)
+  price      Decimal   @default(0) @db.Decimal(15, 2)
   group_id   String
-  group      Group    @relation(fields: [group_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  group      Group     @relation(fields: [group_id], references: [id])
+  deleted_at DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
 }
 
 model Order {
@@ -82,12 +83,14 @@ model Order {
   menu           Json
   group_id       String
   group          Group                @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  note           String?              @db.VarChar(255)
   created_by_id  String
   created_by     User                 @relation("CreatedBy_Order", fields: [created_by_id], references: [id])
   updated_by_id  String
   updated_by     User                 @relation("UpdatedBy_Order", fields: [updated_by_id], references: [id])
   created_at     DateTime             @default(now())
   updated_at     DateTime             @updatedAt
+  deleted_at     DateTime?
   transactions   OrderOnTransaction[]
 }
 
@@ -109,17 +112,19 @@ model OrderOnTransaction {
 }
 
 model Transaction {
-  id            String               @id @default(uuid())
-  status        TransactionStatus    @default(INIT)
-  metadata      Json
-  reason_cancel String?              @db.VarChar(255)
-  created_at    DateTime             @default(now())
-  updated_at    DateTime             @updatedAt
-  orders        OrderOnTransaction[]
+  id               String               @id @default(uuid())
+  status           TransactionStatus    @default(INIT)
+  payos_order_code String?
+  metadata         Json
+  reason_cancel    String?              @db.VarChar(255)
+  created_at       DateTime             @default(now())
+  updated_at       DateTime             @updatedAt
+  orders           OrderOnTransaction[]
 }
 
 enum Role {
   USER
+  SHOP
   ADMIN
 }
 
@@ -133,6 +138,7 @@ enum OrderStatus {
 enum TransactionStatus {
   INIT
   PROCESSING
+  AWAITING_CONFIRMATION
   CANCELED
   COMPLETED
 }

@@ -32,4 +32,10 @@ export class CreateOrderDTO {
     minLength: 1,
   })
   menu: Menu[];
+
+  @StringField({
+    maxLength: 255,
+    allowEmpty: true,
+  })
+  note?: string;
 }

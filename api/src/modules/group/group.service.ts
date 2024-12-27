@@ -129,14 +129,13 @@ export class GroupService {
   }
 
   async show(id: string, query: QueryShowGroupDTO) {
-    console.log(query?.with_orders);
     return this.prismaService.client.group.findFirstOrThrow({
       where: {
         id,
-        is_deleted: false,
       },
       include: {
         orders: query?.with_orders == 1,
+        menu_items: true,
       },
     });
   }

@@ -32,26 +32,22 @@ export type CheckoutResponseDataType = {
   signature: string;
 };
 
+export type GateType =
+  | 'VCBBANK'
+  | 'MBBANK'
+  | 'ACBBANK'
+  | 'TPBANK'
+  | 'TRON_USDT_BLOCKCHAIN'
+  | 'BEP20_USDT_BLOCKCHAIN';
+
 export type WebhookResponseDataType = {
-  code: string;
-  desc: string;
-  data: {
-    orderCode: number;
+  token: string;
+  payment: {
+    transaction_id: string;
     amount: number;
-    description: string;
-    accountNumber: string;
-    reference: string;
-    transactionDateTime: string;
-    currency: string;
-    paymentLinkId: string;
-    code: string;
-    desc: string;
-    counterAccountBankId: string;
-    counterAccountBankName: string;
-    counterAccountName: string;
-    counterAccountNumber: string;
-    virtualAccountName: string;
-    virtualAccountNumber: string;
+    content: string;
+    date: string;
+    account_receiver: string;
+    gate: GateType;
   };
-  signature: string;
 };

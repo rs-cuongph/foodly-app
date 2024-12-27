@@ -38,6 +38,12 @@ export class AuthService {
     });
   }
 
+  async findOrganization(condition: Prisma.OrganizationWhereInput) {
+    return this.prismaService.client.organization.findFirst({
+      where: condition,
+    });
+  }
+
   async signUp(body: SignUpDTO) {
     const { email, organization_id, password, display_name } = body;
     try {
@@ -46,6 +52,13 @@ export class AuthService {
       });
       if (existedUser) {
         throw new ConflictException('Email already existed!');
+      }
+
+      const existedOrganization = await this.findOrganization({
+        id: organization_id,
+      });
+      if (!existedOrganization) {
+        throw new BadRequestException('Organization not found!');
       }
 
       const hashedPassword = await bcrypt.hash(password, this.SALT_ROUND);

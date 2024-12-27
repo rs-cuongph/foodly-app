@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Prisma } from '@prisma/client';
 import { isUndefined } from 'lodash';
+import * as dayjs from 'dayjs';
 
 export const SoftDeleteExt = () =>
   Prisma.defineExtension((client) => {
@@ -24,9 +25,9 @@ export const SoftDeleteExt = () =>
               if (
                 ['Group'].includes(model) &&
                 newArgs?.where &&
-                isUndefined(newArgs?.where?.is_deleted)
+                isUndefined(newArgs?.where?.deleted_at)
               ) {
-                newArgs['where']['is_deleted'] = false;
+                newArgs['where']['deleted_at'] = null;
               }
             }
             const result = await query(newArgs);
@@ -46,7 +47,7 @@ export const SoftDeleteExt = () =>
             return (context as any).update({
               where,
               data: {
-                is_deleted: true,
+                deleted_at: dayjs(),
               },
             });
           },
@@ -60,7 +61,7 @@ export const SoftDeleteExt = () =>
             return (context as any).updateMany({
               where,
               data: {
-                is_deleted: true,
+                deleted_at: dayjs(),
               },
             });
           },
@@ -73,7 +74,7 @@ export const SoftDeleteExt = () =>
             // eslint-disable-next-line @typescript-eslint/no-explicit-any -- There is no way to type a Prisma model
             const result = await (context as any).findUnique({ where });
 
-            return !!result.is_deleted;
+            return !!result.deleted_at;
           },
         },
       },

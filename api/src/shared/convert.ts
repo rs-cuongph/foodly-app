@@ -33,3 +33,15 @@ export const transformDataByTemplate = (payload, template) => {
 export function camelToSnake(obj) {
   return mapKeys(obj, (value, key) => snakeCase(key));
 }
+
+export function convertToUUID(rawString: string) {
+  const cleanString = rawString.replace(/-/g, '');
+
+  if (cleanString.length !== 32) {
+    throw new Error('String is not a valid UUID');
+  }
+
+  const formattedUUID = `${cleanString.slice(0, 8)}-${cleanString.slice(8, 12)}-${cleanString.slice(12, 16)}-${cleanString.slice(16, 20)}-${cleanString.slice(20)}`;
+
+  return formattedUUID;
+}

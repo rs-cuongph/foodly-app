@@ -102,6 +102,7 @@ export class OrderService {
           quantity: body.quanlity,
           price,
           amount,
+          note: body.note,
           transactions: {
             create: [
               {
@@ -117,6 +118,13 @@ export class OrderService {
                 },
               },
             ],
+          },
+        },
+        include: {
+          transactions: {
+            include: {
+              transaction: true,
+            },
           },
         },
       });
@@ -142,7 +150,6 @@ export class OrderService {
           public_end_time: {
             gte: now,
           },
-          is_deleted: false,
         },
       },
       include: {
@@ -184,6 +191,7 @@ export class OrderService {
           quantity: body.quanlity,
           menu: body.menu,
           updated_by_id: user.id,
+          note: body.note,
         },
       });
     });
@@ -195,6 +203,14 @@ export class OrderService {
         id,
         created_by_id: user.id,
       },
+      include: {
+        transactions: {
+          select: {
+            id: true,
+            transaction: true,
+          },
+        },
+      },
     });
 
     return order;
@@ -203,7 +219,7 @@ export class OrderService {
   async delete(id: string, user: RequestWithUser['user']) {
     const now = dayjs().toDate();
     return this.prismaService.client.$transaction(async (tx) => {
-      const order = await tx.order.delete({
+      const order = await tx.order.findFirstOrThrow({
         where: {
           id,
           status: OrderStatus.INIT,
@@ -215,12 +231,14 @@ export class OrderService {
             public_end_time: {
               gte: now,
             },
-            is_deleted: false,
           },
         },
         include: {
           transactions: true,
         },
+      });
+      await tx.order.softDelete({
+        id,
       });
       await tx.transaction.updateMany({
         where: {
@@ -284,16 +302,33 @@ export class OrderService {
   }
 
   markPaid(id: string, body: MarkPaidDTO, user: RequestWithUser['user']) {
-    return this.prismaService.client.order.update({
-      where: {
-        id,
-        status: OrderStatus.INIT,
-        created_by_id: user.id,
-      },
-      data: {
-        status: OrderStatus.PROCESSING,
-        updated_by_id: user.id,
-      },
+    return this.prismaService.client.$transaction(async (tx) => {
+      const order = await tx.order.update({
+        where: {
+          id,
+          status: OrderStatus.INIT,
+          created_by_id: user.id,
+        },
+        data: {
+          status: OrderStatus.PROCESSING,
+          updated_by_id: user.id,
+        },
+        include: {
+          transactions: true,
+        },
+      });
+
+      await tx.transaction.updateMany({
+        where: {
+          id: {
+            in: order.transactions.map((i) => i.transaction_id),
+          },
+        },
+        data: {
+          status: TransactionStatus.AWAITING_CONFIRMATION,
+        },
+      });
+      return order;
     });
   }
 
@@ -332,20 +367,11 @@ export class OrderService {
     });
   }
 
-  markPaidAll(body: MarkPaidAllDTO, user: RequestWithUser['user']) {
-    return this.prismaService.client.order.updateMany({
-      where: {
-        id: {
-          in: body.ids,
-        },
-        status: OrderStatus.INIT,
-        created_by_id: user.id,
-      },
-      data: {
-        status: OrderStatus.PROCESSING,
-        updated_by_id: user.id,
-      },
-    });
+  async markPaidAll(body: MarkPaidAllDTO, user: RequestWithUser['user']) {
+    for await (const id of body.ids) {
+      await this.markPaid(id, {}, user);
+    }
+    return true;
   }
 
   confirmPaidAll(body: ConfirmPaidAllDTO, user: RequestWithUser['user']) {

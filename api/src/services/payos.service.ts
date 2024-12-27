@@ -11,7 +11,7 @@ import { catchError, map, Observable, throwError } from 'rxjs';
 import {
   CheckoutRequestType,
   CheckoutResponseDataType,
-} from 'src/types/payos.type';
+} from 'src/types/bank.type';
 import * as crypto from 'crypto';
 
 @Global()

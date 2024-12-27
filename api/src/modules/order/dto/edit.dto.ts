@@ -10,6 +10,12 @@ class Menu {
   id: string;
 }
 export class EditOrderDTO {
+  @StringField({
+    maxLength: 255,
+    allowEmpty: true,
+  })
+  note?: string;
+
   @NumberField({
     max: 10,
   })
@@ -41,4 +47,9 @@ export class ConfirmPaidAllDTO {
   ids: string[];
 }
 
-export class ConfirmPaidDTO {}
+export class ConfirmPaidDTO {
+  @StringField({
+    maxLength: 255,
+  })
+  qr_code: string;
+}
