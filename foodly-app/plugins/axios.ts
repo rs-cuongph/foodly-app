@@ -16,7 +16,7 @@ export const removeHeaderToken = () => {
 };
 
 apiClient.interceptors.request.use(async (config) => {
-  if (typeof localStorage !== undefined) {
+  if (typeof window !== "undefined") {
     config.headers.Authorization = localStorage.getItem("ACCESS_TOKEN");
   }
 
@@ -25,7 +25,7 @@ apiClient.interceptors.request.use(async (config) => {
 
 apiClient.interceptors.response.use(
   async (res) => {
-    return res.data;
+    return res;
   },
   (e) => {
     Promise.reject(e);

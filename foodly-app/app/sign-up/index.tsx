@@ -5,10 +5,12 @@ import { Link } from "@nextui-org/link";
 import { SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 import { siteConfig } from "@/config/site";
 import useSignUpForm, { SignUpSchemaType } from "@/hooks/form/sign-up-form";
 import { SignUpAPI, SignUpPayload } from "@/services/auth/sign-up";
+import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 
 export function SignUpPage() {
   const {
@@ -17,15 +19,32 @@ export function SignUpPage() {
     formState: { errors },
   } = useSignUpForm();
 
+  const [visible, setVisible] = useState({
+    isVisiblePassword: false,
+    isVisibleConfirmPassword: false
+  });
+
   const signUpMutation = useMutation({
     mutationKey: ["sign-up"],
     mutationFn: (data: SignUpPayload) => SignUpAPI(data),
     onSuccess: (res) => {
       if (res.access_token) {
         localStorage.setItem("ACCESS_TOKEN", res.access_token);
-        signIn("tokenLogin", { ...res });
+        signIn("tokenLogin", {
+          ...res
+        });
       }
     },
+  });
+
+  const toggleVisibility = (visiable: {
+    isVisiblePassword?: boolean,
+    isVisibleConfirmPassword?: boolean
+  }) => setVisible((prev) => {
+    return {
+      ...prev,
+      ...visiable
+    }
   });
 
   const onSubmit: SubmitHandler<SignUpSchemaType> = (data) => {
@@ -55,10 +74,24 @@ export function SignUpPage() {
             className=""
             label="Password"
             placeholder="******"
-            type="password"
+            type={visible.isVisiblePassword ? "text" : "password"}
             {...register("password")}
             errorMessage={errors.password?.message}
             isInvalid={!!errors.password?.message?.length}
+            endContent={
+              <button
+                aria-label="toggle password visibility"
+                className="focus:outline-none"
+                type="button"
+                onClick={() => toggleVisibility({ isVisiblePassword: !visible.isVisiblePassword })}
+              >
+                {visible.isVisiblePassword ? (
+                  <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            }
           />
         </div>
 
@@ -68,10 +101,24 @@ export function SignUpPage() {
             className=""
             label="Confirm Password"
             placeholder="******"
-            type="password"
+            type={visible.isVisibleConfirmPassword ? "text" : "password"}
             {...register("confirm_password")}
             errorMessage={errors.confirm_password?.message}
             isInvalid={!!errors.confirm_password?.message?.length}
+            endContent={
+              <button
+                aria-label="toggle password visibility"
+                className="focus:outline-none"
+                type="button"
+                onClick={() => { toggleVisibility({ isVisibleConfirmPassword: !visible.isVisibleConfirmPassword }) }}
+              >
+                {visible.isVisibleConfirmPassword ? (
+                  <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            }
           />
         </div>
 
