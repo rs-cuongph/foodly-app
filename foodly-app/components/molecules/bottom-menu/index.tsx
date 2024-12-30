@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
+import { signOut, useSession } from "next-auth/react";
 
 import { siteConfig } from "@/config/site";
 import {
@@ -16,8 +17,8 @@ import {
 export function BottomMenu() {
   const router = useRouter();
   const pathName = usePathname();
+  const session = useSession()
 
-  const isLogin = true;
   const menuItems = [
     {
       name: "Home",
@@ -48,6 +49,11 @@ export function BottomMenu() {
     },
   ];
 
+  const isLogin = useMemo(() => {
+    return session.status === 'authenticated'
+  }, [session.status]);
+
+
   const MenuItemFiltered = useMemo(() => {
     return menuItems.filter((item) => {
       if (isLogin) return true;
@@ -55,6 +61,11 @@ export function BottomMenu() {
       return (item.requiredAuth = false);
     });
   }, [isLogin, menuItems]);
+
+  const handleSignInOrSignOUt = () => {
+    if (isLogin) signOut()
+    router.push(siteConfig.routes.login)
+  }
 
   const checkIsActive = useCallback(
     (pathRegex: RegExp) => {
@@ -89,7 +100,7 @@ export function BottomMenu() {
         ))}
       </div>
       <div>
-        <div className="cursor-pointer flex items-center gap-1 md:gap-2 text-sm px-4 py-2.5 max-md:h-auto hover:bg-[#fe724c40] rounded-xl hover:text-[#fe724c]">
+        <div className="cursor-pointer flex items-center gap-1 md:gap-2 text-sm px-4 py-2.5 max-md:h-auto hover:bg-[#fe724c40] rounded-xl hover:text-[#fe724c]" onClick={handleSignInOrSignOUt}>
           <div className="bg-primary px-2 py-2 rounded-md">
             {isLogin ? <LogoutIcon /> : <LoginIcon />}
           </div>

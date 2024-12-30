@@ -6,6 +6,7 @@ import yup from "@/shared/validate-helper";
 export type SignInSchemaType = {
   email: string;
   password: string;
+  organization_id?: string;
 };
 
 const SignInSchema = yup.object().shape({
@@ -20,6 +21,7 @@ const useSignInForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      organization_id: localStorage.getItem("ORGANIZATION_ID") || "",
     },
   });
 

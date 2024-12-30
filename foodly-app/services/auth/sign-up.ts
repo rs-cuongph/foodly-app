@@ -6,6 +6,7 @@ export type SignUpPayload = {
   password: string;
   confirm_password: string;
   display_name?: string | null;
+  organization_id?: string;
 };
 
 export interface SignUpResponse {
@@ -13,7 +14,7 @@ export interface SignUpResponse {
   exp: number;
   type: string;
   user_id: number;
-  organization_id: number;
+  organization_id?: string;
   access_token: string;
   refresh_token: string;
 }

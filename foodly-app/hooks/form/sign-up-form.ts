@@ -8,6 +8,7 @@ export type SignUpSchemaType = {
   password: string;
   confirm_password: string;
   display_name?: string | null;
+  organization_id?: string;
 };
 
 const SignUpSchema = yup.object().shape({
@@ -32,6 +33,7 @@ const useSignUpForm = () => {
       password: "",
       confirm_password: "",
       display_name: null,
+      organization_id: localStorage.getItem("ORGANIZATION_ID") || "",
     },
   });
 

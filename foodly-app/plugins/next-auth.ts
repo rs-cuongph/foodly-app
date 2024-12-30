@@ -107,5 +107,9 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
+    async redirect({ baseUrl }) {
+      return baseUrl + siteConfig.routes.home;
+    },
   },
+  secret: process.env.NEXTAUTH_URL,
 };

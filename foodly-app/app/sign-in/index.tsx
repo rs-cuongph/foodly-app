@@ -3,12 +3,16 @@
 import { Button, Input } from "@nextui-org/react";
 import { Link } from "@nextui-org/link";
 import { SubmitHandler } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
 
 import { siteConfig } from "@/config/site";
 import useSignInForm, { SignInSchemaType } from "@/hooks/form/sign-in-form";
+import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 
 export function SignInPage() {
+  const [isVisible, setIsVisible] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -18,7 +22,12 @@ export function SignInPage() {
   useEffect(() => {
     console.log(errors);
   }, [errors]);
-  const onSubmit: SubmitHandler<SignInSchemaType> = (data) => console.log(data);
+
+  const onSubmit: SubmitHandler<SignInSchemaType> = (data) => {
+    signIn('emailLogin', data)
+  };
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
     <section className="flex flex-col w-full max-w-[600px] mx-auto mt-10 rounded-2xl bg-white p-4 md:p-10">
@@ -43,10 +52,24 @@ export function SignInPage() {
             className=""
             label="Password"
             placeholder="******"
-            type="password"
+            type={isVisible ? "text" : "password"}
             {...register("password")}
             errorMessage={errors.password?.message}
             isInvalid={!!errors.password?.message?.length}
+            endContent={
+              <button
+                aria-label="toggle password visibility"
+                className="focus:outline-none"
+                type="button"
+                onClick={toggleVisibility}
+              >
+                {isVisible ? (
+                  <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            }
           />
         </div>
         <p className="text-sm text-center mt-5">
