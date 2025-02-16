@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   async signUp(body: SignUpDTO) {
-    const { email, organization_id, password, display_name } = body;
+    const { email, organization_code, password, display_name } = body;
     try {
       const existedUser = await this.findUser({
         email,
@@ -55,7 +55,7 @@ export class AuthService {
       }
 
       const existedOrganization = await this.findOrganization({
-        id: organization_id,
+        code: organization_code,
       });
       if (!existedOrganization) {
         throw new BadRequestException('Organization not found!');
@@ -64,7 +64,11 @@ export class AuthService {
       const hashedPassword = await bcrypt.hash(password, this.SALT_ROUND);
       const user = await this.prismaService.client.user.create({
         data: {
-          organization_id,
+          organization: {
+            connect: {
+              code: organization_code,
+            },
+          },
           email,
           display_name,
           password: hashedPassword,
@@ -87,7 +91,7 @@ export class AuthService {
         exp,
         type: TokenType.BEARER,
         user_id: user.id,
-        organization_id,
+        organization_id: user.organization_id,
         access_token,
         refresh_token,
       };

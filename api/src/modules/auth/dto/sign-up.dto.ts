@@ -2,12 +2,14 @@ import { StringField } from '@decorators/validation/string.decorator';
 
 export class SignUpDTO {
   @StringField({
+    property: 'display_name',
     maxLength: 255,
     allowEmpty: false,
   })
   display_name: string;
 
   @StringField({
+    property: 'email',
     email: true,
     maxLength: 255,
     allowEmpty: false,
@@ -15,6 +17,7 @@ export class SignUpDTO {
   email: string;
 
   @StringField({
+    property: 'password',
     maxLength: 255,
     allowEmpty: false,
     password: true,
@@ -22,6 +25,7 @@ export class SignUpDTO {
   password: string;
 
   @StringField({
+    property: 'confirm_password',
     maxLength: 255,
     allowEmpty: false,
     password: true,
@@ -30,8 +34,9 @@ export class SignUpDTO {
   confirm_password: string;
 
   @StringField({
-    maxLength: 255,
+    property: 'organization_code',
+    maxLength: 16,
     allowEmpty: false,
   })
-  organization_id: string;
+  organization_code: string;
 }

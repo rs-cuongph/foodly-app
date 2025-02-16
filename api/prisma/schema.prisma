@@ -16,6 +16,7 @@ datasource db {
 
 model Organization {
   id          String   @id @default(uuid())
+  code        String   @unique @db.VarChar(16)
   short_name  String   @db.VarChar(100)
   name        String   @db.VarChar(255)
   description String?  @db.VarChar(500)
@@ -26,7 +27,7 @@ model Organization {
 
 model User {
   id                   String          @id @default(uuid())
-  email                String          @unique @db.VarChar(255)
+  email                String          @db.VarChar(255)
   password             String?         @db.VarChar(255)
   display_name         String?         @db.VarChar(255)
   role                 Role            @default(USER)
@@ -42,6 +43,8 @@ model User {
   order_created        Order[]         @relation("CreatedBy_Order")
   order_updated        Order[]         @relation("UpdatedBy_Order")
   order_group_template GroupTemplate[] @relation("CreatedBy_GroupTemplate")
+
+  @@unique([email, organization_id])
 }
 
 model Group {

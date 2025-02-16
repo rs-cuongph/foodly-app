@@ -1,4 +1,3 @@
-import { NumberField } from '@decorators/validation/number.decorator';
 import { StringField } from '@decorators/validation/string.decorator';
 
 export class SignInDTO {

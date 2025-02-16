@@ -9,6 +9,7 @@ async function main() {
   await prisma.organization.createManyAndReturn({
     data: [
       {
+        code: 'GMODN',
         short_name: 'GMO DN',
         name: 'GMO Zcom Runsystem (Đà Nẵng Branch)',
         description: '',

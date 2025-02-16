@@ -48,6 +48,7 @@ interface TransformOptions {
 }
 
 interface IStringFieldOptions {
+  property?: string; // property name
   minLength?: number;
   maxLength?: number;
   email?: boolean;
@@ -84,6 +85,12 @@ const IsPassword = (
       constraints: [
         configService.get(
           'jwt.passwordPattern',
+          // Mẫu regex này đảm bảo mật khẩu phải:
+          // - Có ít nhất 1 chữ hoa (?=.*?[A-Z])
+          // - Có ít nhất 1 chữ thường (?=.*?[a-z])
+          // - Có ít nhất 1 số (?=.*?[0-9])
+          // - Có ít nhất 1 ký tự đặc biệt (?=.*?[#?!@$%^&*-])
+          // - Độ dài tối thiểu 8 ký tự (.{8,})
           '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$',
         ),
       ],
@@ -249,6 +256,7 @@ export function StringField(
     numericOptions,
     minLength,
     maxLength,
+    property,
   } = options ?? {};
 
   const decorators = [
@@ -348,7 +356,9 @@ export function StringField(
   if (minLength) {
     decorators.push(
       MinLength(minLength, {
-        message: i18nValidationMessage('validation.MinLength'),
+        message: i18nValidationMessage('validation.MinLength', {
+          property: property ?? '',
+        }),
       }),
     );
   }
@@ -356,7 +366,12 @@ export function StringField(
   if (maxLength) {
     decorators.push(
       MaxLength(maxLength, {
-        message: i18nValidationMessage('validation.MaxLength'),
+        message: i18nValidationMessage('validation.MaxLength', {
+          // property: property
+          //   ? i18nValidationMessage(`validation-properties.${property}`)
+          //   : '',
+          property: property ?? '',
+        }),
       }),
     );
   }

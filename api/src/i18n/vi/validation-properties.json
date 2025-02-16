@@ -1,0 +1,19 @@
+{
+  "code": "code",
+  "email": "địa chỉ email",
+  "password": "mật khẩu",
+  "first_name": "họ",
+  "last_name": "tên",
+  "display_name": "tên hiển thị",
+  "confirm_password": "mật khẩu xác nhận",
+  "page": "trang",
+  "size": "kích thước",
+  "sort": "sắp xếp",
+  "keyword": "từ khóa",
+  "share_scope": "phạm vi chia sẻ",
+  "menu_items": "danh mục thực đơn",
+  "public_start_time": "thời gian công khai",
+  "public_end_time": "thời gian kết thúc",
+  "ids": "ids",
+  "organization_code": "mã tổ chức"
+}
