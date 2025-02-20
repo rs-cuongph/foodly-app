@@ -21,6 +21,10 @@ import { omit } from 'lodash';
 import { Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 import * as dayjs from 'dayjs';
+import {
+  UpdateUserInfoDTO,
+  UpdateUserPasswordDTO,
+} from './dto/update-user-info.dto';
 @Injectable()
 export class AuthService {
   private SALT_ROUND = 11;
@@ -130,11 +134,13 @@ export class AuthService {
   async getAuthenticatedUser(
     email: string,
     password: string,
-    organization_id: string,
+    organization_code: string,
   ) {
     const user = await this.findUser({
       email,
-      organization_id,
+      organization: {
+        code: organization_code,
+      },
     });
 
     if (!user) {
@@ -170,5 +176,48 @@ export class AuthService {
 
   async getUserInfo(user: RequestWithUser['user']) {
     return omit(user, ['password']);
+  }
+
+  async updateUserInfo(body: UpdateUserInfoDTO, user: RequestWithUser['user']) {
+    const currentInfo = await this.prismaService.client.user.findUnique({
+      where: {
+        id: user.id,
+      },
+    });
+    return this.prismaService.client.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        display_name: body.display_name || currentInfo?.display_name,
+        payment_setting: body.payment_setting,
+      },
+      select: {
+        id: true,
+        display_name: true,
+        payment_setting: true,
+      },
+    });
+  }
+
+  async updateUserPassword(
+    body: UpdateUserPasswordDTO,
+    user: RequestWithUser['user'],
+  ) {
+    const is_matching = await bcrypt.compare(body.password, user.password);
+
+    if (!is_matching) {
+      throw new BadRequestException(this.i18n.t('message.wrong_password'));
+    }
+
+    const hashedNewPassword = await bcrypt.hash(
+      body.new_password,
+      this.SALT_ROUND,
+    );
+
+    return this.prismaService.client.user.update({
+      where: { id: user.id },
+      data: { password: hashedNewPassword },
+    });
   }
 }

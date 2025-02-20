@@ -9,4 +9,7 @@ export class QueryShowGroupDTO {
     },
   })
   with_orders?: number;
+
+  @StringFieldOptional()
+  invite_code?: string;
 }

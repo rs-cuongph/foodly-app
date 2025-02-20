@@ -54,4 +54,9 @@ export class EditGroupDTO {
 
   @IsBoolean()
   is_save_template: boolean;
+
+  @StringFieldOptional({
+    maxLength: 255,
+  })
+  invite_code: string;
 }

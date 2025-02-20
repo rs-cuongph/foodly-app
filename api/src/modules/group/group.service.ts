@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGroupDTO } from './dto/create.dto';
 import * as _ from 'lodash';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
@@ -8,16 +14,47 @@ import * as dayjs from 'dayjs';
 import { RequestWithUser } from 'src/types/requests.type';
 import { EditGroupDTO } from './dto/edit.dto';
 import { SearchGroupDTO } from './dto/search.dto';
-import { Prisma } from '@prisma/client';
+import { Group, GroupStatus, Prisma, ShareScope } from '@prisma/client';
 import { camelToSnake } from 'src/shared/convert';
 import { QueryShowGroupDTO } from './dto/show.dto';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class GroupService {
   constructor(
     @Inject('PrismaService')
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
+    private readonly i18n: I18nService,
   ) {}
+
+  private checkInviteCode(group: Group, inviteCode: string) {
+    if (
+      group.share_scope == ShareScope.PRIVATE &&
+      group.invite_code !== inviteCode
+    ) {
+      throw new BadRequestException(
+        this.i18n.t('message.invite_code_incorrect'),
+      );
+    }
+  }
+
+  private generateInviteCode() {
+    return _.times(20, () =>
+      _.sample('abcdefghijklmnopqrstuvwxyz0123456789'),
+    ).join('');
+  }
+
+  private async checkGroupIsLocked(id: string) {
+    const group = await this.prismaService.client.group.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (group.status == GroupStatus.LOCKED) {
+      throw new ForbiddenException(this.i18n.t('message.group_locked'));
+    }
+    return group;
+  }
 
   async create(body: CreateGroupDTO, user: RequestWithUser['user']) {
     try {
@@ -29,6 +66,11 @@ export class GroupService {
       });
       if (lastGroup && lastGroup.code) {
         nextID = _.padStart((Number(lastGroup.code) + 1).toString(), 10, '0');
+      }
+
+      let inviteCode = '';
+      if (body.share_scope === ShareScope.PRIVATE) {
+        inviteCode = this.generateInviteCode();
       }
 
       body.public_start_time = body.public_start_time || dayjs().toDate();
@@ -46,6 +88,7 @@ export class GroupService {
             share_scope: body.share_scope,
             created_by_id: user.id,
             type: body.type,
+            invite_code: inviteCode,
           },
         });
         await tx.menuItem.createMany({
@@ -75,10 +118,12 @@ export class GroupService {
   }
 
   async edit(id: string, body: EditGroupDTO, user: RequestWithUser['user']) {
+    await this.checkGroupIsLocked(id);
     return this.prismaService.client.$transaction(async (tx) => {
       const group = await tx.group.update({
         where: {
           id,
+          created_by_id: user.id,
         },
         data: {
           name: body.name,
@@ -122,27 +167,51 @@ export class GroupService {
   }
 
   async delete(id: string, user: RequestWithUser['user']) {
+    await this.checkGroupIsLocked(id);
     return this.prismaService.client.group.softDelete({
       id,
       created_by_id: user.id,
     });
   }
 
-  async show(id: string, query: QueryShowGroupDTO) {
-    return this.prismaService.client.group.findFirstOrThrow({
+  async show(
+    id: string,
+    query: QueryShowGroupDTO,
+    user: RequestWithUser['user'],
+  ) {
+    const findGroup = await this.prismaService.client.group.findFirstOrThrow({
       where: {
         id,
       },
       include: {
         orders: query?.with_orders == 1,
         menu_items: true,
+        created_by: {
+          select: {
+            id: true,
+            display_name: true,
+            payment_setting: true,
+          },
+        },
       },
     });
+    if (findGroup.created_by_id === user.id) {
+      return findGroup;
+    }
+
+    if (findGroup.status == GroupStatus.INIT) {
+      this.checkInviteCode(findGroup, query.invite_code);
+    }
+    return findGroup;
   }
 
   async search(query: SearchGroupDTO, user: RequestWithUser['user']) {
     const { keyword, sort, page, size, is_online, is_mine } = query;
-    const whereClause: Prisma.GroupWhereInput = {};
+    const whereClause: Prisma.GroupWhereInput = {
+      share_scope: {
+        in: [ShareScope.PUBLIC],
+      },
+    };
     let orderByClause:
       | Prisma.GroupOrderByWithRelationInput
       | Prisma.GroupOrderByWithRelationInput[] = {
@@ -205,4 +274,21 @@ export class GroupService {
       meta: camelToSnake(meta),
     };
   }
+
+  async lock(id: string, inviteCode: string, user: RequestWithUser['user']) {
+    const group = await this.checkGroupIsLocked(id);
+    this.checkInviteCode(group, inviteCode);
+    return this.prismaService.client.group.update({
+      where: { id, created_by_id: user.id },
+      data: { status: GroupStatus.LOCKED },
+    });
+  }
+
+  // async unlock(id: string, user: RequestWithUser['user']) {
+  //   await this.checkGroupIsLocked(id);
+  //   return this.prismaService.client.group.update({
+  //     where: { id },
+  //     data: { status: GroupStatus.INIT },
+  //   });
+  // }
 }

@@ -3,12 +3,21 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
 import { CreateOrderDTO } from './dto/create.dto';
 import { RequestWithUser } from 'src/types/requests.type';
-import { Order, OrderStatus, Prisma, TransactionStatus } from '@prisma/client';
+import {
+  Group,
+  GroupStatus,
+  Order,
+  OrderStatus,
+  Prisma,
+  ShareScope,
+  TransactionStatus,
+} from '@prisma/client';
 import {
   ConfirmPaidAllDTO,
   ConfirmPaidDTO,
@@ -29,6 +38,39 @@ export class OrderService {
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
     private i18n: I18nService,
   ) {}
+
+  private async checkInviteCode(
+    group: Group,
+    inviteCode: string,
+    currentUser: RequestWithUser['user'],
+  ) {
+    if (group.created_by_id === currentUser.id) return group;
+
+    if (
+      group.share_scope == ShareScope.PRIVATE &&
+      group.invite_code !== inviteCode
+    ) {
+      throw new BadRequestException(
+        this.i18n.t('message.invite_code_incorrect'),
+      );
+    }
+
+    return group;
+  }
+
+  private async checkGroupIsLocked(id: string) {
+    const group = await this.prismaService.client.group.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (group.status == GroupStatus.LOCKED) {
+      throw new ForbiddenException(this.i18n.t('message.group_locked'));
+    }
+
+    return group;
+  }
 
   private async checkCanCreateOrder(user: RequestWithUser['user']) {
     const maxOrder = user.max_order;
@@ -63,6 +105,9 @@ export class OrderService {
         },
       },
     });
+
+    await this.checkInviteCode(group, body.invite_code, user);
+    await this.checkGroupIsLocked(group.id);
 
     const menu = await this.prismaService.client.menuItem.findMany({
       where: {
@@ -133,10 +178,6 @@ export class OrderService {
     });
   }
 
-  checkPermission(order: Order, user: RequestWithUser['user']) {
-    if (order.created_by_id !== user.id) throw new ForbiddenException();
-  }
-
   async edit(id: string, body: EditOrderDTO, user: RequestWithUser['user']) {
     const now = dayjs().toDate();
     const order = await this.prismaService.client.order.findFirstOrThrow({
@@ -156,7 +197,10 @@ export class OrderService {
         group: true,
       },
     });
-    this.checkPermission(order, user);
+    await this.checkInviteCode(order.group, body.invite_code, user);
+    await this.checkGroupIsLocked(order.group.id);
+    if (order.created_by_id !== user.id) throw new ForbiddenException();
+
     const menu = await this.prismaService.client.menuItem.findMany({
       where: {
         group_id: order.group.id,
@@ -301,6 +345,13 @@ export class OrderService {
     };
   }
 
+  /**
+   * Marks an order as paid (only accessible by the order creator)
+   * @param id The order ID to mark as paid
+   * @param body The mark paid payload
+   * @param user The authenticated user making the request
+   * @returns The updated order
+   */
   markPaid(id: string, body: MarkPaidDTO, user: RequestWithUser['user']) {
     return this.prismaService.client.$transaction(async (tx) => {
       const order = await tx.order.update({
@@ -332,17 +383,37 @@ export class OrderService {
     });
   }
 
-  confirmPaid(id: string, body: ConfirmPaidDTO, user: RequestWithUser['user']) {
+  /**
+   * Confirms an order as paid (only accessible by the order creator)
+   * @param id The order ID to confirm
+   * @param body The confirmation payload
+   * @param user The authenticated user making the request
+   * @returns The updated order
+   */
+  async confirmPaid(
+    id: string,
+    body: ConfirmPaidDTO,
+    user: RequestWithUser['user'],
+  ) {
+    const findOrder = await this.prismaService.client.order.findFirst({
+      where: {
+        id,
+        status: {
+          in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+        },
+        group: {
+          created_by_id: user.id,
+        },
+      },
+    });
+
+    if (!findOrder)
+      throw new BadRequestException(this.i18n.t('message.order_not_found'));
+
     return this.prismaService.client.$transaction(async (tx) => {
       const order = await tx.order.update({
         where: {
-          id,
-          status: {
-            in: [OrderStatus.INIT, OrderStatus.PROCESSING],
-          },
-          group: {
-            created_by_id: user.id,
-          },
+          id: findOrder.id,
         },
         data: {
           status: OrderStatus.COMPLETED,
@@ -367,6 +438,12 @@ export class OrderService {
     });
   }
 
+  /**
+   * Marks multiple orders as paid in bulk (only accessible by the group owner)
+   * @param body Contains array of order IDs to mark as paid
+   * @param user The authenticated user making the request
+   * @returns True if successful
+   */
   async markPaidAll(body: MarkPaidAllDTO, user: RequestWithUser['user']) {
     for await (const id of body.ids) {
       await this.markPaid(id, {}, user);
@@ -374,6 +451,12 @@ export class OrderService {
     return true;
   }
 
+  /**
+   * Confirms multiple orders as paid in bulk (only accessible by the order creator)
+   * @param body Contains array of order IDs to confirm
+   * @param user The authenticated user making the request
+   * @returns The transaction result
+   */
   confirmPaidAll(body: ConfirmPaidAllDTO, user: RequestWithUser['user']) {
     return this.prismaService.client.$transaction(async (tx) => {
       for await (const id of body.ids) {

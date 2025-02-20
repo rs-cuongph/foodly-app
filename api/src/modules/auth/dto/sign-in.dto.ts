@@ -19,5 +19,5 @@ export class SignInDTO {
     maxLength: 255,
     allowEmpty: false,
   })
-  organization_id: string;
+  organization_code: string;
 }

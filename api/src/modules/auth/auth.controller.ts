@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +15,10 @@ import { SignUpDTO } from './dto/sign-up.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { Public } from '@decorators/auth.decorator';
+import {
+  UpdateUserInfoDTO,
+  UpdateUserPasswordDTO,
+} from './dto/update-user-info.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -39,5 +44,21 @@ export class AuthController {
   myInfo(@Req() request: RequestWithUser) {
     const { user } = request;
     return this.authService.getUserInfo(user);
+  }
+
+  @Put('user-info')
+  updateUserInfo(
+    @Body() body: UpdateUserInfoDTO,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.authService.updateUserInfo(body, request.user);
+  }
+
+  @Put('change-password')
+  updateUserPassword(
+    @Body() body: UpdateUserPasswordDTO,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.authService.updateUserPassword(body, request.user);
   }
 }

@@ -29,11 +29,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         this.i18n.t('message.wrong_credential_format'),
       );
     } else {
-      const { organization_id, email, password } = req.body;
+      const { organization_code, email, password } = req.body;
       const user = await this.authService.getAuthenticatedUser(
         email,
         password,
-        organization_id,
+        organization_code,
       );
 
       return user;

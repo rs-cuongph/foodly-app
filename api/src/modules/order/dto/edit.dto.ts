@@ -1,6 +1,9 @@
 import { ArrayField } from '@decorators/validation/array.decorator';
 import { NumberField } from '@decorators/validation/number.decorator';
-import { StringField } from '@decorators/validation/string.decorator';
+import {
+  StringField,
+  StringFieldOptional,
+} from '@decorators/validation/string.decorator';
 
 class Menu {
   @StringField({
@@ -27,6 +30,12 @@ export class EditOrderDTO {
     minLength: 1,
   })
   menu: Menu[];
+
+  @StringFieldOptional({
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  invite_code?: string;
 }
 
 export class MarkPaidDTO {}

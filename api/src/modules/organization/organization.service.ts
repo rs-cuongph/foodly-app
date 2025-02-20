@@ -19,4 +19,15 @@ export class OrganizationService {
       data,
     };
   }
+
+  async get(organization_code: string) {
+    const data = await this.prismaService.client.organization.findFirst({
+      where: {
+        code: organization_code,
+      },
+    });
+    return {
+      data,
+    };
+  }
 }

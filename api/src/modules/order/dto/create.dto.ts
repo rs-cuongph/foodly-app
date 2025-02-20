@@ -1,7 +1,10 @@
 import { ArrayField } from '@decorators/validation/array.decorator';
 import { EnumField } from '@decorators/validation/enum.decorator';
 import { NumberField } from '@decorators/validation/number.decorator';
-import { StringField } from '@decorators/validation/string.decorator';
+import {
+  StringField,
+  StringFieldOptional,
+} from '@decorators/validation/string.decorator';
 import { PAYMENT_METHOD } from 'src/enums/payment.enum';
 
 class Menu {
@@ -38,4 +41,10 @@ export class CreateOrderDTO {
     allowEmpty: true,
   })
   note?: string;
+
+  @StringFieldOptional({
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  invite_code?: string;
 }

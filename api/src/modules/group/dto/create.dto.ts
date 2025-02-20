@@ -18,6 +18,7 @@ export class CreateGroupDTO {
   @StringFieldOptional({
     isDate: true,
     dateOptions: {
+      minDate: new Date(),
       maxDate: 'public_time_end',
     },
   })

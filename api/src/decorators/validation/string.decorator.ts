@@ -12,6 +12,7 @@ import {
   Min,
   MinLength,
   ValidateBy,
+  ValidateIf,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import {
@@ -155,18 +156,33 @@ const MinDateString = (
         validate(value: any, args: ValidationArguments) {
           const targetKey = args.constraints[0];
           const payload = args.object;
+
           if (typeof property === 'string') {
             const targetValue = payload[targetKey];
+            if (targetValue === null || targetValue === undefined) {
+              return true;
+            }
             return dayjs(value).isSameOrAfter(dayjs(targetValue));
           }
+
+          if (typeof property === 'object') {
+            return dayjs(value).isSameOrAfter(dayjs(property));
+          }
+
           return false;
         },
         defaultMessage: (args: ValidationArguments) => {
           const targetKey = args.constraints[0];
           const payload = args.object;
+          let min = payload[targetKey];
+
+          if (typeof property === 'object') {
+            min = dayjs(property).format('YYYY-MM-DDTHH:mm:ssZ');
+          }
+
           return i18nValidationMessage('validation.MinDate', {
             property: args.property,
-            min: payload[targetKey],
+            min,
           })(args);
         },
       },
@@ -185,23 +201,31 @@ const MaxDateString = (
       constraints: [property],
       validator: {
         validate(value: string, args: ValidationArguments) {
-          console.log(args);
           const targetKey = args.constraints[0];
           const payload = args.object;
 
           if (typeof property === 'string') {
             const targetValue = payload[targetKey];
+            if (targetValue === null || targetValue === undefined) {
+              return true;
+            }
             return dayjs(value).isSameOrBefore(dayjs(targetValue));
           }
-          args.constraints[0] = 'xxxx';
+          if (typeof property === 'object') {
+            return dayjs(value).isSameOrBefore(dayjs(property));
+          }
           return false;
         },
         defaultMessage: (args: ValidationArguments) => {
           const targetKey = args.constraints[0];
           const payload = args.object;
+          let max = payload[targetKey];
+          if (typeof property === 'object') {
+            max = dayjs(property).format('YYYY-MM-DDTHH:mm:ssZ');
+          }
           return i18nValidationMessage('validation.MaxDate', {
             property: args.property,
-            max: payload[targetKey],
+            max,
           })(args);
         },
       },
@@ -430,5 +454,8 @@ export function StringFieldOptional(
   return applyDecorators(
     IsOptional(),
     StringField({ allowEmpty: true, ...options }, validationOptions),
+    ValidateIf((object, value) => {
+      return value !== undefined && value !== null && value !== '';
+    }),
   );
 }

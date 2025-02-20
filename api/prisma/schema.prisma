@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins", "nativeDistinct", "fullTextSearch"]
+  previewFeatures = ["relationJoins", "nativeDistinct", "fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -58,7 +58,9 @@ model Group {
   price             Decimal     @default(0) @db.Decimal(15, 2)
   share_scope       ShareScope? @default(PUBLIC)
   type              GroupType   @default(MANUAL)
+  status            GroupStatus @default(INIT)
   menu_items        MenuItem[]
+  invite_code       String?     @unique @db.VarChar(100)
   created_at        DateTime    @default(now())
   updated_at        DateTime    @updatedAt
   deleted_at        DateTime?
@@ -168,4 +170,12 @@ enum PaymentHistoryStatus {
 enum GroupType {
   MANUAL
   AUTO
+}
+
+enum GroupStatus {
+  INIT
+  LOCKED
+  PROCESSING
+  COMPLETED
+  CANCELED
 }

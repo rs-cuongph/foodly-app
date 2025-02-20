@@ -2,7 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { Public } from '@decorators/auth.decorator';
 
@@ -14,5 +14,11 @@ export class OrganizationController {
   @Get('/')
   index() {
     return this.organizationService.index();
+  }
+
+  @Public()
+  @Get('/:organization_code')
+  get(@Param('organization_code') organization_code: string) {
+    return this.organizationService.get(organization_code);
   }
 }

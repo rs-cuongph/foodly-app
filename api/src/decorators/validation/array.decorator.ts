@@ -9,6 +9,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
@@ -98,5 +99,12 @@ export function ArrayField(
 export function ArrayFieldOptional(
   options?: IArrayFieldOptions,
 ): PropertyDecorator {
-  return applyDecorators(IsOptional(), ArrayField({ ...options }));
+  return applyDecorators(
+    IsOptional(),
+    ValidateIf(
+      (object, value) =>
+        value !== null && value !== undefined && value.length > 0,
+    ),
+    ArrayField({ ...options }),
+  );
 }

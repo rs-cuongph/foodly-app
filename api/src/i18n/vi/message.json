@@ -1,3 +1,11 @@
 {
-  "wrong_account": "Tài khoản hoặc mật khẩu không đúng."
+  "wrong_account": "Tài khoản hoặc mật khẩu không đúng.",
+  "wrong_current_password": "Mật khẩu bạn nhập không đúng.",
+  "locked": "Tài khoản của bạn đã bị khóa bởi quản trị viên, vui lòng liên hệ quản trị viên để mở khóa.",
+  "wrong_menu_item": "Menu item không đúng.",
+  "max_order": "Bạn có một đơn hàng chưa thanh toán, vui lòng thanh toán!",
+  "wrong_credential_format": "Mật khẩu không đúng định dạng.",
+  "invite_code_incorrect": "Mã mời không đúng.",
+  "group_locked": "Nhóm đã bị khóa.",
+  "wrong_password": "Mật khẩu không đúng."
 }
