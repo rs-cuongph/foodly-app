@@ -26,10 +26,10 @@ import {
   MarkPaidDTO,
 } from './dto/edit.dto';
 import * as dayjs from 'dayjs';
-import { camelToSnake } from 'src/shared/convert';
+import { camelToSnake } from 'src/utils/convert';
 import { SearchOrderDTO } from './dto/search.dto';
 import { I18nService } from 'nestjs-i18n';
-import { ORDER_STATUS_ENUM } from 'src/enums/status.enum';
+import { ORDER_STATUS_ENUM } from '@enums/status.enum';
 
 @Injectable()
 export class OrderService {
@@ -120,7 +120,8 @@ export class OrderService {
     if (!menu.length)
       throw new BadRequestException(this.i18n.t('message.wrong_menu_item'));
 
-    await this.checkCanCreateOrder(user);
+    const isGroupOwner = group.created_by_id === user.id;
+    if (!isGroupOwner) await this.checkCanCreateOrder(user);
 
     return this.prismaService.client.$transaction(async (tx) => {
       let price = 0;
@@ -136,14 +137,14 @@ export class OrderService {
           body.quanlity;
       }
 
-      const order = await tx.order.create({
+      const result = await tx.order.create({
         data: {
           menu,
           group_id: body.group_id,
           created_by_id: user.id,
           updated_by_id: user.id,
           status: OrderStatus.INIT,
-          payment_method: body.payment_method,
+          payment_method: body.payment_setting[0].payment_method,
           quantity: body.quanlity,
           price,
           amount,
@@ -154,7 +155,7 @@ export class OrderService {
                 transaction: {
                   create: {
                     metadata: {
-                      payment_method: body.payment_method,
+                      payment_setting: body.payment_setting[0],
                       quanlity: body.quanlity,
                       amount,
                     },
@@ -174,7 +175,25 @@ export class OrderService {
         },
       });
 
-      return order;
+      const order = tx.order.findFirstOrThrow({
+        where: {
+          id: result.id,
+        },
+        include: {
+          transactions: {
+            select: {
+              id: true,
+              transaction: true,
+            },
+          },
+        },
+      });
+
+      return {
+        ...order,
+        qrcode_text: order.transactions[0].id,
+        qrcode_metadata: order.transactions[0].transaction.metadata,
+      };
     });
   }
 
@@ -192,6 +211,7 @@ export class OrderService {
             gte: now,
           },
         },
+        deleted_at: null,
       },
       include: {
         group: true,
@@ -257,7 +277,11 @@ export class OrderService {
       },
     });
 
-    return order;
+    return {
+      ...order,
+      qrcode_text: order.transactions[0].id,
+      qrcode_metadata: order.transactions[0].transaction.metadata,
+    };
   }
 
   async delete(id: string, user: RequestWithUser['user']) {
@@ -276,6 +300,7 @@ export class OrderService {
               gte: now,
             },
           },
+          deleted_at: null,
         },
         include: {
           transactions: true,

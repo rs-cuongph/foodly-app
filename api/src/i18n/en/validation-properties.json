@@ -15,5 +15,8 @@
   "public_start_time": "public start time",
   "public_end_time": "public end time",
   "ids": "ids",
-  "organization_code": "organization code"
+  "organization_code": "organization code",
+  "new_password": "new password",
+  "confirm_new_password": "confirm new password",
+  "token": "token"
 }

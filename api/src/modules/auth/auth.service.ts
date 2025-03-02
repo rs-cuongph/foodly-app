@@ -13,7 +13,7 @@ import {
 } from '@constants/jwt.constraints';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { TokenType } from 'src/enums/token.enum';
+import { TokenType } from '@enums/token.enum';
 import { RequestWithUser } from 'src/types/requests.type';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
@@ -25,6 +25,9 @@ import {
   UpdateUserInfoDTO,
   UpdateUserPasswordDTO,
 } from './dto/update-user-info.dto';
+import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
+import { generateToken } from '@utils/helper';
+import { MailService } from '@shared/mail/mail.service';
 @Injectable()
 export class AuthService {
   private SALT_ROUND = 11;
@@ -34,6 +37,7 @@ export class AuthService {
     private configService: ConfigService,
     private readonly jwtService: JwtService,
     private i18n: I18nService,
+    private mailService: MailService,
   ) {}
 
   async findUser(condition: Prisma.UserWhereInput) {
@@ -219,5 +223,92 @@ export class AuthService {
       where: { id: user.id },
       data: { password: hashedNewPassword },
     });
+  }
+
+  async resetPassword(body: ResetPasswordDTO) {
+    const { email, organization_code } = body;
+    const user = await this.findUser({
+      email,
+      organization: {
+        code: organization_code,
+      },
+    });
+    if (!user) {
+      throw new BadRequestException(this.i18n.t('message.user_not_found'));
+    }
+
+    if (user.block_to) {
+      throw new BadRequestException(this.i18n.t('message.locked'));
+    }
+
+    const resetToken = generateToken();
+    const resetTokenExpiresAt = dayjs().add(1, 'day').toDate();
+
+    await this.prismaService.client.user.update({
+      where: { id: user.id },
+      data: {
+        reset_password_token: resetToken,
+        reset_password_token_expires_at: resetTokenExpiresAt,
+      },
+    });
+
+    await this.mailService.sendPasswordResetMail(user.email, resetToken);
+  }
+
+  async verifyResetPasswordToken(token: string) {
+    const user = await this.prismaService.client.user.findFirst({
+      where: { reset_password_token: token },
+    });
+    if (!user) {
+      throw new BadRequestException(this.i18n.t('message.invalid_token'));
+    }
+
+    if (
+      user.reset_password_token_expires_at &&
+      dayjs().isAfter(user.reset_password_token_expires_at)
+    ) {
+      throw new BadRequestException(this.i18n.t('message.token_expired'));
+    }
+
+    return {
+      id: user.id,
+    };
+  }
+
+  async setPassword(body: SetPasswordDTO) {
+    const { token, new_password } = body;
+    const user = await this.prismaService.client.user.findFirst({
+      where: { reset_password_token: token },
+    });
+
+    if (!user) {
+      throw new BadRequestException(this.i18n.t('message.invalid_token'));
+    }
+
+    if (user.block_to) {
+      throw new BadRequestException(this.i18n.t('message.locked'));
+    }
+
+    if (
+      user.reset_password_token_expires_at &&
+      dayjs().isAfter(user.reset_password_token_expires_at)
+    ) {
+      throw new BadRequestException(this.i18n.t('message.token_expired'));
+    }
+
+    const hashedPassword = await bcrypt.hash(new_password, this.SALT_ROUND);
+
+    await this.prismaService.client.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        reset_password_token: null,
+        reset_password_token_expires_at: null,
+      },
+    });
+
+    return {
+      id: user.id,
+    };
   }
 }

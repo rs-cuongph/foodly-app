@@ -54,7 +54,6 @@ interface IStringFieldOptions {
   maxLength?: number;
   email?: boolean;
   url?: boolean;
-  isPassword?: boolean;
   isPhone?: boolean;
   noEmoji?: boolean;
   allowEmpty?: boolean;

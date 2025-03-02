@@ -7,5 +7,9 @@
   "wrong_credential_format": "Invalid credentials format",
   "invite_code_incorrect": "Invite code is incorrect",
   "group_locked": "Group is locked",
-  "wrong_password": "Password is incorrect"
+  "wrong_password": "Password is incorrect",
+  "order_not_found": "Order not found",
+  "order_not_in_init_status": "Order is not in init status",
+  "invalid_token": "Invalid token",
+  "token_expired": "Token expired"
 }

@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import {
   UpdateUserInfoDTO,
   UpdateUserPasswordDTO,
 } from './dto/update-user-info.dto';
+import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -60,5 +62,23 @@ export class AuthController {
     @Req() request: RequestWithUser,
   ) {
     return this.authService.updateUserPassword(body, request.user);
+  }
+
+  @Public()
+  @Put('reset-password')
+  resetPassword(@Body() body: ResetPasswordDTO) {
+    return this.authService.resetPassword(body);
+  }
+
+  @Public()
+  @Get('verify-reset-password-token')
+  verifyResetPasswordToken(@Query('token') token: string) {
+    return this.authService.verifyResetPasswordToken(token);
+  }
+
+  @Public()
+  @Put('set-password')
+  setPassword(@Body() body: SetPasswordDTO) {
+    return this.authService.setPassword(body);
   }
 }

@@ -11,7 +11,7 @@ import {
   I18nValidationExceptionFilter,
   i18nValidationErrorFactory,
 } from 'nestjs-i18n';
-import { formatErrors } from './shared/format-error-http';
+import { formatErrors } from './utils/format-error-http';
 import { configSwagger } from '@configs/api-docs.config';
 import { useContainer } from 'class-validator';
 import { PrismaClientExceptionFilter } from '@filters/prisma-client-exception.filter';

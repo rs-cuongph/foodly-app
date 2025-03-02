@@ -5,8 +5,8 @@ import {
   StringFieldOptional,
 } from '@decorators/validation/string.decorator';
 import { Transform } from 'class-transformer';
-import { PAYMENT_METHOD } from 'src/enums/payment.enum';
-import { ORDER_STATUS_ENUM } from 'src/enums/status.enum';
+import { PAYMENT_METHOD } from '@enums/payment.enum';
+import { ORDER_STATUS_ENUM } from '@enums/status.enum';
 
 export class SearchOrderDTO {
   @StringField({

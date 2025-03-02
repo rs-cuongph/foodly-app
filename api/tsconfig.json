@@ -21,11 +21,13 @@
       "@configs/*": ["src/configs/*"],
       "@filters/*": ["src/filters/*"],
       "@constants/*": ["src/constants/*"],
-      "@enum/*": ["src/enum/*"],
+      "@enums/*": ["src/enums/*"],
       "@modules/*": ["src/modules/*"],
       "@guards/*": ["src/guards/*"],
       "@decorators/*": ["src/decorators/*"],
-      "@commands/*": ["src/commands/*"]
+      "@commands/*": ["src/commands/*"],
+      "@shared/*": ["src/shared/*"],
+      "@utils/*": ["src/utils/*"]
     }
   }
 }

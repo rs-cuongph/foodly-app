@@ -5,7 +5,7 @@ import {
   StringField,
   StringFieldOptional,
 } from '@decorators/validation/string.decorator';
-import { PAYMENT_METHOD } from 'src/enums/payment.enum';
+import { PAYMENT_METHOD } from '@enums/payment.enum';
 
 class Menu {
   @StringField({
@@ -13,6 +13,25 @@ class Menu {
     allowEmpty: false,
   })
   id: string;
+}
+
+class PaymentSettingDTO {
+  @EnumField(() => PAYMENT_METHOD)
+  payment_method: PAYMENT_METHOD;
+
+  @StringFieldOptional({
+    property: 'account_name',
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  account_name?: string;
+
+  @StringFieldOptional({
+    property: 'account_number',
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  account_number?: string;
 }
 export class CreateOrderDTO {
   @StringField({
@@ -26,8 +45,11 @@ export class CreateOrderDTO {
   })
   quanlity: number;
 
-  @EnumField(() => PAYMENT_METHOD)
-  payment_method: PAYMENT_METHOD;
+  @ArrayField({
+    type: () => PaymentSettingDTO,
+    isValidateNested: true,
+  })
+  payment_setting: PaymentSettingDTO[];
 
   @ArrayField({
     type: () => Menu,

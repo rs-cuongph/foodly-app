@@ -4,7 +4,7 @@ import {
   StringField,
   StringFieldOptional,
 } from '@decorators/validation/string.decorator';
-import { PAYMENT_METHOD } from 'src/enums/payment.enum';
+import { PAYMENT_METHOD } from '@enums/payment.enum';
 
 export class UpdateUserInfoDTO {
   @ArrayFieldOptional({

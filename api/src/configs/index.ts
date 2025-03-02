@@ -30,7 +30,22 @@ const configs = (): Config => {
       s3BucketName: process.env.AWS_S3_BUCKET_NAME,
     },
     mail: {
-      transportUrl: process.env.TRANSPORT_URL,
+      provider: process.env.MAIL_PROVIDER,
+      mailFrom: process.env.MAIL_FROM,
+      maildev: {
+        host: process.env.MAILDEV_HOST,
+        port: parseInt(process.env.MAILDEV_PORT) || 1025,
+        username: process.env.MAILDEV_USERNAME || 'maildev',
+        password: process.env.MAILDEV_PASSWORD || 'maildev',
+      },
+      gmail: {
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT) || 587,
+        secure: Boolean(process.env.SMTP_SECURE) || false,
+        username: process.env.SMTP_USERNAME,
+        password: process.env.SMTP_PASSWORD,
+      },
+      frontendUrl: process.env.FRONTEND_URL,
     },
     prisma: {
       logLevel: process.env.PRISMA_LOG_LEVEL || 'log',

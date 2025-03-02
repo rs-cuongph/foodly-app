@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateGroupDTO } from './dto/create.dto';
@@ -15,12 +16,14 @@ import { RequestWithUser } from 'src/types/requests.type';
 import { EditGroupDTO } from './dto/edit.dto';
 import { SearchGroupDTO } from './dto/search.dto';
 import { Group, GroupStatus, Prisma, ShareScope } from '@prisma/client';
-import { camelToSnake } from 'src/shared/convert';
+import { camelToSnake } from 'src/utils/convert';
 import { QueryShowGroupDTO } from './dto/show.dto';
 import { I18nService } from 'nestjs-i18n';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class GroupService {
+  private logger = new Logger(GroupService.name);
   constructor(
     @Inject('PrismaService')
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
@@ -61,14 +64,14 @@ export class GroupService {
       let nextID = '0000000001';
       const lastGroup = await this.prismaService.client.group.findFirst({
         orderBy: {
-          id: 'desc',
+          code: 'desc',
         },
       });
       if (lastGroup && lastGroup.code) {
         nextID = _.padStart((Number(lastGroup.code) + 1).toString(), 10, '0');
       }
 
-      let inviteCode = '';
+      let inviteCode = null;
       if (body.share_scope === ShareScope.PRIVATE) {
         inviteCode = this.generateInviteCode();
       }
@@ -291,4 +294,38 @@ export class GroupService {
   //     data: { status: GroupStatus.INIT },
   //   });
   // }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  /**
+   * Cron job that runs every minute to automatically lock groups that have passed their end time
+   * Updates status to LOCKED for any groups where:
+   * - Current time is after public_end_time
+   * - Status is not already LOCKED
+   */
+  async batchUpdateStatusGroup() {
+    const now = dayjs().toDate();
+
+    this.logger.log('Running batch update to lock expired groups');
+
+    try {
+      const result = await this.prismaService.client.group.updateMany({
+        where: {
+          public_end_time: {
+            lte: now,
+          },
+          status: {
+            not: GroupStatus.LOCKED,
+          },
+        },
+        data: {
+          status: GroupStatus.LOCKED,
+        },
+      });
+
+      this.logger.log(`Successfully locked ${result.count} expired groups`);
+    } catch (error) {
+      this.logger.error('Error locking expired groups:', error);
+      throw error;
+    }
+  }
 }

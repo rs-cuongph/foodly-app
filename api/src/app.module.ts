@@ -54,6 +54,7 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
           path: join(__dirname, '..', 'i18n'),
           watch: true,
         },
+        viewEngine: 'hbs',
       }),
       resolvers: [
         new QueryResolver(['lang', 'locale', 'l']),

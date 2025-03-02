@@ -10,6 +10,6 @@ export class WebhookService {
   constructor(private readonly transactionService: TransactionService) {}
 
   public async confirmTransaction(body: WebhookResponseDataType) {
-    return this.transactionService.confirmTransaction(body);
+    // return this.transactionService.confirmTransaction(body);
   }
 }

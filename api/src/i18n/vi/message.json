@@ -7,5 +7,9 @@
   "wrong_credential_format": "Mật khẩu không đúng định dạng.",
   "invite_code_incorrect": "Mã mời không đúng.",
   "group_locked": "Nhóm đã bị khóa.",
-  "wrong_password": "Mật khẩu không đúng."
+  "wrong_password": "Mật khẩu không đúng.",
+  "order_not_found": "Đơn hàng không tồn tại.",
+  "order_not_in_init_status": "Đơn hàng không ở trạng thái khởi tạo.",
+  "invalid_token": "Mã không hợp lệ.",
+  "token_expired": "Mã đã hết hạn sử dụng."
 }

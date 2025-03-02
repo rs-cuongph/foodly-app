@@ -37,7 +37,22 @@ export interface JwtConfig {
 }
 
 export interface MailConfig {
-  transportUrl: string;
+  provider: string;
+  mailFrom: string;
+  maildev: {
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+  };
+  gmail: {
+    host: string;
+    port: number;
+    secure: boolean;
+    username: string;
+    password: string;
+  };
+  frontendUrl: string;
 }
 
 export interface PrismaConfig {
