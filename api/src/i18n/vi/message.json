@@ -11,5 +11,7 @@
   "order_not_found": "Đơn hàng không tồn tại.",
   "order_not_in_init_status": "Đơn hàng không ở trạng thái khởi tạo.",
   "invalid_token": "Mã không hợp lệ.",
-  "token_expired": "Mã đã hết hạn sử dụng."
+  "token_expired": "Mã đã hết hạn sử dụng.",
+  "transaction_not_in_init_status": "Giao dịch không ở trạng thái khởi tạo.",
+  "order_completed": "Đơn hàng đã hoàn tất."
 }

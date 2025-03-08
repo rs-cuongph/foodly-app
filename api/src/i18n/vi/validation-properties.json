@@ -18,5 +18,6 @@
   "organization_code": "mã tổ chức",
   "new_password": "mật khẩu mới",
   "confirm_new_password": "mật khẩu mới xác nhận",
-  "token": "token"
+  "token": "token",
+  "qr_text": "QR Code"
 }

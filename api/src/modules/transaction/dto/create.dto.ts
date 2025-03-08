@@ -43,3 +43,12 @@ export class CreateTransactionDTO {
   // })
   // callback_url: string;
 }
+
+export class ScanTransactionDTO {
+  @StringField({
+    property: 'qr_text',
+    maxLength: 255,
+    allowEmpty: false,
+  })
+  qr_text: string;
+}

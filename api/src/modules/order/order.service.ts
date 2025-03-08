@@ -175,7 +175,7 @@ export class OrderService {
         },
       });
 
-      const order = tx.order.findFirstOrThrow({
+      const order = await tx.order.findFirstOrThrow({
         where: {
           id: result.id,
         },
@@ -191,7 +191,7 @@ export class OrderService {
 
       return {
         ...order,
-        qrcode_text: order.transactions[0].id,
+        qrcode_text: order.transactions[0].id.replace(/-/g, ''),
         qrcode_metadata: order.transactions[0].transaction.metadata,
       };
     });
@@ -325,8 +325,22 @@ export class OrderService {
   }
 
   async search(query: SearchOrderDTO, user: RequestWithUser['user']) {
-    const { payment_method, sort, page, size, is_mine, statuses } = query;
+    const {
+      payment_method,
+      sort,
+      page,
+      size,
+      is_mine,
+      statuses,
+      with_group,
+      group_id,
+      keyword,
+    } = query;
     const whereClause: Prisma.OrderWhereInput = {};
+    const include = {
+      group: Boolean(with_group),
+    };
+
     let orderByClause:
       | Prisma.OrderOrderByWithRelationInput
       | Prisma.OrderOrderByWithRelationInput[] = {
@@ -343,10 +357,43 @@ export class OrderService {
       };
     }
 
+    if (group_id) {
+      whereClause.group_id = group_id;
+    }
+
     if (is_mine) {
       whereClause.created_by_id = user.id;
     }
 
+    if (keyword) {
+      whereClause.OR = [
+        {
+          note: {
+            contains: keyword,
+            mode: 'insensitive',
+          },
+        },
+        {
+          group: {
+            OR: [
+              {
+                name: {
+                  contains: keyword,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                code: {
+                  contains: keyword,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          },
+        },
+      ];
+    }
+    console.log(JSON.stringify(whereClause, null, 2));
     if (sort) {
       const [key, order] = sort.split(':');
       orderByClause = {
@@ -358,6 +405,7 @@ export class OrderService {
       .paginate({
         where: whereClause,
         orderBy: orderByClause,
+        include,
       })
       .withPages({
         limit: Number(size),

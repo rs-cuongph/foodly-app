@@ -18,5 +18,6 @@
   "organization_code": "organization code",
   "new_password": "new password",
   "confirm_new_password": "confirm new password",
-  "token": "token"
+  "token": "token",
+  "qr_text": "QR Code"
 }

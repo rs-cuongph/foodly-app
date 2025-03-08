@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateTransactionDTO } from './dto/create.dto';
+import { CreateTransactionDTO, ScanTransactionDTO } from './dto/create.dto';
 import * as dayjs from 'dayjs';
 import { PayOSService } from 'src/services/payos.service';
 import { ORDER_STATUS_ENUM, TRANSACTION_ENUM } from '@enums/status.enum';
@@ -145,41 +145,110 @@ export class TransactionService {
   //   });
   // }
 
-  async createTransaction(body: CreateTransactionDTO) {
-    const { order_id, payment_setting } = body;
-    const order = await this.prismaService.client.order.findUnique({
-      where: {
-        id: order_id,
-      },
-    });
+  // async createTransaction(body: CreateTransactionDTO) {
+  //   const { order_id, payment_setting } = body;
+  //   const order = await this.prismaService.client.order.findUnique({
+  //     where: {
+  //       id: order_id,
+  //     },
+  //   });
 
-    if (!order) {
-      throw new BadRequestException(this.i18n.t('error.order_not_found'));
+  //   if (!order) {
+  //     throw new BadRequestException(this.i18n.t('error.order_not_found'));
+  //   }
+
+  //   if (order.status !== ORDER_STATUS_ENUM.INIT) {
+  //     throw new BadRequestException(
+  //       this.i18n.t('error.order_not_in_init_status'),
+  //     );
+  //   }
+
+  //   return this.prismaService.client.$transaction(async (tx) => {
+  //     const transaction = await tx.transaction.create({
+  //       data: {
+  //         metadata: {
+  //           order_id,
+  //           payment_setting,
+  //         },
+  //       },
+  //     });
+  //   });
+
+  //   // return this.prismaService.client.transaction.create({
+  //   // return this.prismaService.client.transaction.create({
+  //   //   data: {
+  //   //     order_id,
+  //   //   },
+  //   // });
+  //   return {
+  //     success: true,
+  //   };
+  // }
+
+  async scan(body: ScanTransactionDTO) {
+    const { qr_text } = body;
+
+    const transactionId = qr_text.replace(
+      /(.{8})(.{4})(.{4})(.{4})(.{12})/,
+      '$1-$2-$3-$4-$5',
+    );
+
+    const orderOnTransaction =
+      await this.prismaService.client.orderOnTransaction.findFirst({
+        where: {
+          id: transactionId,
+        },
+        include: {
+          order: true,
+          transaction: true,
+        },
+      });
+
+    if (!orderOnTransaction) {
+      throw new BadRequestException(this.i18n.t('error.transaction_not_found'));
     }
 
-    if (order.status !== ORDER_STATUS_ENUM.INIT) {
+    const order = orderOnTransaction.order;
+    const transaction = orderOnTransaction.transaction;
+
+    if (
+      ![TRANSACTION_ENUM.INIT, TRANSACTION_ENUM.PROCESSING].includes(
+        transaction.status as TRANSACTION_ENUM,
+      )
+    ) {
+      throw new BadRequestException(
+        this.i18n.t('error.transaction_not_in_init_status'),
+      );
+    }
+
+    if (
+      ![ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING].includes(
+        order.status as ORDER_STATUS_ENUM,
+      )
+    ) {
       throw new BadRequestException(
         this.i18n.t('error.order_not_in_init_status'),
       );
     }
 
-    return this.prismaService.client.$transaction(async (tx) => {
-      const transaction = await tx.transaction.create({
-        data: {
-          metadata: {
-            order_id,
-            payment_setting,
-          },
-        },
-      });
+    await this.prismaService.client.transaction.update({
+      where: {
+        id: transaction.id,
+      },
+      data: {
+        status: TRANSACTION_ENUM.COMPLETED,
+      },
     });
 
-    // return this.prismaService.client.transaction.create({
-    // return this.prismaService.client.transaction.create({
-    //   data: {
-    //     order_id,
-    //   },
-    // });
+    await this.prismaService.client.order.update({
+      where: {
+        id: order.id,
+      },
+      data: {
+        status: ORDER_STATUS_ENUM.COMPLETED,
+      },
+    });
+
     return {
       success: true,
     };

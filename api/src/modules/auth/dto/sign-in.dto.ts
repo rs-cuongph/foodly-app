@@ -11,7 +11,6 @@ export class SignInDTO {
   @StringField({
     maxLength: 255,
     allowEmpty: false,
-    password: true,
   })
   password: string;
 

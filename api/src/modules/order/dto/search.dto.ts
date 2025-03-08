@@ -54,4 +54,21 @@ export class SearchOrderDTO {
     },
   })
   is_mine?: number;
+
+  @StringFieldOptional({
+    isStringNumber: true,
+    transformTo: true,
+    transformOptions: {
+      toInt: true,
+    },
+  })
+  with_group?: number;
+
+  @StringFieldOptional()
+  group_id?: string;
+
+  @StringFieldOptional({
+    maxLength: 255,
+  })
+  keyword?: string;
 }

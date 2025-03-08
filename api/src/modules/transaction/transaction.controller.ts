@@ -2,9 +2,9 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
-import { CreateTransactionDTO } from './dto/create.dto';
+import { ScanTransactionDTO } from './dto/create.dto';
 
 @Controller('transaction')
 export class TransactionController {
@@ -14,8 +14,14 @@ export class TransactionController {
   // createPaymentLink(@Param('id') id: string) {
   //   return this.transactionService.createPaymentLink(id);
   // }
-  @Post('/create')
-  createTransaction(@Body() body: CreateTransactionDTO) {
-    return this.transactionService.createTransaction(body);
+  // @Post('/create')
+  // createTransaction(@Body() body: CreateTransactionDTO) {
+  //   return this.transactionService.createTransaction(body);
+  // }
+
+  // TODO: for testing
+  @Patch('/scan')
+  scan(@Body() body: ScanTransactionDTO) {
+    return this.transactionService.scan(body);
   }
 }
