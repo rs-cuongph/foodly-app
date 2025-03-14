@@ -252,7 +252,11 @@ export class AuthService {
       },
     });
 
-    await this.mailService.sendPasswordResetMail(user.email, resetToken);
+    await this.mailService.sendPasswordResetMail(
+      user.email,
+      resetToken,
+      body.redirect_url,
+    );
   }
 
   async verifyResetPasswordToken(token: string) {

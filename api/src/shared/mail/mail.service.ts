@@ -27,9 +27,15 @@ export class MailService {
     }
   }
 
-  async sendPasswordResetMail(to: string, resetToken: string) {
+  async sendPasswordResetMail(
+    to: string,
+    resetToken: string,
+    redirectUrl: string,
+  ) {
     const subject = 'Đặt lại mật khẩu';
-    const resetLink = `${this.configService.get('mail.frontendUrl')}/reset-password?token=${resetToken}`;
+    const resetLink = redirectUrl
+      ? `${redirectUrl}?token=${resetToken}`
+      : `${this.configService.get('mail.frontendUrl')}/reset-password?token=${resetToken}`;
     await this.sendMail({
       to,
       subject,

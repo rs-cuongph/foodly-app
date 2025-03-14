@@ -1,4 +1,7 @@
-import { StringField } from '@decorators/validation/string.decorator';
+import {
+  StringField,
+  StringFieldOptional,
+} from '@decorators/validation/string.decorator';
 
 export class ResetPasswordDTO {
   @StringField({
@@ -12,6 +15,13 @@ export class ResetPasswordDTO {
     maxLength: 255,
   })
   organization_code: string;
+
+  @StringFieldOptional({
+    allowEmpty: false,
+    maxLength: 255,
+    url: true,
+  })
+  redirect_url: string;
 }
 
 export class SetPasswordDTO {
