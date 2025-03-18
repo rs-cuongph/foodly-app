@@ -59,14 +59,18 @@ export class AuthService {
         email,
       });
       if (existedUser) {
-        throw new ConflictException('Email already existed!');
+        throw new ConflictException(
+          this.i18n.t('message.email_already_existed'),
+        );
       }
 
       const existedOrganization = await this.findOrganization({
         code: organization_code,
       });
       if (!existedOrganization) {
-        throw new BadRequestException('Organization not found!');
+        throw new BadRequestException(
+          this.i18n.t('message.organization_not_found'),
+        );
       }
 
       const hashedPassword = await bcrypt.hash(password, this.SALT_ROUND);

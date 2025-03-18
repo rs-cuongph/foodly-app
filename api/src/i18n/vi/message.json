@@ -13,5 +13,8 @@
   "invalid_token": "Mã không hợp lệ.",
   "token_expired": "Mã đã hết hạn sử dụng.",
   "transaction_not_in_init_status": "Giao dịch không ở trạng thái khởi tạo.",
-  "order_completed": "Đơn hàng đã hoàn tất."
+  "order_completed": "Đơn hàng đã hoàn tất.",
+  "email_already_existed": "Email đã tồn tại.",
+  "organization_not_found": "Tổ chức không tồn tại.",
+  "user_not_found": "Người dùng không tồn tại."
 }

@@ -13,5 +13,8 @@
   "invalid_token": "Invalid token",
   "token_expired": "Token expired",
   "transaction_not_in_init_status": "Transaction is not in init status",
-  "order_completed": "Order is completed"
+  "order_completed": "Order is completed",
+  "email_already_existed": "Email already existed",
+  "organization_not_found": "Organization not found",
+  "user_not_found": "User not found"
 }

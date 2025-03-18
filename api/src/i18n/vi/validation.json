@@ -32,5 +32,10 @@
   "IsDate": "$t(validation-properties.{property}) là ngày không hợp lệ",
   "IsFutureDate": "$t(validation-properties.{property}) phải là ngày trong tương lai",
   "IsPastDate": "$t(validation-properties.{property}) phải là ngày trong quá khứ",
-  "SmallerDate": "$t(validation-properties.{property}) phải nhỏ hơn {constraints.0}"
+  "SmallerDate": "$t(validation-properties.{property}) phải nhỏ hơn {constraints.0}",
+  "IsUnique": "$t(validation-properties.{property}) đã tồn tại",
+  "NoEmoji": "$t(validation-properties.{property}) không hỗ trợ emoji",
+  "OnlyAlphaNumeric": "$t(validation-properties.{property}) chỉ chứa các chữ cái và số",
+  "IsPhoneNumber": "$t(validation-properties.{property}) không phải là số điện thoại hợp lệ",
+  "IsIdentifyNumber": "$t(validation-properties.{property}) không phải là số CMND hợp lệ"
 }
