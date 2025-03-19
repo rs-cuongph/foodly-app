@@ -20,6 +20,9 @@ export class ResetPasswordDTO {
     allowEmpty: false,
     maxLength: 255,
     url: true,
+    urlOptions: {
+      require_tld: false,
+    },
   })
   redirect_url: string;
 }
