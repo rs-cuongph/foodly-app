@@ -180,7 +180,7 @@ export class GroupService {
   async show(
     id: string,
     query: QueryShowGroupDTO,
-    user: RequestWithUser['user'],
+    user: RequestWithUser['user'] | null,
   ) {
     const findGroup = await this.prismaService.client.group.findFirstOrThrow({
       where: {
@@ -198,17 +198,18 @@ export class GroupService {
         },
       },
     });
-    if (findGroup.created_by_id === user.id) {
+    if (user && findGroup.created_by_id === user.id) {
       return findGroup;
     }
 
     if (findGroup.status == GroupStatus.INIT) {
       this.checkInviteCode(findGroup, query.invite_code);
     }
+    
     return findGroup;
   }
 
-  async search(query: SearchGroupDTO, user: RequestWithUser['user']) {
+  async search(query: SearchGroupDTO, user: RequestWithUser['user'] | null) {
     const { keyword, sort, page, size, is_online, is_mine } = query;
     const whereClause: Prisma.GroupWhereInput = {
       share_scope: {
@@ -238,7 +239,7 @@ export class GroupService {
       ];
     }
 
-    if (is_mine && is_mine == 1) {
+    if (is_mine && is_mine == 1 && user) {
       whereClause.AND = {
         created_by_id: user.id,
       };

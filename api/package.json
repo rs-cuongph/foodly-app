@@ -128,5 +128,19 @@
   },
   "engines": {
     "node": "=20.11.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "cpu-features",
+      "esbuild",
+      "msgpackr-extract",
+      "nestjs-pino",
+      "prisma",
+      "ssh2"
+    ]
   }
 }

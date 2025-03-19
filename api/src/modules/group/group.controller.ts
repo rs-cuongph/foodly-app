@@ -16,6 +16,7 @@ import { GroupService } from './group.service';
 import { EditGroupDTO } from './dto/edit.dto';
 import { SearchGroupDTO } from './dto/search.dto';
 import { QueryShowGroupDTO } from './dto/show.dto';
+import { Public } from '@decorators/auth.decorator';
 
 @Controller('groups')
 @ApiTags('groups')
@@ -35,6 +36,7 @@ export class GroupController {
     return this.groupService.edit(id, body, request.user);
   }
 
+  @Public()
   @Get('/:id')
   show(
     @Param('id') id: string,
@@ -49,6 +51,7 @@ export class GroupController {
     return this.groupService.delete(id, request.user);
   }
 
+  @Public()
   @Get('/')
   search(@Query() query: SearchGroupDTO, @Req() request: RequestWithUser) {
     return this.groupService.search(query, request.user);
