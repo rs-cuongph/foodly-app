@@ -246,7 +246,7 @@ export class AuthService {
     }
 
     const resetToken = generateToken();
-    const resetTokenExpiresAt = dayjs().add(1, 'day').toDate();
+    const resetTokenExpiresAt = dayjs().add(3, 'hours').toDate();
 
     await this.prismaService.client.user.update({
       where: { id: user.id },

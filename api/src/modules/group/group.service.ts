@@ -205,7 +205,7 @@ export class GroupService {
     if (findGroup.status == GroupStatus.INIT) {
       this.checkInviteCode(findGroup, query.invite_code);
     }
-    
+
     return findGroup;
   }
 
@@ -267,6 +267,21 @@ export class GroupService {
       .paginate({
         where: whereClause,
         orderBy: orderByClause,
+        include: {
+          created_by: {
+            select: {
+              id: true,
+              display_name: true,
+            },
+          },
+          menu_items: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+            },
+          },
+        },
       })
       .withPages({
         limit: Number(size),
