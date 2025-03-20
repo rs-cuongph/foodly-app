@@ -1,8 +1,9 @@
 module.exports = {
   apps: [
     {
-      name: 'foodly-app-v2',
-      script: 'dist/main.js',
+      name: 'foodly-api',
+      script: 'pnpm',
+      args: 'start',
       // exec_mode: 'cluster', // Use cluster mode for better performance, not show log
       restart_delay: 4000,
       max_restarts: 10,
