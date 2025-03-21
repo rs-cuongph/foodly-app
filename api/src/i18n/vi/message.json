@@ -2,6 +2,7 @@
   "wrong_account": "Tài khoản hoặc mật khẩu không đúng.",
   "wrong_current_password": "Mật khẩu bạn nhập không đúng.",
   "locked": "Tài khoản của bạn đã bị khóa bởi quản trị viên, vui lòng liên hệ quản trị viên để mở khóa.",
+  "login_attempts_exceeded": "Tài khoản của bạn đã tạm thời bị khóa trong 2 giờ do nhiều lần đăng nhập không thành công. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
   "wrong_menu_item": "Menu item không đúng.",
   "max_order": "Bạn có một đơn hàng chưa thanh toán, vui lòng thanh toán!",
   "wrong_credential_format": "Mật khẩu không đúng định dạng.",

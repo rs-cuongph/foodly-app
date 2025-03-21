@@ -30,10 +30,15 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       );
     } else {
       const { organization_code, email, password } = req.body;
+      const ip_address = req.ip || req.socket.remoteAddress;
+      const user_agent = req.headers['user-agent'];
+
       const user = await this.authService.getAuthenticatedUser(
         email,
         password,
         organization_code,
+        ip_address,
+        user_agent,
       );
 
       return user;

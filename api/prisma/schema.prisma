@@ -45,6 +45,7 @@ model User {
   order_created                   Order[]         @relation("CreatedBy_Order")
   order_updated                   Order[]         @relation("UpdatedBy_Order")
   order_group_template            GroupTemplate[] @relation("CreatedBy_GroupTemplate")
+  login_attempts                  LoginAttempt[]  @relation("UserLoginAttempts")
 
   @@unique([email, organization_id])
 }
@@ -127,6 +128,20 @@ model Transaction {
   created_at       DateTime             @default(now())
   updated_at       DateTime             @updatedAt
   orders           OrderOnTransaction[]
+}
+
+model LoginAttempt {
+  id                String   @id @default(uuid())
+  email             String   @db.VarChar(255)
+  organization_code String   @db.VarChar(16)
+  user_id           String?
+  ip_address        String?  @db.VarChar(45)
+  user_agent        String?  @db.VarChar(255)
+  created_at        DateTime @default(now())
+  user              User?    @relation("UserLoginAttempts", fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([email, organization_code, created_at])
+  @@index([user_id, created_at])
 }
 
 enum Role {

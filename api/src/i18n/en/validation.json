@@ -26,7 +26,7 @@
   "ArrayMaxSize": "$t(validation-properties.{property}) must contain no more than {constraints.0} elements",
   "ArrayMinSize": "$t(validation-properties.{property}) must contain at least {constraints.0} elements",
   "IsEqualTo": "$t(validation-properties.{property}) is not equal with {constraints.0} field",
-  "IsPassword": "$t(validation-properties.{property}) doesn't match with pattern {constraints.0}",
+  "IsPassword": "$t(validation-properties.{property}) must be at least 8 characters, including uppercase, lowercase, numbers, and special characters",
   "IsMatch": "$t(validation-properties.{property}) doesn't match with $t(validation-properties.{constraints.0})",
   "IsArray": "$t(validation-properties.{property}) needs to be an array",
   "IsObject": "$t(validation-properties.{property}) needs to be an object",

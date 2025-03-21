@@ -288,8 +288,37 @@ export class GroupService {
         page: Number(page),
         includePageCount: true,
       });
+
+    // Get order counts and total quantities for each group
+    const groupIds = groups.map((group) => group.id);
+    const orderStats = await this.prismaService.client.order.groupBy({
+      by: ['group_id'],
+      where: {
+        group_id: {
+          in: groupIds,
+        },
+        deleted_at: null,
+      },
+      _count: {
+        id: true,
+      },
+      _sum: {
+        quantity: true,
+      },
+    });
+
+    // Map the order counts and total quantities to each group
+    const groupsWithOrderStats = groups.map((group) => {
+      const stats = orderStats.find((stat) => stat.group_id === group.id);
+      return {
+        ...group,
+        order_count: stats?._count?.id || 0,
+        total_quantity: stats?._sum?.quantity || 0,
+      };
+    });
+
     return {
-      groups,
+      groups: groupsWithOrderStats,
       meta: camelToSnake(meta),
     };
   }

@@ -28,9 +28,14 @@ import {
 import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
 import { generateToken } from '@utils/helper';
 import { MailService } from '@shared/mail/mail.service';
+
 @Injectable()
 export class AuthService {
   private SALT_ROUND = 11;
+  private MAX_FAILED_ATTEMPTS = 10;
+  private ATTEMPTS_WINDOW_MINUTES = 30;
+  private BLOCK_DURATION_HOURS = 2;
+
   constructor(
     @Inject('PrismaService')
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
@@ -143,6 +148,8 @@ export class AuthService {
     email: string,
     password: string,
     organization_code: string,
+    ip_address?: string,
+    user_agent?: string,
   ) {
     const user = await this.findUser({
       email,
@@ -152,25 +159,104 @@ export class AuthService {
     });
 
     if (!user) {
+      // Track failed login attempt for non-existent user
+      await this.trackFailedLoginAttempt(
+        email,
+        organization_code,
+        null,
+        ip_address,
+        user_agent,
+      );
       throw new BadRequestException(this.i18n.t('message.wrong_account'));
+    }
+
+    // Check if user is blocked
+    if (user.block_to && dayjs().isBefore(user.block_to)) {
+      // Check if this is a temporary block due to failed login attempts
+      const blockDuration = dayjs(user.block_to).diff(dayjs(), 'minute');
+      if (blockDuration <= this.BLOCK_DURATION_HOURS * 60) {
+        throw new BadRequestException(
+          this.i18n.t('message.login_attempts_exceeded'),
+        );
+      }
+      // For admin-blocked accounts
+      throw new BadRequestException(this.i18n.t('message.locked'));
     }
 
     const is_matching = await bcrypt.compare(password, user.password);
     if (!is_matching) {
+      // Track failed login attempt for wrong password
+      await this.trackFailedLoginAttempt(
+        email,
+        organization_code,
+        user.id,
+        ip_address,
+        user_agent,
+      );
       throw new BadRequestException(this.i18n.t('message.wrong_account'));
     }
 
-    if (user.block_to && dayjs().isBefore(user.block_to)) {
-      throw new BadRequestException(this.i18n.t('message.locked'));
-    }
+    // Reset failed login attempts on successful login
+    // Not needed with database approach, we just don't count successful logins
+
     return user;
+  }
+
+  private async trackFailedLoginAttempt(
+    email: string,
+    organization_code: string,
+    user_id: string | null,
+    ip_address?: string,
+    user_agent?: string,
+  ) {
+    // Record the failed attempt in the database
+    await this.prismaService.client.loginAttempt.create({
+      data: {
+        email,
+        organization_code,
+        user_id,
+        ip_address,
+        user_agent,
+      },
+    });
+
+    // Count recent failed attempts for this email and organization
+    const windowStart = dayjs()
+      .subtract(this.ATTEMPTS_WINDOW_MINUTES, 'minute')
+      .toDate();
+
+    const recentAttempts = await this.prismaService.client.loginAttempt.count({
+      where: {
+        email,
+        organization_code,
+        created_at: {
+          gte: windowStart,
+        },
+      },
+    });
+
+    // Check if we should block the user
+    if (recentAttempts >= this.MAX_FAILED_ATTEMPTS) {
+      // Block the user for BLOCK_DURATION_HOURS hours
+      const blockUntil = dayjs()
+        .add(this.BLOCK_DURATION_HOURS, 'hour')
+        .toDate();
+
+      // If user exists, update block_to field
+      if (user_id) {
+        await this.prismaService.client.user.update({
+          where: { id: user_id },
+          data: { block_to: blockUntil },
+        });
+      }
+    }
   }
 
   generateAccessToken(payload: TokenPayload) {
     return this.jwtService.sign(payload, {
       algorithm: 'RS256',
       privateKey: access_token_private_key,
-      expiresIn: `${this.configService.get<string>('jwt.refreshIn')}`,
+      expiresIn: `${this.configService.get<string>('jwt.expiresIn')}`,
     });
   }
 
