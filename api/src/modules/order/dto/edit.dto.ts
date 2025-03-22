@@ -42,18 +42,26 @@ export class MarkPaidDTO {}
 
 export class MarkPaidAllDTO {
   @ArrayField({
-    isValidateNested: true,
-    minLength: 1,
+    minLength: 0,
   })
-  ids: string[];
+  include_ids: string[];
+
+  @ArrayField({
+    minLength: 0,
+  })
+  exclude_ids: string[];
 }
 
 export class ConfirmPaidAllDTO {
   @ArrayField({
-    isValidateNested: true,
-    minLength: 1,
+    minLength: 0,
   })
-  ids: string[];
+  include_ids: string[];
+
+  @ArrayField({
+    minLength: 0,
+  })
+  exclude_ids: string[];
 }
 
 export class ConfirmPaidDTO {
@@ -61,4 +69,12 @@ export class ConfirmPaidDTO {
     maxLength: 255,
   })
   qr_code: string;
+}
+
+export class CancelOrderDTO {
+  @StringField({
+    maxLength: 255,
+    allowEmpty: true,
+  })
+  reason: string;
 }

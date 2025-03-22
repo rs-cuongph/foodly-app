@@ -21,7 +21,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(req: Request) {
+  async validate(req: Request & { clientIp: string }) {
     const body = plainToClass(SignInDTO, req.body);
     const errors = await classValidate(body);
     if (errors.length) {
@@ -30,7 +30,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       );
     } else {
       const { organization_code, email, password } = req.body;
-      const ip_address = req.ip || req.socket.remoteAddress;
+      const ip_address = req.clientIp || req.ip || req.socket.remoteAddress;
       const user_agent = req.headers['user-agent'];
 
       const user = await this.authService.getAuthenticatedUser(

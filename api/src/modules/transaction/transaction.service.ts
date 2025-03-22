@@ -13,6 +13,7 @@ import { CustomPrismaService } from 'nestjs-prisma';
 import { WebhookResponseDataType } from 'src/types/bank.type';
 import { convertToUUID } from 'src/utils/convert';
 import { I18nService } from 'nestjs-i18n';
+import { TransactionType } from '@prisma/client';
 
 @Injectable()
 export class TransactionService {
@@ -188,66 +189,85 @@ export class TransactionService {
   async scan(body: ScanTransactionDTO) {
     const { qr_text } = body;
 
-    const transactionId = qr_text.replace(
-      /(.{8})(.{4})(.{4})(.{4})(.{12})/,
-      '$1-$2-$3-$4-$5',
-    );
+    const transaction = await this.prismaService.client.transaction.findFirst({
+      where: {
+        unique_code: qr_text,
+      },
+    });
 
-    const orderOnTransaction =
-      await this.prismaService.client.orderOnTransaction.findFirst({
-        where: {
-          id: transactionId,
-        },
-        include: {
-          order: true,
-          transaction: true,
-        },
-      });
-
-    if (!orderOnTransaction) {
+    if (!transaction) {
       throw new BadRequestException(this.i18n.t('error.transaction_not_found'));
     }
 
-    const order = orderOnTransaction.order;
-    const transaction = orderOnTransaction.transaction;
-
     if (
-      ![TRANSACTION_ENUM.INIT, TRANSACTION_ENUM.PROCESSING].includes(
-        transaction.status as TRANSACTION_ENUM,
-      )
+      ![
+        TRANSACTION_ENUM.INIT,
+        TRANSACTION_ENUM.PROCESSING,
+        TRANSACTION_ENUM.AWAITING_CONFIRMATION,
+      ].includes(transaction.status as TRANSACTION_ENUM)
     ) {
       throw new BadRequestException(
         this.i18n.t('error.transaction_not_in_init_status'),
       );
     }
 
-    if (
-      ![ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING].includes(
-        order.status as ORDER_STATUS_ENUM,
-      )
-    ) {
-      throw new BadRequestException(
-        this.i18n.t('error.order_not_in_init_status'),
-      );
+    if (transaction.type === TransactionType.SETTLEMENT) {
+      await this.prismaService.client.$transaction(async (tx) => {
+        await tx.transaction.update({
+          where: {
+            id: transaction.id,
+          },
+          data: {
+            status: TRANSACTION_ENUM.COMPLETED,
+          },
+        });
+
+        const orders = await tx.order.findMany({
+          where: {
+            transaction_id: transaction.id,
+          },
+        });
+
+        await tx.order.updateMany({
+          where: {
+            id: {
+              in: orders.map((i) => i.id),
+            },
+          },
+          data: {
+            status: ORDER_STATUS_ENUM.COMPLETED,
+          },
+        });
+      });
     }
 
-    await this.prismaService.client.transaction.update({
-      where: {
-        id: transaction.id,
-      },
-      data: {
-        status: TRANSACTION_ENUM.COMPLETED,
-      },
-    });
+    if (transaction.type === TransactionType.SINGLE_ORDER) {
+      await this.prismaService.client.$transaction(async (tx) => {
+        await tx.transaction.update({
+          where: {
+            id: transaction.id,
+          },
+          data: {
+            status: TRANSACTION_ENUM.COMPLETED,
+          },
+        });
 
-    await this.prismaService.client.order.update({
-      where: {
-        id: order.id,
-      },
-      data: {
-        status: ORDER_STATUS_ENUM.COMPLETED,
-      },
-    });
+        const order = await tx.order.findFirst({
+          where: {
+            transaction_id: transaction.id,
+          },
+        });
+
+        await tx.order.update({
+          where: {
+            id: order.id,
+          },
+          data: {
+            status: ORDER_STATUS_ENUM.COMPLETED,
+          },
+        });
+      });
+    }
 
     return {
       success: true,

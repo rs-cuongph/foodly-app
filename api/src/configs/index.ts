@@ -9,7 +9,7 @@ const configs = (): Config => {
       name: process.env.APP_NAME || 'APP NAME',
       nodeEnv: (process.env.NODE_ENV as NODE_ENV) || NODE_ENV.PRODUCTION,
       port: +process.env.APP_PORT || 3333,
-      fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
+      fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'vi',
       headerLanguage: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
       redisHost: process.env.REDIS_HOST || 'localhost',
       redisPort: parseInt(process.env.REDIS_PORT) || 6379,

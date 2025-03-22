@@ -15,6 +15,7 @@ import { OrderService } from './order.service';
 import { CreateOrderDTO } from './dto/create.dto';
 import { RequestWithUser } from 'src/types/requests.type';
 import {
+  CancelOrderDTO,
   ConfirmPaidAllDTO,
   ConfirmPaidDTO,
   EditOrderDTO,
@@ -47,9 +48,13 @@ export class OrderController {
     return this.orderService.show(id, request.user);
   }
 
-  @Delete('/:id')
-  delete(@Param('id') id: string, @Req() request: RequestWithUser) {
-    return this.orderService.delete(id, request.user);
+  @Put('/:id/cancel')
+  delete(
+    @Param('id') id: string,
+    @Body() body: CancelOrderDTO,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.orderService.cancel(id, body, request.user);
   }
 
   @Get('/')

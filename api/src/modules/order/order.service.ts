@@ -17,8 +17,10 @@ import {
   Prisma,
   ShareScope,
   TransactionStatus,
+  TransactionType,
 } from '@prisma/client';
 import {
+  CancelOrderDTO,
   ConfirmPaidAllDTO,
   ConfirmPaidDTO,
   EditOrderDTO,
@@ -92,6 +94,12 @@ export class OrderService {
       throw new BadRequestException(this.i18n.t('message.max_order'));
   }
 
+  private generateUniqueCode() {
+    const timestamp = dayjs().format('YYMMDDHHmmss'); // 12 characters
+    const randomChars = Math.random().toString(36).substring(2, 10); // 8 characters
+    return `${timestamp}${randomChars}`.toLowerCase(); // total 20 characters
+  }
+
   async create(body: CreateOrderDTO, user: RequestWithUser['user']) {
     const now = dayjs().toDate();
     const group = await this.prismaService.client.group.findFirstOrThrow({
@@ -137,8 +145,24 @@ export class OrderService {
           body.quanlity;
       }
 
-      const result = await tx.order.create({
+      const newTransaction = await tx.transaction.create({
         data: {
+          organization_id: user.organization_id,
+          status: TransactionStatus.INIT,
+          type: TransactionType.SINGLE_ORDER,
+          total_amount: amount,
+          metadata: {
+            payment_setting: body.payment_setting[0],
+            quanlity: body.quanlity,
+            amount,
+          },
+          unique_code: this.generateUniqueCode(),
+        },
+      });
+
+      const newOrder = await tx.order.create({
+        data: {
+          organization_id: user.organization_id,
           menu,
           group_id: body.group_id,
           created_by_id: user.id,
@@ -149,57 +173,20 @@ export class OrderService {
           price,
           amount,
           note: body.note,
-          transactions: {
-            create: [
-              {
-                transaction: {
-                  create: {
-                    metadata: {
-                      payment_setting: body.payment_setting[0],
-                      quanlity: body.quanlity,
-                      amount,
-                    },
-                    status: TransactionStatus.INIT,
-                  },
-                },
-              },
-            ],
-          },
-        },
-        include: {
-          transactions: {
-            include: {
-              transaction: true,
-            },
-          },
-        },
-      });
-
-      const order = await tx.order.findFirstOrThrow({
-        where: {
-          id: result.id,
-        },
-        include: {
-          transactions: {
-            select: {
-              id: true,
-              transaction: true,
-            },
-          },
+          transaction_id: newTransaction.id,
         },
       });
 
       return {
-        ...order,
-        qrcode_text: order.transactions[0].id.replace(/-/g, ''),
-        qrcode_metadata: order.transactions[0].transaction.metadata,
+        ...newOrder,
+        transaction: newTransaction,
       };
     });
   }
 
   async edit(id: string, body: EditOrderDTO, user: RequestWithUser['user']) {
     const now = dayjs().toDate();
-    const order = await this.prismaService.client.order.findFirstOrThrow({
+    const order = await this.prismaService.client.order.findFirst({
       where: {
         id,
         status: OrderStatus.INIT,
@@ -217,6 +204,10 @@ export class OrderService {
         group: true,
       },
     });
+
+    if (!order)
+      throw new BadRequestException(this.i18n.t('message.order_not_found'));
+
     await this.checkInviteCode(order.group, body.invite_code, user);
     await this.checkGroupIsLocked(order.group.id);
     if (order.created_by_id !== user.id) throw new ForbiddenException();
@@ -231,6 +222,7 @@ export class OrderService {
     });
     if (!menu.length)
       throw new BadRequestException(this.i18n.t('message.wrong_menu_item'));
+
     return this.prismaService.client.$transaction(async (tx) => {
       let price = 0;
       let amount = 0;
@@ -258,6 +250,26 @@ export class OrderService {
           note: body.note,
         },
       });
+
+      const transaction = await tx.transaction.findFirst({
+        where: {
+          id: order.transaction_id,
+        },
+      });
+
+      await tx.transaction.update({
+        where: {
+          id: order.transaction_id,
+          status: TransactionStatus.INIT,
+        },
+        data: {
+          metadata: {
+            payment_setting: transaction.metadata['payment_setting'],
+            quanlity: body.quanlity,
+            amount,
+          },
+        },
+      });
     });
   }
 
@@ -267,59 +279,100 @@ export class OrderService {
         id,
         created_by_id: user.id,
       },
-      include: {
-        transactions: {
-          select: {
-            id: true,
-            transaction: true,
-          },
-        },
+    });
+
+    const transaction = await this.prismaService.client.transaction.findFirst({
+      where: {
+        id: order.transaction_id,
       },
     });
 
     return {
       ...order,
-      qrcode_text: order.transactions[0].id,
-      qrcode_metadata: order.transactions[0].transaction.metadata,
+      transaction,
     };
   }
 
-  async delete(id: string, user: RequestWithUser['user']) {
+  async cancel(
+    id: string,
+    body: CancelOrderDTO,
+    user: RequestWithUser['user'],
+  ) {
     const now = dayjs().toDate();
     return this.prismaService.client.$transaction(async (tx) => {
-      const order = await tx.order.findFirstOrThrow({
+      const whereClause: Prisma.OrderWhereInput = {
+        id,
+        status: {
+          in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+        },
+        group: {
+          public_start_time: {
+            lte: now,
+          },
+          public_end_time: {
+            gte: now,
+          },
+        },
+        transaction: {
+          status: {
+            in: [
+              TransactionStatus.INIT,
+              TransactionStatus.PROCESSING,
+              TransactionStatus.AWAITING_CONFIRMATION,
+            ],
+          },
+        },
+        deleted_at: null,
+      };
+
+      const order = await tx.order.findFirst({
+        where: whereClause,
+        include: {
+          group: true,
+          transaction: true,
+        },
+      });
+
+      if (!order)
+        throw new BadRequestException(this.i18n.t('message.order_not_found'));
+
+      // is group owner
+      if (order.group.created_by_id === user.id) {
+        // allow cancel
+      } else if (order.created_by_id === user.id) {
+        // is order creator
+        if (order.created_at < dayjs().subtract(10, 'minute').toDate()) {
+          throw new BadRequestException(this.i18n.t('message.order_not_found'));
+        }
+
+        if (
+          order.transaction.status === TransactionStatus.AWAITING_CONFIRMATION
+        ) {
+          throw new BadRequestException(this.i18n.t('message.order_not_found'));
+        }
+      }
+
+      await tx.order.update({
         where: {
           id,
-          status: OrderStatus.INIT,
-          created_by_id: user.id,
-          group: {
-            public_start_time: {
-              lte: now,
-            },
-            public_end_time: {
-              gte: now,
-            },
-          },
-          deleted_at: null,
-        },
-        include: {
-          transactions: true,
-        },
-      });
-      await tx.order.softDelete({
-        id,
-      });
-      await tx.transaction.updateMany({
-        where: {
-          id: {
-            in: order.transactions.map((i) => i.transaction_id),
-          },
         },
         data: {
-          status: TransactionStatus.CANCELED,
-          reason_cancel: 'CANCEL ORDER',
+          deleted_at: new Date(),
+          status: OrderStatus.CANCELED,
         },
       });
+
+      if (order.transaction_id) {
+        await tx.transaction.updateMany({
+          where: {
+            id: order.transaction_id,
+          },
+          data: {
+            status: TransactionStatus.CANCELED,
+            reason_cancel: body.reason,
+          },
+        });
+      }
       return order;
     });
   }
@@ -339,6 +392,11 @@ export class OrderService {
     const whereClause: Prisma.OrderWhereInput = {};
     const include = {
       group: Boolean(with_group),
+      transaction: {
+        select: {
+          unique_code: true,
+        },
+      },
     };
 
     let orderByClause:
@@ -393,7 +451,6 @@ export class OrderService {
         },
       ];
     }
-    console.log(JSON.stringify(whereClause, null, 2));
     if (sort) {
       const [key, order] = sort.split(':');
       orderByClause = {
@@ -412,6 +469,7 @@ export class OrderService {
         page: Number(page),
         includePageCount: true,
       });
+
     return {
       orders,
       meta: camelToSnake(meta),
@@ -437,16 +495,11 @@ export class OrderService {
           status: OrderStatus.PROCESSING,
           updated_by_id: user.id,
         },
-        include: {
-          transactions: true,
-        },
       });
 
       await tx.transaction.updateMany({
         where: {
-          id: {
-            in: order.transactions.map((i) => i.transaction_id),
-          },
+          id: order.transaction_id,
         },
         data: {
           status: TransactionStatus.AWAITING_CONFIRMATION,
@@ -492,15 +545,10 @@ export class OrderService {
           status: OrderStatus.COMPLETED,
           updated_by_id: user.id,
         },
-        include: {
-          transactions: true,
-        },
       });
       await tx.transaction.updateMany({
         where: {
-          id: {
-            in: order.transactions.map((i) => i.transaction_id),
-          },
+          id: findOrder.transaction_id,
         },
         data: {
           status: TransactionStatus.COMPLETED,
@@ -518,10 +566,111 @@ export class OrderService {
    * @returns True if successful
    */
   async markPaidAll(body: MarkPaidAllDTO, user: RequestWithUser['user']) {
-    for await (const id of body.ids) {
-      await this.markPaid(id, {}, user);
+    const { include_ids, exclude_ids } = body;
+    let orders: Order[] = [];
+
+    // if is mark all
+    if (!include_ids.length && !exclude_ids.length) {
+      orders = await this.prismaService.client.order.findMany({
+        where: {
+          status: OrderStatus.INIT,
+          created_by_id: user.id,
+        },
+      });
     }
-    return true;
+
+    if (!include_ids.length && exclude_ids.length) {
+      orders = await this.prismaService.client.order.findMany({
+        where: {
+          status: OrderStatus.INIT,
+          created_by_id: user.id,
+          id: {
+            notIn: exclude_ids,
+          },
+        },
+      });
+    }
+
+    if (
+      (include_ids.length && !exclude_ids.length) ||
+      (include_ids.length && exclude_ids.length)
+    ) {
+      orders = await this.prismaService.client.order.findMany({
+        where: {
+          status: OrderStatus.INIT,
+          id: {
+            in: include_ids,
+          },
+        },
+      });
+    }
+
+    return this.prismaService.client.$transaction(async (tx) => {
+      const newTransaction = await tx.transaction.create({
+        data: {
+          organization_id: user.organization_id,
+          status: TransactionStatus.AWAITING_CONFIRMATION,
+          type: TransactionType.SETTLEMENT,
+          total_amount: orders.reduce(
+            (prev, curr) => prev + Number(curr.amount),
+            0,
+          ),
+          unique_code: this.generateUniqueCode(),
+          metadata: {
+            orders: orders.map((i) => ({
+              id: i.id,
+              quantity: i.quantity,
+              amount: i.amount,
+              menu: i.menu,
+              price: i.price,
+            })),
+            quanlity: orders.reduce(
+              (prev, curr) => prev + Number(curr.quantity),
+              0,
+            ),
+            amount: orders.reduce(
+              (prev, curr) => prev + Number(curr.amount),
+              0,
+            ),
+          },
+        },
+      });
+
+      await tx.orderOnTransaction.createMany({
+        data: orders.map((i) => ({
+          order_id: i.id,
+          transaction_id: newTransaction.id,
+          amount: i.amount,
+        })),
+      });
+
+      // remove old transaction
+      await tx.transaction.deleteMany({
+        where: {
+          id: {
+            in: orders.map((i) => i.transaction_id),
+          },
+        },
+      });
+
+      await tx.order.updateMany({
+        where: {
+          id: {
+            in: orders.map((i) => i.id),
+          },
+          status: OrderStatus.INIT,
+        },
+        data: {
+          status: OrderStatus.PROCESSING,
+          transaction_id: newTransaction.id,
+          updated_by_id: user.id,
+        },
+      });
+
+      return {
+        success: true,
+      };
+    });
   }
 
   /**
@@ -530,38 +679,91 @@ export class OrderService {
    * @param user The authenticated user making the request
    * @returns The transaction result
    */
-  confirmPaidAll(body: ConfirmPaidAllDTO, user: RequestWithUser['user']) {
+  async confirmPaidAll(body: ConfirmPaidAllDTO, user: RequestWithUser['user']) {
+    const { include_ids, exclude_ids } = body;
+    let orders: Order[] = [];
+
+    // if is mark all
+    if (!include_ids.length && !exclude_ids.length) {
+      orders = await this.prismaService.client.order.findMany({
+        where: {
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+          },
+          group: {
+            created_by_id: user.id,
+          },
+        },
+      });
+    }
+
+    if (!include_ids.length && exclude_ids.length) {
+      orders = await this.prismaService.client.order.findMany({
+        where: {
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+          },
+          group: {
+            created_by_id: user.id,
+          },
+          id: {
+            notIn: exclude_ids,
+          },
+        },
+      });
+    }
+
+    if (
+      (include_ids.length && !exclude_ids.length) ||
+      (include_ids.length && exclude_ids.length)
+    ) {
+      orders = await this.prismaService.client.order.findMany({
+        where: {
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+          },
+          group: {
+            created_by_id: user.id,
+          },
+          id: {
+            in: include_ids,
+          },
+        },
+      });
+    }
+
     return this.prismaService.client.$transaction(async (tx) => {
-      for await (const id of body.ids) {
-        const order = await tx.order.update({
-          where: {
-            id,
-            status: {
-              in: [OrderStatus.INIT, OrderStatus.PROCESSING],
-            },
-            group: {
-              created_by_id: user.id,
-            },
+      await tx.order.updateMany({
+        where: {
+          id: {
+            in: orders.map((i) => i.id),
           },
-          data: {
-            status: OrderStatus.COMPLETED,
-            updated_by_id: user.id,
-          },
-          include: {
-            transactions: true,
-          },
-        });
+        },
+        data: {
+          status: OrderStatus.COMPLETED,
+          updated_by_id: user.id,
+        },
+      });
+
+      try {
         await tx.transaction.updateMany({
           where: {
             id: {
-              in: order.transactions.map((i) => i.transaction_id),
+              in: orders
+                .filter((i) => i.transaction_id)
+                .map((i) => i.transaction_id),
             },
           },
           data: {
             status: TransactionStatus.COMPLETED,
           },
         });
+      } catch (error) {
+        console.log(error);
       }
+      return {
+        success: true,
+      };
     });
   }
 }

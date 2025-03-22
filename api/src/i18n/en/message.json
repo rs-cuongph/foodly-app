@@ -17,5 +17,7 @@
   "order_completed": "Order is completed",
   "email_already_existed": "Email already existed",
   "organization_not_found": "Organization not found",
-  "user_not_found": "User not found"
+  "user_not_found": "User not found",
+  "cant_cancel_order": "Can't cancel order",
+  "transaction_not_found": "Transaction not found"
 }

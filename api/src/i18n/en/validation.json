@@ -37,7 +37,7 @@
   "SmallerDate": "$t(validation-properties.{property}) needs to be smaller than {constraints.0}",
   "IsUnique": "$t(validation-properties.{property}) is already exists",
   "NoEmoji": "$t(validation-properties.{property}) is not support Emoji",
-  "OnlyAlphaNumeric": "$t(validation-properties.{property}) contains only letters and numbers",
+  "OnlyAlphaNumeric": "$t(validation-properties.{property}) must only contain alphabets and numbers",
   "IsPhoneNumber": "$t(validation-properties.{property}) is not a valid phone number format",
   "IsIdentifyNumber": "$t(validation-properties.{property}) is not a valid identify number format"
 }

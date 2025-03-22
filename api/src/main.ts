@@ -15,6 +15,7 @@ import { formatErrors } from './utils/format-error-http';
 import { configSwagger } from '@configs/api-docs.config';
 import { useContainer } from 'class-validator';
 import { PrismaClientExceptionFilter } from '@filters/prisma-client-exception.filter';
+import * as requestIp from 'request-ip';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -34,7 +35,7 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
-
+  app.use(requestIp.mw());
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(
     new I18nValidationExceptionFilter({

@@ -15,14 +15,17 @@ datasource db {
 }
 
 model Organization {
-  id          String   @id @default(uuid())
-  code        String   @unique @db.VarChar(16)
-  short_name  String   @db.VarChar(100)
-  name        String   @db.VarChar(255)
-  description String?  @db.VarChar(500)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id          String        @id @default(uuid())
+  code        String        @unique @db.VarChar(16)
+  short_name  String        @db.VarChar(100)
+  name        String        @db.VarChar(255)
+  description String?       @db.VarChar(500)
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
   User        User[]
+  Group       Group[]
+  Order       Order[]
+  Transaction Transaction[]
 }
 
 model User {
@@ -46,28 +49,31 @@ model User {
   order_updated                   Order[]         @relation("UpdatedBy_Order")
   order_group_template            GroupTemplate[] @relation("CreatedBy_GroupTemplate")
   login_attempts                  LoginAttempt[]  @relation("UserLoginAttempts")
+  Transaction                     Transaction[]
 
   @@unique([email, organization_id])
 }
 
 model Group {
-  id                String      @id @default(uuid())
-  code              String?     @unique @db.VarChar(100)
-  name              String      @db.VarChar(255)
+  id                String       @id @default(uuid())
+  code              String?      @unique @db.VarChar(100)
+  name              String       @db.VarChar(255)
   created_by_id     String
-  created_by        User        @relation(fields: [created_by_id], references: [id])
+  created_by        User         @relation(fields: [created_by_id], references: [id])
   public_start_time DateTime
   public_end_time   DateTime
-  price             Decimal     @default(0) @db.Decimal(15, 2)
-  share_scope       ShareScope? @default(PUBLIC)
-  type              GroupType   @default(MANUAL)
-  status            GroupStatus @default(INIT)
+  price             Decimal      @default(0) @db.Decimal(15, 2)
+  share_scope       ShareScope?  @default(PUBLIC)
+  type              GroupType    @default(MANUAL)
+  status            GroupStatus  @default(INIT)
   menu_items        MenuItem[]
-  invite_code       String?     @unique @db.VarChar(100)
-  created_at        DateTime    @default(now())
-  updated_at        DateTime    @updatedAt
+  organization_id   String
+  invite_code       String?      @unique @db.VarChar(100)
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
   deleted_at        DateTime?
   orders            Order[]
+  organization      Organization @relation(fields: [organization_id], references: [id])
 }
 
 model MenuItem {
@@ -82,24 +88,30 @@ model MenuItem {
 }
 
 model Order {
-  id             String               @id @default(uuid())
-  quantity       Int
-  status         OrderStatus          @default(PROCESSING)
-  payment_method String               @db.VarChar(255)
-  price          Decimal              @default(0) @db.Decimal(15, 2)
-  amount         Decimal              @default(0) @db.Decimal(15, 2)
-  menu           Json
-  group_id       String
-  group          Group                @relation(fields: [group_id], references: [id], onDelete: Cascade)
-  note           String?              @db.VarChar(255)
-  created_by_id  String
-  created_by     User                 @relation("CreatedBy_Order", fields: [created_by_id], references: [id])
-  updated_by_id  String
-  updated_by     User                 @relation("UpdatedBy_Order", fields: [updated_by_id], references: [id])
-  created_at     DateTime             @default(now())
-  updated_at     DateTime             @updatedAt
-  deleted_at     DateTime?
-  transactions   OrderOnTransaction[]
+  id                 String               @id @default(uuid())
+  quantity           Int
+  status             OrderStatus          @default(PROCESSING)
+  payment_method     String               @db.VarChar(255)
+  price              Decimal              @default(0) @db.Decimal(15, 2)
+  amount             Decimal              @default(0) @db.Decimal(15, 2)
+  menu               Json
+  group_id           String
+  group              Group                @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  note               String?              @db.VarChar(255)
+  created_by_id      String
+  created_by         User                 @relation("CreatedBy_Order", fields: [created_by_id], references: [id])
+  updated_by_id      String
+  updated_by         User                 @relation("UpdatedBy_Order", fields: [updated_by_id], references: [id])
+  organization_id    String
+  organization       Organization         @relation(fields: [organization_id], references: [id])
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  deleted_at         DateTime?
+  transaction_id     String?
+  transaction        Transaction?         @relation(fields: [transaction_id], references: [id])
+  OrderOnTransaction OrderOnTransaction[]
+
+  @@index([transaction_id])
 }
 
 model GroupTemplate {
@@ -109,25 +121,37 @@ model GroupTemplate {
   created_by    User   @relation("CreatedBy_GroupTemplate", fields: [created_by_id], references: [id])
 }
 
+model Transaction {
+  id                 String               @id @default(uuid())
+  status             TransactionStatus    @default(INIT)
+  type               TransactionType      @default(SINGLE_ORDER)
+  unique_code        String               @unique @db.VarChar(20)
+  total_amount       Decimal              @default(0) @db.Decimal(15, 2)
+  metadata           Json?
+  reason_cancel      String?              @db.VarChar(255)
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  orders             Order[]
+  created_by_id      String?
+  created_by         User?                @relation(fields: [created_by_id], references: [id])
+  organization_id    String?
+  organization       Organization?        @relation(fields: [organization_id], references: [id])
+  OrderOnTransaction OrderOnTransaction[]
+
+  @@index([created_by_id])
+  @@index([organization_id])
+}
+
+// OrderOnTransaction is a table that contains the orders that are on a transaction
 model OrderOnTransaction {
   id             String      @id @default(uuid())
   order_id       String
-  order          Order       @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order          Order       @relation(fields: [order_id], references: [id])
   transaction_id String
-  transaction    Transaction @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  transaction    Transaction @relation(fields: [transaction_id], references: [id])
+  amount         Decimal     @default(0) @db.Decimal(15, 2)
   created_at     DateTime    @default(now())
   updated_at     DateTime    @updatedAt
-}
-
-model Transaction {
-  id               String               @id @default(uuid())
-  status           TransactionStatus    @default(INIT)
-  payos_order_code String?
-  metadata         Json
-  reason_cancel    String?              @db.VarChar(255)
-  created_at       DateTime             @default(now())
-  updated_at       DateTime             @updatedAt
-  orders           OrderOnTransaction[]
 }
 
 model LoginAttempt {
@@ -163,6 +187,11 @@ enum TransactionStatus {
   AWAITING_CONFIRMATION
   CANCELED
   COMPLETED
+}
+
+enum TransactionType {
+  SINGLE_ORDER
+  SETTLEMENT
 }
 
 enum ShareScope {

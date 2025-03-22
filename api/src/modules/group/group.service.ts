@@ -81,6 +81,7 @@ export class GroupService {
       return this.prismaService.client.$transaction(async (tx) => {
         const group = await tx.group.create({
           data: {
+            organization_id: user.organization_id,
             name: body.name,
             code: nextID,
             public_start_time: body.public_start_time,
@@ -237,6 +238,10 @@ export class GroupService {
           },
         },
       ];
+    }
+
+    if (user) {
+      whereClause.organization_id = user.organization_id;
     }
 
     if (is_mine && is_mine == 1 && user) {
