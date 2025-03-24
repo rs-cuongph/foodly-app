@@ -1,7 +1,6 @@
 {
   "wrong_account": "Your username or password is incorrect.",
   "wrong_current_password": "The password you entered is incorrect.",
-  "locked": "This user be blocked by admin, please contact admin to unlock",
   "login_attempts_exceeded": "Your account has been temporarily blocked for 2 hours due to multiple failed login attempts. Please try again later or contact support.",
   "wrong_menu_item": "Menu item is invalid",
   "max_order": "You have an unpaid order, please pay!",
@@ -19,5 +18,11 @@
   "organization_not_found": "Organization not found",
   "user_not_found": "User not found",
   "cant_cancel_order": "Can't cancel order",
-  "transaction_not_found": "Transaction not found"
+  "transaction_not_found": "Transaction not found",
+  "login_code_sent": "A login code has been sent to your email",
+  "login_code_resent": "A new login code has been resent to your email",
+  "code_resend_too_soon": "Please wait {seconds} seconds before requesting a new code",
+  "invalid_login_code": "Invalid login code",
+  "login_code_expired": "Login code has expired",
+  "account_blocked": "Your account has been blocked until {time}"
 }

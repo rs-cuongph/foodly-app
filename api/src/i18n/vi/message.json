@@ -1,7 +1,6 @@
 {
   "wrong_account": "Tài khoản hoặc mật khẩu không đúng.",
   "wrong_current_password": "Mật khẩu bạn nhập không đúng.",
-  "locked": "Tài khoản của bạn đã bị khóa bởi quản trị viên, vui lòng liên hệ quản trị viên để mở khóa.",
   "login_attempts_exceeded": "Tài khoản của bạn đã tạm thời bị khóa trong 2 giờ do nhiều lần đăng nhập không thành công. Vui lòng thử lại sau hoặc liên hệ hỗ trợ.",
   "wrong_menu_item": "Menu item không đúng.",
   "max_order": "Bạn có một đơn hàng chưa thanh toán, vui lòng thanh toán!",
@@ -19,5 +18,11 @@
   "organization_not_found": "Tổ chức không tồn tại.",
   "user_not_found": "Người dùng không tồn tại.",
   "cant_cancel_order": "Không thể hủy đơn hàng.",
-  "transaction_not_found": "Giao dịch không tồn tại."
+  "transaction_not_found": "Giao dịch không tồn tại.",
+  "login_code_sent": "Mã đăng nhập đã được gửi tới email của bạn",
+  "login_code_resent": "Mã đăng nhập mới đã được gửi lại tới email của bạn",
+  "code_resend_too_soon": "Vui lòng đợi {seconds} giây trước khi yêu cầu gửi lại mã",
+  "invalid_login_code": "Mã đăng nhập không hợp lệ",
+  "login_code_expired": "Mã đăng nhập đã hết hạn",
+  "account_blocked": "Tài khoản của bạn đã bị khóa đến {time}"
 }

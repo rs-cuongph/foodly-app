@@ -45,4 +45,16 @@ export class MailService {
       },
     });
   }
+
+  async sendLoginCodeMail(to: string, loginCode: string) {
+    const subject = 'Mã đăng nhập Foodly';
+    await this.sendMail({
+      to,
+      subject,
+      template: 'login-code',
+      context: {
+        loginCode,
+      },
+    });
+  }
 }

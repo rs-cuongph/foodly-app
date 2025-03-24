@@ -21,6 +21,11 @@ import {
   UpdateUserPasswordDTO,
 } from './dto/update-user-info.dto';
 import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
+import {
+  RequestLoginCodeDTO,
+  VerifyLoginCodeDTO,
+  ResendLoginCodeDTO,
+} from './dto/login-by-code.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -39,6 +44,24 @@ export class AuthController {
   async signIn(@Req() request: RequestWithUser) {
     const { user } = request;
     return await this.authService.signIn(user);
+  }
+
+  @Public()
+  @Post('sign-in-by-code/request')
+  async requestLoginCode(@Body() body: RequestLoginCodeDTO) {
+    return await this.authService.requestLoginCode(body);
+  }
+
+  @Public()
+  @Post('sign-in-by-code/resend')
+  async resendLoginCode(@Body() body: ResendLoginCodeDTO) {
+    return await this.authService.resendLoginCode(body);
+  }
+
+  @Public()
+  @Post('sign-in-by-code/verify')
+  async verifyLoginCode(@Body() body: VerifyLoginCodeDTO) {
+    return await this.authService.verifyLoginCode(body);
   }
 
   @HttpCode(HttpStatus.OK)

@@ -28,6 +28,11 @@ import {
 import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
 import { generateToken } from '@utils/helper';
 import { MailService } from '@shared/mail/mail.service';
+import {
+  RequestLoginCodeDTO,
+  VerifyLoginCodeDTO,
+  ResendLoginCodeDTO,
+} from './dto/login-by-code.dto';
 
 @Injectable()
 export class AuthService {
@@ -180,7 +185,13 @@ export class AuthService {
         );
       }
       // For admin-blocked accounts
-      throw new BadRequestException(this.i18n.t('message.locked'));
+      throw new BadRequestException(
+        this.i18n.t('message.account_blocked', {
+          args: {
+            time: dayjs(user.block_to).format('HH:mm DD/MM/YYYY'),
+          },
+        }),
+      );
     }
 
     const is_matching = await bcrypt.compare(password, user.password);
@@ -328,7 +339,13 @@ export class AuthService {
     }
 
     if (user.block_to) {
-      throw new BadRequestException(this.i18n.t('message.locked'));
+      throw new BadRequestException(
+        this.i18n.t('message.account_blocked', {
+          args: {
+            time: dayjs(user.block_to).format('HH:mm DD/MM/YYYY'),
+          },
+        }),
+      );
     }
 
     const resetToken = generateToken();
@@ -380,7 +397,13 @@ export class AuthService {
     }
 
     if (user.block_to) {
-      throw new BadRequestException(this.i18n.t('message.locked'));
+      throw new BadRequestException(
+        this.i18n.t('message.account_blocked', {
+          args: {
+            time: dayjs(user.block_to).format('HH:mm DD/MM/YYYY'),
+          },
+        }),
+      );
     }
 
     if (
@@ -404,5 +427,233 @@ export class AuthService {
     return {
       id: user.id,
     };
+  }
+
+  async requestLoginCode(body: RequestLoginCodeDTO) {
+    const { email, organization_code } = body;
+    try {
+      const organization = await this.findOrganization({
+        code: organization_code,
+      });
+      if (!organization) {
+        throw new BadRequestException(
+          this.i18n.t('message.organization_not_found'),
+        );
+      }
+
+      const user = await this.findUser({
+        email,
+        organization_id: organization.id,
+      });
+
+      if (!user) {
+        throw new BadRequestException(this.i18n.t('message.wrong_account'));
+      }
+
+      // Check if user is blocked
+      if (user.block_to && dayjs().isBefore(user.block_to)) {
+        throw new BadRequestException(
+          this.i18n.t('message.account_blocked', {
+            args: {
+              time: dayjs(user.block_to).format('HH:mm DD/MM/YYYY'),
+            },
+          }),
+        );
+      }
+
+      // Generate a 6-digit login code
+      const loginCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Set expiration to 5 minutes from now
+      const loginCodeExpiresAt = dayjs().add(5, 'minutes').toDate();
+
+      // Save the code to the user record
+      await this.prismaService.client.user.update({
+        where: { id: user.id },
+        data: {
+          login_code: loginCode,
+          login_code_expires_at: loginCodeExpiresAt,
+        },
+      });
+
+      // Send the code via email
+      await this.mailService.sendLoginCodeMail(user.email, loginCode);
+
+      return {
+        message: this.i18n.t('message.login_code_sent'),
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifyLoginCode(body: VerifyLoginCodeDTO) {
+    const { email, code, organization_code } = body;
+    try {
+      const organization = await this.findOrganization({
+        code: organization_code,
+      });
+      if (!organization) {
+        throw new BadRequestException(
+          this.i18n.t('message.organization_not_found'),
+        );
+      }
+
+      const user = await this.findUser({
+        email,
+        organization_id: organization.id,
+      });
+
+      if (!user) {
+        throw new BadRequestException(this.i18n.t('message.wrong_account'));
+      }
+
+      // Check if user is blocked
+      if (user.block_to && dayjs().isBefore(user.block_to)) {
+        throw new BadRequestException(
+          this.i18n.t('message.account_blocked', {
+            args: {
+              time: dayjs(user.block_to).format('HH:mm DD/MM/YYYY'),
+            },
+          }),
+        );
+      }
+
+      // Verify the code
+      if (!user.login_code || user.login_code !== code) {
+        // Track failed login attempt
+        await this.trackFailedLoginAttempt(email, organization_code, user.id);
+        throw new BadRequestException(
+          this.i18n.t('message.invalid_login_code'),
+        );
+      }
+
+      // Check if code has expired
+      if (
+        !user.login_code_expires_at ||
+        dayjs().isAfter(user.login_code_expires_at)
+      ) {
+        throw new BadRequestException(
+          this.i18n.t('message.login_code_expired'),
+        );
+      }
+
+      // Clear the login code after successful verification
+      await this.prismaService.client.user.update({
+        where: { id: user.id },
+        data: {
+          login_code: null,
+          login_code_expires_at: null,
+        },
+      });
+
+      // Generate tokens and return the same response as regular login
+      const access_token = this.generateAccessToken({
+        userId: user.id,
+      });
+      const refresh_token = this.generateRefreshToken({
+        userId: user.id,
+      });
+      const decodedToken = this.jwtService.decode(access_token) as {
+        [key: string]: any;
+      };
+      const iat = decodedToken?.iat;
+      const exp = decodedToken?.exp;
+
+      return {
+        iat,
+        exp,
+        type: TokenType.BEARER,
+        user_id: user.id,
+        organization_id: user.organization_id,
+        access_token,
+        refresh_token,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async resendLoginCode(body: ResendLoginCodeDTO) {
+    const { email, organization_code } = body;
+    try {
+      const organization = await this.findOrganization({
+        code: organization_code,
+      });
+      if (!organization) {
+        throw new BadRequestException(
+          this.i18n.t('message.organization_not_found'),
+        );
+      }
+
+      const user = await this.findUser({
+        email,
+        organization_id: organization.id,
+      });
+
+      if (!user) {
+        throw new BadRequestException(this.i18n.t('message.wrong_account'));
+      }
+
+      // Check if user is blocked
+      if (user.block_to && dayjs().isBefore(user.block_to)) {
+        throw new BadRequestException(
+          this.i18n.t('message.account_blocked', {
+            args: {
+              time: dayjs(user.block_to).format('HH:mm DD/MM/YYYY'),
+            },
+          }),
+        );
+      }
+
+      // Check if a code was recently sent and is still valid
+      if (
+        user.login_code_expires_at &&
+        dayjs().isBefore(user.login_code_expires_at)
+      ) {
+        // Calculate time since code was generated (assuming code expires in 5 minutes)
+        const codeGeneratedAt = dayjs(user.login_code_expires_at).subtract(
+          5,
+          'minutes',
+        );
+        const secondsElapsed = dayjs().diff(codeGeneratedAt, 'second');
+
+        // Prevent resending if last code was sent less than 60 seconds ago
+        if (secondsElapsed < 60) {
+          const secondsToWait = 60 - secondsElapsed;
+          throw new BadRequestException(
+            this.i18n.t('message.code_resend_too_soon', {
+              args: {
+                seconds: secondsToWait,
+              },
+            }),
+          );
+        }
+      }
+
+      // Generate a new 6-digit login code
+      const loginCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Set expiration to 5 minutes from now
+      const loginCodeExpiresAt = dayjs().add(5, 'minutes').toDate();
+
+      // Save the code to the user record
+      await this.prismaService.client.user.update({
+        where: { id: user.id },
+        data: {
+          login_code: loginCode,
+          login_code_expires_at: loginCodeExpiresAt,
+        },
+      });
+
+      // Send the code via email
+      await this.mailService.sendLoginCodeMail(user.email, loginCode);
+
+      return {
+        message: this.i18n.t('message.login_code_resent'),
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
