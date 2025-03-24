@@ -33,6 +33,7 @@ import {
   VerifyLoginCodeDTO,
   ResendLoginCodeDTO,
 } from './dto/login-by-code.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -487,7 +488,10 @@ export class AuthService {
     }
   }
 
-  async verifyLoginCode(body: VerifyLoginCodeDTO) {
+  async verifyLoginCode(
+    body: VerifyLoginCodeDTO,
+    request: Request & { clientIp: string },
+  ) {
     const { email, code, organization_code } = body;
     try {
       const organization = await this.findOrganization({
@@ -522,7 +526,16 @@ export class AuthService {
       // Verify the code
       if (!user.login_code || user.login_code !== code) {
         // Track failed login attempt
-        await this.trackFailedLoginAttempt(email, organization_code, user.id);
+        const ip_address =
+          request.clientIp || request.ip || request.socket?.remoteAddress;
+        const user_agent = request.headers['user-agent'];
+        await this.trackFailedLoginAttempt(
+          email,
+          organization_code,
+          user.id,
+          ip_address,
+          user_agent,
+        );
         throw new BadRequestException(
           this.i18n.t('message.invalid_login_code'),
         );

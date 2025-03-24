@@ -26,6 +26,7 @@ import {
   VerifyLoginCodeDTO,
   ResendLoginCodeDTO,
 } from './dto/login-by-code.dto';
+import { Request } from 'express';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -60,8 +61,11 @@ export class AuthController {
 
   @Public()
   @Post('sign-in-by-code/verify')
-  async verifyLoginCode(@Body() body: VerifyLoginCodeDTO) {
-    return await this.authService.verifyLoginCode(body);
+  async verifyLoginCode(
+    @Body() body: VerifyLoginCodeDTO,
+    @Req() request: Request & { clientIp: string },
+  ) {
+    return await this.authService.verifyLoginCode(body, request);
   }
 
   @HttpCode(HttpStatus.OK)
