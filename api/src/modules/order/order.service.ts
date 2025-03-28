@@ -392,39 +392,41 @@ export class OrderService {
     } = query;
     const whereClause: Prisma.OrderWhereInput = {};
     const include = {
-      group: Boolean(with_group)
-        ? {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-              share_scope: true,
-              type: true,
-              price: true,
-              created_by: {
-                select: {
-                  id: true,
-                  email: true,
-                  display_name: true,
+      group:
+        with_group && with_group == 1
+          ? {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+                share_scope: true,
+                type: true,
+                price: true,
+                created_by: {
+                  select: {
+                    id: true,
+                    email: true,
+                    display_name: true,
+                  },
                 },
               },
-            },
-          }
-        : false,
+            }
+          : false,
       transaction: {
         select: {
           unique_code: true,
         },
       },
-      created_by: Boolean(with_created_by)
-        ? {
-            select: {
-              id: true,
-              email: true,
-              display_name: true,
-            },
-          }
-        : false,
+      created_by:
+        with_created_by && with_created_by == 1
+          ? {
+              select: {
+                id: true,
+                email: true,
+                display_name: true,
+              },
+            }
+          : false,
     };
 
     let orderByClause:
@@ -447,7 +449,7 @@ export class OrderService {
       whereClause.group_id = group_id;
     }
 
-    if (is_mine) {
+    if (is_mine && is_mine == 1) {
       whereClause.created_by_id = user.id;
     }
 

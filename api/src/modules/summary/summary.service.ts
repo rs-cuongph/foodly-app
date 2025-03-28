@@ -9,6 +9,14 @@ import { I18nService } from 'nestjs-i18n';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { Prisma } from '@prisma/client';
+import * as dayjs from 'dayjs';
+import * as weekOfYear from 'dayjs/plugin/weekOfYear';
+import * as isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import * as isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(weekOfYear);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 interface PeriodResult {
   date: Date;
@@ -53,76 +61,86 @@ export class SummaryService {
    * 5. Tính tổng số lượng order và tổng tiền
    * 6. Gộp kết quả với mảng thời gian để đảm bảo đủ dữ liệu
    */
-  async getOrderAmountSummary(
-    mode: SummaryMode,
-    organization_id?: string,
-  ): Promise<OrderAmountSummaryResponse[]> {
-    const now = new Date();
+  async getOrderAmountSummary(mode: SummaryMode, organization_id?: string) {
+    const now = dayjs();
     let startDate: Date;
-    let groupBy: string;
     let timeIntervals: Date[] = [];
 
     switch (mode) {
       case SummaryMode.DAYS:
-        startDate = new Date(now.setDate(now.getDate() - 7));
-        groupBy = 'DATE(created_at)';
+        startDate = now.subtract(7, 'day').toDate();
         // Tạo mảng 7 ngày
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i);
-          timeIntervals.push(date);
-        }
+        timeIntervals = Array.from({ length: 7 }, (_, i) =>
+          now.subtract(6 - i, 'day').toDate(),
+        );
         break;
       case SummaryMode.WEEKS:
-        startDate = new Date(now.setDate(now.getDate() - 28));
-        groupBy = "DATE_TRUNC('week', created_at)";
+        startDate = now.subtract(28, 'day').toDate();
         // Tạo mảng 4 tuần
-        for (let i = 0; i < 4; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i * 7);
-          timeIntervals.push(date);
-        }
+        timeIntervals = Array.from({ length: 4 }, (_, i) =>
+          now
+            .subtract(3 - i, 'week')
+            .startOf('week')
+            .toDate(),
+        );
         break;
       case SummaryMode.MONTHS:
-        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-        groupBy = "DATE_TRUNC('month', created_at)";
+        startDate = now.subtract(1, 'year').toDate();
         // Tạo mảng 12 tháng
-        for (let i = 0; i < 12; i++) {
-          const date = new Date(now);
-          date.setMonth(date.getMonth() - i);
-          timeIntervals.push(date);
-        }
+        timeIntervals = Array.from({ length: 12 }, (_, i) =>
+          now
+            .subtract(11 - i, 'month')
+            .startOf('month')
+            .toDate(),
+        );
         break;
     }
 
-    // Đảo ngược mảng để sắp xếp theo thứ tự tăng dần
-    timeIntervals = timeIntervals.reverse();
-
     const results = (await this.prismaService.client.$queryRaw`
-      SELECT 
-        ${groupBy} as date,
+      WITH grouped_dates AS (
+        SELECT
+          CASE 
+            WHEN ${mode} = 'DAYS' THEN DATE(created_at)
+            WHEN ${mode} = 'WEEKS' THEN DATE_TRUNC('week', created_at)
+            WHEN ${mode} = 'MONTHS' THEN DATE_TRUNC('month', created_at)
+          END as grouped_date
+        FROM "Order"
+        WHERE created_at >= ${startDate}
+        AND deleted_at IS NULL
+        ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+      )
+      SELECT
+        grouped_date as date,
         COUNT(*) as order_count,
         COALESCE(SUM(amount), 0) as total_amount
-      FROM "Order"
-      WHERE created_at >= ${startDate}
-      AND deleted_at IS NULL
-      ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
-      GROUP BY ${groupBy}
+      FROM "Order" o
+      JOIN grouped_dates g ON 
+        CASE 
+          WHEN ${mode} = 'DAYS' THEN DATE(o.created_at)
+          WHEN ${mode} = 'WEEKS' THEN DATE_TRUNC('week', o.created_at)
+          WHEN ${mode} = 'MONTHS' THEN DATE_TRUNC('month', o.created_at)
+        END = g.grouped_date
+      WHERE o.created_at >= ${startDate}
+      AND o.deleted_at IS NULL
+      ${organization_id ? Prisma.sql`AND o.organization_id = ${organization_id}` : Prisma.empty}
+      GROUP BY grouped_date
       ORDER BY date ASC
     `) as AmountResult[];
 
-    // Gộp kết quả với mảng thời gian
     return timeIntervals.map((date) => {
       const result = results.find((r) => {
-        if (mode === SummaryMode.DAYS) {
-          return r.date.toDateString() === date.toDateString();
-        } else if (mode === SummaryMode.WEEKS) {
-          return r.date.getTime() === date.getTime();
-        } else {
-          return (
-            r.date.getMonth() === date.getMonth() &&
-            r.date.getFullYear() === date.getFullYear()
-          );
+        const resultDate = dayjs(r.date);
+        const targetDate = dayjs(date);
+
+        switch (mode) {
+          case SummaryMode.DAYS:
+            return resultDate.isSame(targetDate, 'day');
+          case SummaryMode.WEEKS:
+            return resultDate.isSame(targetDate, 'week');
+          case SummaryMode.MONTHS:
+            return resultDate.isSame(targetDate, 'month');
+          default:
+            return false;
         }
       });
 
@@ -150,101 +168,136 @@ export class SummaryService {
     mode: SummaryMode,
     organization_id?: string,
   ): Promise<OrderCountSummaryResponse[]> {
-    const now = new Date();
+    const now = dayjs();
     let startDate: Date;
     let previousStartDate: Date;
-    let groupBy: string;
     let timeIntervals: Date[] = [];
 
     switch (mode) {
       case SummaryMode.DAYS:
-        startDate = new Date(now.setDate(now.getDate() - 7));
-        previousStartDate = new Date(now.setDate(now.getDate() - 14));
-        groupBy = 'DATE(created_at)';
+        startDate = now.subtract(7, 'day').toDate();
+        previousStartDate = now.subtract(14, 'day').toDate();
         // Tạo mảng 7 ngày
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i);
-          timeIntervals.push(date);
-        }
+        timeIntervals = Array.from({ length: 7 }, (_, i) =>
+          now.subtract(6 - i, 'day').toDate(),
+        );
         break;
       case SummaryMode.WEEKS:
-        startDate = new Date(now.setDate(now.getDate() - 28));
-        previousStartDate = new Date(now.setDate(now.getDate() - 56));
-        groupBy = "DATE_TRUNC('week', created_at)";
+        startDate = now.subtract(28, 'day').toDate();
+        previousStartDate = now.subtract(56, 'day').toDate();
         // Tạo mảng 4 tuần
-        for (let i = 0; i < 4; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i * 7);
-          timeIntervals.push(date);
-        }
+        timeIntervals = Array.from({ length: 4 }, (_, i) =>
+          now
+            .subtract(3 - i, 'week')
+            .startOf('week')
+            .toDate(),
+        );
         break;
       case SummaryMode.MONTHS:
-        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
-        previousStartDate = new Date(now.setFullYear(now.getFullYear() - 2));
-        groupBy = "DATE_TRUNC('month', created_at)";
+        startDate = now.subtract(1, 'year').toDate();
+        previousStartDate = now.subtract(2, 'year').toDate();
         // Tạo mảng 12 tháng
-        for (let i = 0; i < 12; i++) {
-          const date = new Date(now);
-          date.setMonth(date.getMonth() - i);
-          timeIntervals.push(date);
-        }
+        timeIntervals = Array.from({ length: 12 }, (_, i) =>
+          now
+            .subtract(11 - i, 'month')
+            .startOf('month')
+            .toDate(),
+        );
         break;
     }
 
-    // Đảo ngược mảng để sắp xếp theo thứ tự tăng dần
-    timeIntervals = timeIntervals.reverse();
-
     const currentPeriod = (await this.prismaService.client.$queryRaw`
-      SELECT 
-        ${groupBy} as date,
+      WITH grouped_dates AS (
+        SELECT
+          CASE 
+            WHEN ${mode} = 'DAYS' THEN DATE(created_at)
+            WHEN ${mode} = 'WEEKS' THEN DATE_TRUNC('week', created_at)
+            WHEN ${mode} = 'MONTHS' THEN DATE_TRUNC('month', created_at)
+          END as grouped_date
+        FROM "Order"
+        WHERE created_at >= ${startDate}
+        AND deleted_at IS NULL
+        ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+      )
+      SELECT
+        grouped_date as date,
         COUNT(*) as current_period
-      FROM "Order"
-      WHERE created_at >= ${startDate}
-      AND deleted_at IS NULL
-      ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
-      GROUP BY ${groupBy}
+      FROM "Order" o
+      JOIN grouped_dates g ON 
+        CASE 
+          WHEN ${mode} = 'DAYS' THEN DATE(o.created_at)
+          WHEN ${mode} = 'WEEKS' THEN DATE_TRUNC('week', o.created_at)
+          WHEN ${mode} = 'MONTHS' THEN DATE_TRUNC('month', o.created_at)
+        END = g.grouped_date
+      WHERE o.created_at >= ${startDate}
+      AND o.deleted_at IS NULL
+      ${organization_id ? Prisma.sql`AND o.organization_id = ${organization_id}` : Prisma.empty}
+      GROUP BY grouped_date
       ORDER BY date ASC
     `) as PeriodResult[];
 
     const previousPeriod = (await this.prismaService.client.$queryRaw`
-      SELECT 
-        ${groupBy} as date,
+      WITH grouped_dates AS (
+        SELECT
+          CASE 
+            WHEN ${mode} = 'DAYS' THEN DATE(created_at)
+            WHEN ${mode} = 'WEEKS' THEN DATE_TRUNC('week', created_at)
+            WHEN ${mode} = 'MONTHS' THEN DATE_TRUNC('month', created_at)
+          END as grouped_date
+        FROM "Order"
+        WHERE created_at >= ${previousStartDate}
+        AND created_at < ${startDate}
+        AND deleted_at IS NULL
+        ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+      )
+      SELECT
+        grouped_date as date,
         COUNT(*) as previous_period
-      FROM "Order"
-      WHERE created_at >= ${previousStartDate}
-      AND created_at < ${startDate}
-      AND deleted_at IS NULL
-      ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
-      GROUP BY ${groupBy}
+      FROM "Order" o
+      JOIN grouped_dates g ON 
+        CASE 
+          WHEN ${mode} = 'DAYS' THEN DATE(o.created_at)
+          WHEN ${mode} = 'WEEKS' THEN DATE_TRUNC('week', o.created_at)
+          WHEN ${mode} = 'MONTHS' THEN DATE_TRUNC('month', o.created_at)
+        END = g.grouped_date
+      WHERE o.created_at >= ${previousStartDate}
+      AND o.created_at < ${startDate}
+      AND o.deleted_at IS NULL
+      ${organization_id ? Prisma.sql`AND o.organization_id = ${organization_id}` : Prisma.empty}
+      GROUP BY grouped_date
       ORDER BY date ASC
     `) as PeriodResult[];
 
-    // Gộp kết quả với mảng thời gian
     return timeIntervals.map((date) => {
       const current = currentPeriod.find((r) => {
-        if (mode === SummaryMode.DAYS) {
-          return r.date.toDateString() === date.toDateString();
-        } else if (mode === SummaryMode.WEEKS) {
-          return r.date.getTime() === date.getTime();
-        } else {
-          return (
-            r.date.getMonth() === date.getMonth() &&
-            r.date.getFullYear() === date.getFullYear()
-          );
+        const resultDate = dayjs(r.date);
+        const targetDate = dayjs(date);
+
+        switch (mode) {
+          case SummaryMode.DAYS:
+            return resultDate.isSame(targetDate, 'day');
+          case SummaryMode.WEEKS:
+            return resultDate.isSame(targetDate, 'week');
+          case SummaryMode.MONTHS:
+            return resultDate.isSame(targetDate, 'month');
+          default:
+            return false;
         }
       });
 
       const previous = previousPeriod.find((r) => {
-        if (mode === SummaryMode.DAYS) {
-          return r.date.toDateString() === date.toDateString();
-        } else if (mode === SummaryMode.WEEKS) {
-          return r.date.getTime() === date.getTime();
-        } else {
-          return (
-            r.date.getMonth() === date.getMonth() &&
-            r.date.getFullYear() === date.getFullYear()
-          );
+        const resultDate = dayjs(r.date);
+        const targetDate = dayjs(date);
+
+        switch (mode) {
+          case SummaryMode.DAYS:
+            return resultDate.isSame(targetDate, 'day');
+          case SummaryMode.WEEKS:
+            return resultDate.isSame(targetDate, 'week');
+          case SummaryMode.MONTHS:
+            return resultDate.isSame(targetDate, 'month');
+          default:
+            return false;
         }
       });
 
@@ -277,21 +330,22 @@ export class SummaryService {
     mode: SummaryMode,
     organization_id?: string,
   ): Promise<OrderStatusSummaryResponse[]> {
-    const now = new Date();
+    const now = dayjs();
     let startDate: Date;
 
     switch (mode) {
       case SummaryMode.DAYS:
-        startDate = new Date(now.setDate(now.getDate() - 7));
+        startDate = now.subtract(7, 'day').toDate();
         break;
       case SummaryMode.WEEKS:
-        startDate = new Date(now.setDate(now.getDate() - 28));
+        startDate = now.subtract(28, 'day').toDate();
         break;
       case SummaryMode.MONTHS:
-        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+        startDate = now.subtract(1, 'year').toDate();
         break;
     }
 
+    console.log(startDate);
     const results = (await this.prismaService.client.$queryRaw`
       WITH total_orders AS (
         SELECT COUNT(*) as total
@@ -299,20 +353,36 @@ export class SummaryService {
         WHERE created_at >= ${startDate}
         AND deleted_at IS NULL
         ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+      ),
+      status_counts AS (
+        SELECT
+          status,
+          COUNT(*) as count
+        FROM "Order"
+        WHERE created_at >= ${startDate}
+        AND deleted_at IS NULL
+        ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+        GROUP BY status
       )
-      SELECT 
-        status,
-        COUNT(*) as count,
-        ROUND((COUNT(*)::float / total::float) * 100, 2) as percentage
-      FROM "Order", total_orders
-      WHERE created_at >= ${startDate}
-      AND deleted_at IS NULL
-      ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
-      GROUP BY status, total
-      ORDER BY count DESC
+      SELECT
+        s.status,
+        COALESCE(s.count, 0) as count,
+        CASE 
+          WHEN t.total > 0 THEN ROUND((COALESCE(s.count, 0)::numeric / t.total::numeric) * 100, 2)
+          ELSE 0
+        END as percentage
+      FROM total_orders t
+      CROSS JOIN (
+        SELECT DISTINCT status FROM "Order" WHERE status IS NOT NULL
+        UNION
+        SELECT NULL WHERE EXISTS (
+          SELECT 1 FROM "Order" WHERE status IS NULL
+        )
+      ) all_statuses
+      LEFT JOIN status_counts s ON s.status = all_statuses.status
+      ORDER BY s.count DESC NULLS LAST
     `) as StatusResult[];
 
-    // Convert BigInt to number
     return results.map((result) => ({
       status: result.status,
       count: Number(result.count),

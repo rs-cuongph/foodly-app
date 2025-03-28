@@ -12,7 +12,7 @@ export const CustomPrismaClient = (options: CustomPrismaClientOpts) => {
     Prisma.PrismaClientOptions,
     'query' | 'info' | 'warn' | 'error'
   >({
-    log: ['query', 'info'],
+    log: process.env.PRISMA_ENABLE_LOG == 'true' ? ['query', 'info'] : [],
     transactionOptions: {
       isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
       maxWait: 5000, // default: 2000

@@ -4,9 +4,10 @@ import {
   StringField,
   StringFieldOptional,
 } from '@decorators/validation/string.decorator';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { PAYMENT_METHOD } from '@enums/payment.enum';
 import { ORDER_STATUS_ENUM } from '@enums/status.enum';
+import { ToInt } from '@decorators/validation/transform.decorator';
 
 export class SearchOrderDTO {
   @StringField({
@@ -46,6 +47,7 @@ export class SearchOrderDTO {
   })
   is_online?: number;
 
+  @Transform(({ value }) => (value ? Number(value) : undefined))
   @StringFieldOptional({
     isStringNumber: true,
     transformTo: true,

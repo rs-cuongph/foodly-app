@@ -33,6 +33,7 @@ async function bootstrap() {
       exceptionFactory: i18nValidationErrorFactory,
       whitelist: true,
       stopAtFirstError: true,
+      transform: true,
     }),
   );
   app.use(requestIp.mw());

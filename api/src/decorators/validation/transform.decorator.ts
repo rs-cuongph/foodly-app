@@ -19,125 +19,94 @@ export function Trim(): PropertyDecorator {
 }
 
 export function ToBoolean(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      switch (params.value) {
-        case 'true':
-          return true;
-        case 'false':
-          return false;
-        default:
-          return params.value;
-      }
-    },
-    { toClassOnly: true },
-  );
+  return Transform((params) => {
+    switch (params.value) {
+      case 'true':
+        return true;
+      case 'false':
+        return false;
+      default:
+        return params.value;
+    }
+  });
 }
 
 export function ToDate(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      return dayjs(params.value).format('YYYY-MM-DD');
-    },
-    { toClassOnly: true },
-  );
+  return Transform((params) => {
+    return dayjs(params.value).format('YYYY-MM-DD');
+  });
 }
 
 export function ToDateISOString(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      return dayjs(params.value).toISOString();
-    },
-    { toClassOnly: true },
-  );
+  return Transform((params) => {
+    return dayjs(params.value).toISOString();
+  });
 }
 
 export function ToInt(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      const value = params.value as string;
-      return Number.parseInt(value, 10);
-    },
-    { toClassOnly: true },
-  );
+  return Transform((params) => {
+    const value = params.value as string;
+    return Number.parseInt(value, 10);
+  });
 }
 
 export function ToNumber(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      const value = params.value as string;
+  return Transform((params) => {
+    const value = params.value as string;
 
-      return Number(value);
-    },
-    { toClassOnly: true },
-  );
+    return Number(value);
+  });
 }
 
 export function ToFloat(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      const value = params.value as string;
-      return Number.parseFloat(value);
-    },
-    { toClassOnly: true },
-  );
+  return Transform((params) => {
+    const value = params.value as string;
+    return Number.parseFloat(value);
+  });
 }
 
 export function ToLowerCase(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      const value = params.value;
+  return Transform((params) => {
+    const value = params.value;
 
-      if (!value) {
-        return;
-      }
+    if (!value) {
+      return;
+    }
 
-      if (!Array.isArray(value)) {
-        return value.toLowerCase();
-      }
+    if (!Array.isArray(value)) {
+      return value.toLowerCase();
+    }
 
-      return value.map((v) => v.toLowerCase());
-    },
-    {
-      toClassOnly: true,
-    },
-  );
+    return value.map((v) => v.toLowerCase());
+  });
 }
 
 export function ToUpperCase(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      const value = params.value;
+  return Transform((params) => {
+    const value = params.value;
 
-      if (!value) {
-        return;
-      }
+    if (!value) {
+      return;
+    }
 
-      if (!Array.isArray(value)) {
-        return value.toUpperCase();
-      }
+    if (!Array.isArray(value)) {
+      return value.toUpperCase();
+    }
 
-      return value.map((v) => v.toUpperCase());
-    },
-    {
-      toClassOnly: true,
-    },
-  );
+    return value.map((v) => v.toUpperCase());
+  });
 }
 
 export function ToArray(): PropertyDecorator {
-  return Transform(
-    (params) => {
-      const value = params.value;
+  return Transform((params) => {
+    const value = params.value;
 
-      if (isNil(value)) {
-        return [];
-      }
+    if (isNil(value)) {
+      return [];
+    }
 
-      return castArray(value);
-    },
-    { toClassOnly: true },
-  );
+    return castArray(value);
+  });
 }
 
 export function IsEqualTo<T>(

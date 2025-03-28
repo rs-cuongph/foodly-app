@@ -26,21 +26,22 @@ export const QueryLoggingExt = (
             const result = await query(args);
             const after = performance.now();
             const executionTime = Number((after - before).toFixed(2));
-
-            if (logMessage) {
-              logger[logLevel](
-                logMessage({
-                  model: model!,
-                  action: operation,
-                  before,
-                  after,
-                  executionTime,
-                }),
-              );
-            } else {
-              logger[logLevel](
-                `Prisma Query ${model}.${operation} took ${executionTime}ms`,
-              );
+            if (process.env.PRISMA_ENABLE_LOG == 'true') {
+              if (logMessage) {
+                logger[logLevel](
+                  logMessage({
+                    model: model!,
+                    action: operation,
+                    before,
+                    after,
+                    executionTime,
+                  }),
+                );
+              } else {
+                logger[logLevel](
+                  `Prisma Query ${model}.${operation} took ${executionTime}ms`,
+                );
+              }
             }
             return result;
           },
@@ -48,17 +49,3 @@ export const QueryLoggingExt = (
       },
     });
   });
-
-// export const QueryLoggingExt = Prisma.defineExtension({
-//   name: 'QueryLoggingExtension',
-//   model: {
-//     $allModels: {
-//       async $allOperations(_args) {
-//         console.log(_args);
-//         const { operation, model, args, query } = _args;
-
-//         return result;
-//       },
-//     },
-//   },
-// });
