@@ -78,6 +78,7 @@ export class OrderService {
     const maxOrder = user.max_order;
     const ordersNotPay = await this.prismaService.client.order.findMany({
       where: {
+        created_by_id: user.id,
         status: {
           in: [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
         },
