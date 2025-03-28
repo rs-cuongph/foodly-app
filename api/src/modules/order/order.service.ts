@@ -393,7 +393,25 @@ export class OrderService {
     } = query;
     const whereClause: Prisma.OrderWhereInput = {};
     const include = {
-      group: Boolean(with_group),
+      group: Boolean(with_group)
+        ? {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+              share_scope: true,
+              type: true,
+              price: true,
+              created_by: {
+                select: {
+                  id: true,
+                  email: true,
+                  display_name: true,
+                },
+              },
+            },
+          }
+        : false,
       transaction: {
         select: {
           unique_code: true,
