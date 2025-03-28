@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
