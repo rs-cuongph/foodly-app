@@ -387,6 +387,7 @@ export class OrderService {
       is_mine,
       statuses,
       with_group,
+      with_created_by,
       group_id,
       keyword,
     } = query;
@@ -398,6 +399,7 @@ export class OrderService {
           unique_code: true,
         },
       },
+      created_by: Boolean(with_created_by),
     };
 
     let orderByClause:
@@ -511,7 +513,7 @@ export class OrderService {
   }
 
   /**
-   * Confirms an order as paid (only accessible by the order creator)
+   * Confirms an order as paid (only accessible by the group creator)
    * @param id The order ID to confirm
    * @param body The confirmation payload
    * @param user The authenticated user making the request
@@ -675,7 +677,7 @@ export class OrderService {
   }
 
   /**
-   * Confirms multiple orders as paid in bulk (only accessible by the order creator)
+   * Confirms multiple orders as paid in bulk (only accessible by the group creator)
    * @param body Contains array of order IDs to confirm
    * @param user The authenticated user making the request
    * @returns The transaction result
