@@ -399,7 +399,15 @@ export class OrderService {
           unique_code: true,
         },
       },
-      created_by: Boolean(with_created_by),
+      created_by: Boolean(with_created_by)
+        ? {
+            select: {
+              id: true,
+              email: true,
+              display_name: true,
+            },
+          }
+        : false,
     };
 
     let orderByClause:
