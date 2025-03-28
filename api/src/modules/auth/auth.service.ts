@@ -34,6 +34,7 @@ import {
   ResendLoginCodeDTO,
 } from './dto/login-by-code.dto';
 import { Request } from 'express';
+import { ORDER_STATUS_ENUM } from '@enums/status.enum';
 
 @Injectable()
 export class AuthService {
@@ -281,7 +282,27 @@ export class AuthService {
   }
 
   async getUserInfo(user: RequestWithUser['user']) {
-    return omit(user, ['password']);
+    const maxOrder = user.max_order;
+    const ordersNotPay = await this.prismaService.client.order.findMany({
+      where: {
+        created_by_id: user.id,
+        status: {
+          in: [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
+        },
+      },
+    });
+
+    const currentPoint = ordersNotPay.reduce((prev, curr) => {
+      let _curr = 1;
+      if (curr.status === ORDER_STATUS_ENUM.PROCESSING) _curr = 0.5;
+      return prev + _curr;
+    }, 0);
+
+    user['can_create_order'] = currentPoint < maxOrder;
+
+    return {
+      ...omit(user, ['password']),
+    };
   }
 
   async updateUserInfo(body: UpdateUserInfoDTO, user: RequestWithUser['user']) {
