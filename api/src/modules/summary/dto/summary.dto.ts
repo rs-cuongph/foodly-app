@@ -40,7 +40,7 @@ export class GetOrderStatusSummaryDto {
 
 export class OrderAmountSummaryResponse {
   @ApiProperty()
-  date: string;
+  date: Date;
 
   @ApiProperty()
   total_amount: number;

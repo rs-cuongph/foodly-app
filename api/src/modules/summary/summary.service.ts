@@ -16,6 +16,18 @@ interface PeriodResult {
   previous_period?: number;
 }
 
+interface AmountResult {
+  date: Date;
+  order_count: number;
+  total_amount: number;
+}
+
+interface StatusResult {
+  status: string;
+  count: number;
+  percentage: number;
+}
+
 @Injectable()
 export class SummaryService {
   constructor(
@@ -24,6 +36,22 @@ export class SummaryService {
     private i18n: I18nService,
   ) {}
 
+  /**
+   * Lấy thống kê tổng tiền và số lượng order theo thời gian
+   * @param mode - Chế độ thống kê: 7 ngày, 4 tuần, 12 tháng
+   * @param organization_id - ID của tổ chức (tùy chọn)
+   * @returns Mảng các kết quả thống kê theo ngày/tuần/tháng
+   *
+   * Logic:
+   * 1. Xác định khoảng thời gian và cách nhóm dữ liệu dựa vào mode
+   * 2. Query dữ liệu từ bảng Order với các điều kiện:
+   *    - Thời gian >= startDate
+   *    - Chưa bị xóa (deleted_at IS NULL)
+   *    - Thuộc organization (nếu có)
+   * 3. Nhóm dữ liệu theo ngày/tuần/tháng
+   * 4. Tính tổng số lượng order và tổng tiền
+   * 5. Sắp xếp kết quả theo thời gian tăng dần
+   */
   async getOrderAmountSummary(
     mode: SummaryMode,
     organization_id?: string,
@@ -47,7 +75,7 @@ export class SummaryService {
         break;
     }
 
-    const results = await this.prismaService.client.$queryRaw`
+    const results = (await this.prismaService.client.$queryRaw`
       SELECT 
         ${groupBy} as date,
         COUNT(*) as order_count,
@@ -58,11 +86,30 @@ export class SummaryService {
       ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
       GROUP BY ${groupBy}
       ORDER BY date ASC
-    `;
+    `) as AmountResult[];
 
-    return results as OrderAmountSummaryResponse[];
+    return results;
   }
 
+  /**
+   * Lấy thống kê số lượng order theo thời gian, so sánh với khoảng thời gian trước
+   * @param mode - Chế độ thống kê: 7 ngày, 4 tuần, 12 tháng
+   * @param organization_id - ID của tổ chức (tùy chọn)
+   * @returns Mảng các kết quả thống kê theo ngày/tuần/tháng, bao gồm cả khoảng thời gian trước
+   *
+   * Logic:
+   * 1. Xác định khoảng thời gian hiện tại và khoảng thời gian trước
+   * 2. Query dữ liệu cho khoảng thời gian hiện tại:
+   *    - Thời gian >= startDate
+   *    - Chưa bị xóa
+   *    - Thuộc organization (nếu có)
+   * 3. Query dữ liệu cho khoảng thời gian trước:
+   *    - Thời gian >= previousStartDate và < startDate
+   *    - Chưa bị xóa
+   *    - Thuộc organization (nếu có)
+   * 4. Gộp kết quả của hai khoảng thời gian
+   * 5. Sắp xếp kết quả theo thời gian tăng dần
+   */
   async getOrderCountSummary(
     mode: SummaryMode,
     organization_id?: string,
@@ -130,6 +177,23 @@ export class SummaryService {
     return mergedResults as OrderCountSummaryResponse[];
   }
 
+  /**
+   * Lấy thống kê tỉ lệ các trạng thái order theo thời gian
+   * @param mode - Chế độ thống kê: 7 ngày, 4 tuần, 12 tháng
+   * @param organization_id - ID của tổ chức (tùy chọn)
+   * @returns Mảng các kết quả thống kê theo trạng thái, bao gồm số lượng và tỉ lệ phần trăm
+   *
+   * Logic:
+   * 1. Xác định khoảng thời gian dựa vào mode
+   * 2. Sử dụng CTE (Common Table Expression) để tính tổng số order
+   * 3. Query dữ liệu từ bảng Order với các điều kiện:
+   *    - Thời gian >= startDate
+   *    - Chưa bị xóa
+   *    - Thuộc organization (nếu có)
+   * 4. Nhóm dữ liệu theo trạng thái
+   * 5. Tính số lượng và tỉ lệ phần trăm cho mỗi trạng thái
+   * 6. Sắp xếp kết quả theo số lượng giảm dần
+   */
   async getOrderStatusSummary(
     mode: SummaryMode,
     organization_id?: string,
@@ -149,7 +213,7 @@ export class SummaryService {
         break;
     }
 
-    const results = await this.prismaService.client.$queryRaw`
+    const results = (await this.prismaService.client.$queryRaw`
       WITH total_orders AS (
         SELECT COUNT(*) as total
         FROM "Order"
@@ -167,8 +231,8 @@ export class SummaryService {
       ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
       GROUP BY status, total
       ORDER BY count DESC
-    `;
+    `) as StatusResult[];
 
-    return results as OrderStatusSummaryResponse[];
+    return results;
   }
 }
