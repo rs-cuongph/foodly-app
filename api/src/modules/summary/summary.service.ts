@@ -44,13 +44,14 @@ export class SummaryService {
    *
    * Logic:
    * 1. Xác định khoảng thời gian và cách nhóm dữ liệu dựa vào mode
-   * 2. Query dữ liệu từ bảng Order với các điều kiện:
+   * 2. Tạo mảng các ngày/tuần/tháng cần hiển thị
+   * 3. Query dữ liệu từ bảng Order với các điều kiện:
    *    - Thời gian >= startDate
    *    - Chưa bị xóa (deleted_at IS NULL)
    *    - Thuộc organization (nếu có)
-   * 3. Nhóm dữ liệu theo ngày/tuần/tháng
-   * 4. Tính tổng số lượng order và tổng tiền
-   * 5. Sắp xếp kết quả theo thời gian tăng dần
+   * 4. Nhóm dữ liệu theo ngày/tuần/tháng
+   * 5. Tính tổng số lượng order và tổng tiền
+   * 6. Gộp kết quả với mảng thời gian để đảm bảo đủ dữ liệu
    */
   async getOrderAmountSummary(
     mode: SummaryMode,
@@ -59,27 +60,49 @@ export class SummaryService {
     const now = new Date();
     let startDate: Date;
     let groupBy: string;
+    let timeIntervals: Date[] = [];
 
     switch (mode) {
       case SummaryMode.DAYS:
         startDate = new Date(now.setDate(now.getDate() - 7));
         groupBy = 'DATE(created_at)';
+        // Tạo mảng 7 ngày
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          timeIntervals.push(date);
+        }
         break;
       case SummaryMode.WEEKS:
         startDate = new Date(now.setDate(now.getDate() - 28));
         groupBy = "DATE_TRUNC('week', created_at)";
+        // Tạo mảng 4 tuần
+        for (let i = 0; i < 4; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i * 7);
+          timeIntervals.push(date);
+        }
         break;
       case SummaryMode.MONTHS:
         startDate = new Date(now.setFullYear(now.getFullYear() - 1));
         groupBy = "DATE_TRUNC('month', created_at)";
+        // Tạo mảng 12 tháng
+        for (let i = 0; i < 12; i++) {
+          const date = new Date(now);
+          date.setMonth(date.getMonth() - i);
+          timeIntervals.push(date);
+        }
         break;
     }
+
+    // Đảo ngược mảng để sắp xếp theo thứ tự tăng dần
+    timeIntervals = timeIntervals.reverse();
 
     const results = (await this.prismaService.client.$queryRaw`
       SELECT 
         ${groupBy} as date,
         COUNT(*) as order_count,
-        SUM(amount) as total_amount
+        COALESCE(SUM(amount), 0) as total_amount
       FROM "Order"
       WHERE created_at >= ${startDate}
       AND deleted_at IS NULL
@@ -88,12 +111,27 @@ export class SummaryService {
       ORDER BY date ASC
     `) as AmountResult[];
 
-    // Convert BigInt and Decimal to number/string
-    return results.map((result) => ({
-      date: result.date,
-      order_count: Number(result.order_count),
-      total_amount: result.total_amount.toString(),
-    }));
+    // Gộp kết quả với mảng thời gian
+    return timeIntervals.map((date) => {
+      const result = results.find((r) => {
+        if (mode === SummaryMode.DAYS) {
+          return r.date.toDateString() === date.toDateString();
+        } else if (mode === SummaryMode.WEEKS) {
+          return r.date.getTime() === date.getTime();
+        } else {
+          return (
+            r.date.getMonth() === date.getMonth() &&
+            r.date.getFullYear() === date.getFullYear()
+          );
+        }
+      });
+
+      return {
+        date,
+        order_count: result ? Number(result.order_count) : 0,
+        total_amount: result ? result.total_amount.toString() : '0',
+      };
+    });
   }
 
   /**
@@ -104,16 +142,9 @@ export class SummaryService {
    *
    * Logic:
    * 1. Xác định khoảng thời gian hiện tại và khoảng thời gian trước
-   * 2. Query dữ liệu cho khoảng thời gian hiện tại:
-   *    - Thời gian >= startDate
-   *    - Chưa bị xóa
-   *    - Thuộc organization (nếu có)
-   * 3. Query dữ liệu cho khoảng thời gian trước:
-   *    - Thời gian >= previousStartDate và < startDate
-   *    - Chưa bị xóa
-   *    - Thuộc organization (nếu có)
-   * 4. Gộp kết quả của hai khoảng thời gian
-   * 5. Sắp xếp kết quả theo thời gian tăng dần
+   * 2. Tạo mảng các ngày/tuần/tháng cần hiển thị
+   * 3. Query dữ liệu cho khoảng thời gian hiện tại và khoảng thời gian trước
+   * 4. Gộp kết quả với mảng thời gian để đảm bảo đủ dữ liệu
    */
   async getOrderCountSummary(
     mode: SummaryMode,
@@ -123,24 +154,46 @@ export class SummaryService {
     let startDate: Date;
     let previousStartDate: Date;
     let groupBy: string;
+    let timeIntervals: Date[] = [];
 
     switch (mode) {
       case SummaryMode.DAYS:
         startDate = new Date(now.setDate(now.getDate() - 7));
         previousStartDate = new Date(now.setDate(now.getDate() - 14));
         groupBy = 'DATE(created_at)';
+        // Tạo mảng 7 ngày
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          timeIntervals.push(date);
+        }
         break;
       case SummaryMode.WEEKS:
         startDate = new Date(now.setDate(now.getDate() - 28));
         previousStartDate = new Date(now.setDate(now.getDate() - 56));
         groupBy = "DATE_TRUNC('week', created_at)";
+        // Tạo mảng 4 tuần
+        for (let i = 0; i < 4; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i * 7);
+          timeIntervals.push(date);
+        }
         break;
       case SummaryMode.MONTHS:
         startDate = new Date(now.setFullYear(now.getFullYear() - 1));
         previousStartDate = new Date(now.setFullYear(now.getFullYear() - 2));
         groupBy = "DATE_TRUNC('month', created_at)";
+        // Tạo mảng 12 tháng
+        for (let i = 0; i < 12; i++) {
+          const date = new Date(now);
+          date.setMonth(date.getMonth() - i);
+          timeIntervals.push(date);
+        }
         break;
     }
+
+    // Đảo ngược mảng để sắp xếp theo thứ tự tăng dần
+    timeIntervals = timeIntervals.reverse();
 
     const currentPeriod = (await this.prismaService.client.$queryRaw`
       SELECT 
@@ -167,19 +220,40 @@ export class SummaryService {
       ORDER BY date ASC
     `) as PeriodResult[];
 
-    // Merge the results and convert BigInt to number
-    const mergedResults = currentPeriod.map((current) => {
-      const previous = previousPeriod.find(
-        (p) => p.date.getTime() === current.date.getTime(),
-      );
+    // Gộp kết quả với mảng thời gian
+    return timeIntervals.map((date) => {
+      const current = currentPeriod.find((r) => {
+        if (mode === SummaryMode.DAYS) {
+          return r.date.toDateString() === date.toDateString();
+        } else if (mode === SummaryMode.WEEKS) {
+          return r.date.getTime() === date.getTime();
+        } else {
+          return (
+            r.date.getMonth() === date.getMonth() &&
+            r.date.getFullYear() === date.getFullYear()
+          );
+        }
+      });
+
+      const previous = previousPeriod.find((r) => {
+        if (mode === SummaryMode.DAYS) {
+          return r.date.toDateString() === date.toDateString();
+        } else if (mode === SummaryMode.WEEKS) {
+          return r.date.getTime() === date.getTime();
+        } else {
+          return (
+            r.date.getMonth() === date.getMonth() &&
+            r.date.getFullYear() === date.getFullYear()
+          );
+        }
+      });
+
       return {
-        date: current.date,
-        current_period: Number(current.current_period),
+        date,
+        current_period: current ? Number(current.current_period) : 0,
         previous_period: previous ? Number(previous.previous_period) : 0,
       };
     });
-
-    return mergedResults;
   }
 
   /**
