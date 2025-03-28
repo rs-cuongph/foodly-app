@@ -43,7 +43,7 @@ export class OrderAmountSummaryResponse {
   date: Date;
 
   @ApiProperty()
-  total_amount: number;
+  total_amount: string | number;
 
   @ApiProperty()
   order_count: number;
