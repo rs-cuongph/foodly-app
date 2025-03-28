@@ -513,11 +513,28 @@ export class OrderService {
    */
   markPaid(id: string, body: MarkPaidDTO, user: RequestWithUser['user']) {
     return this.prismaService.client.$transaction(async (tx) => {
-      const order = await tx.order.update({
+      const order = await tx.order.findFirst({
         where: {
           id,
-          status: OrderStatus.INIT,
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+          },
           created_by_id: user.id,
+        },
+      });
+
+      if (!order)
+        throw new BadRequestException(this.i18n.t('message.order_not_found'));
+
+      if (order.status === OrderStatus.COMPLETED) {
+        return {
+          message: this.i18n.t('message.order_already_paid'),
+        };
+      }
+
+      await tx.order.update({
+        where: {
+          id,
         },
         data: {
           status: OrderStatus.PROCESSING,
@@ -533,6 +550,7 @@ export class OrderService {
           status: TransactionStatus.AWAITING_CONFIRMATION,
         },
       });
+
       return order;
     });
   }

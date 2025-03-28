@@ -24,5 +24,6 @@
   "code_resend_too_soon": "Vui lòng đợi {seconds} giây trước khi yêu cầu gửi lại mã",
   "invalid_login_code": "Mã đăng nhập không hợp lệ",
   "login_code_expired": "Mã đăng nhập đã hết hạn",
-  "account_blocked": "Tài khoản của bạn đã bị khóa đến {time}"
+  "account_blocked": "Tài khoản của bạn đã bị khóa đến {time}",
+  "order_already_paid": "Đơn hàng đã được thanh toán"
 }
