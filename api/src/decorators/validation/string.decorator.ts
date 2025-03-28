@@ -308,16 +308,6 @@ export function StringField(
     );
   }
 
-  if (transformTo) {
-    if (transformOptions.toLowerCase) {
-      decorators.push(ToLowerCase());
-    } else if (transformOptions.toUpperCase) {
-      decorators.push(ToUpperCase());
-    } else if (transformOptions.toInt) {
-      decorators.push(ToInt());
-    }
-  }
-
   if (noEmoji) {
     decorators.push(
       IsNotEmoji({
@@ -440,6 +430,16 @@ export function StringField(
           message: i18nValidationMessage('validation.Max'),
         }),
       );
+    }
+  }
+
+  if (transformTo) {
+    if (transformOptions.toLowerCase) {
+      decorators.push(ToLowerCase());
+    } else if (transformOptions.toUpperCase) {
+      decorators.push(ToUpperCase());
+    } else if (transformOptions.toInt) {
+      decorators.push(ToInt());
     }
   }
 

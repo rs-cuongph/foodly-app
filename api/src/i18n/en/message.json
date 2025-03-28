@@ -24,5 +24,6 @@
   "code_resend_too_soon": "Please wait {seconds} seconds before requesting a new code",
   "invalid_login_code": "Invalid login code",
   "login_code_expired": "Login code has expired",
-  "account_blocked": "Your account has been blocked until {time}"
+  "account_blocked": "Your account has been blocked until {time}",
+  "order_already_paid": "Order is already paid"
 }

@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
@@ -78,6 +77,7 @@ export class OrderService {
     const maxOrder = user.max_order;
     const ordersNotPay = await this.prismaService.client.order.findMany({
       where: {
+        created_by_id: user.id,
         status: {
           in: [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
         },
@@ -386,17 +386,45 @@ export class OrderService {
       is_mine,
       statuses,
       with_group,
+      with_created_by,
       group_id,
       keyword,
     } = query;
     const whereClause: Prisma.OrderWhereInput = {};
     const include = {
-      group: Boolean(with_group),
+      group: Boolean(with_group)
+        ? {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+              share_scope: true,
+              type: true,
+              price: true,
+              created_by: {
+                select: {
+                  id: true,
+                  email: true,
+                  display_name: true,
+                },
+              },
+            },
+          }
+        : false,
       transaction: {
         select: {
           unique_code: true,
         },
       },
+      created_by: Boolean(with_created_by)
+        ? {
+            select: {
+              id: true,
+              email: true,
+              display_name: true,
+            },
+          }
+        : false,
     };
 
     let orderByClause:
@@ -485,11 +513,28 @@ export class OrderService {
    */
   markPaid(id: string, body: MarkPaidDTO, user: RequestWithUser['user']) {
     return this.prismaService.client.$transaction(async (tx) => {
-      const order = await tx.order.update({
+      const order = await tx.order.findFirst({
         where: {
           id,
-          status: OrderStatus.INIT,
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+          },
           created_by_id: user.id,
+        },
+      });
+
+      if (!order)
+        throw new BadRequestException(this.i18n.t('message.order_not_found'));
+
+      if (order.status === OrderStatus.COMPLETED) {
+        return {
+          message: this.i18n.t('message.order_already_paid'),
+        };
+      }
+
+      await tx.order.update({
+        where: {
+          id,
         },
         data: {
           status: OrderStatus.PROCESSING,
@@ -505,12 +550,13 @@ export class OrderService {
           status: TransactionStatus.AWAITING_CONFIRMATION,
         },
       });
+
       return order;
     });
   }
 
   /**
-   * Confirms an order as paid (only accessible by the order creator)
+   * Confirms an order as paid (only accessible by the group creator)
    * @param id The order ID to confirm
    * @param body The confirmation payload
    * @param user The authenticated user making the request
@@ -674,7 +720,7 @@ export class OrderService {
   }
 
   /**
-   * Confirms multiple orders as paid in bulk (only accessible by the order creator)
+   * Confirms multiple orders as paid in bulk (only accessible by the group creator)
    * @param body Contains array of order IDs to confirm
    * @param user The authenticated user making the request
    * @returns The transaction result
