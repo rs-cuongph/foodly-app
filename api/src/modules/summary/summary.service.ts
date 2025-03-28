@@ -18,13 +18,13 @@ interface PeriodResult {
 
 interface AmountResult {
   date: Date;
-  order_count: number;
-  total_amount: number;
+  order_count: bigint;
+  total_amount: Prisma.Decimal;
 }
 
 interface StatusResult {
   status: string;
-  count: number;
+  count: bigint;
   percentage: number;
 }
 
@@ -88,7 +88,12 @@ export class SummaryService {
       ORDER BY date ASC
     `) as AmountResult[];
 
-    return results;
+    // Convert BigInt and Decimal to number/string
+    return results.map((result) => ({
+      date: result.date,
+      order_count: Number(result.order_count),
+      total_amount: result.total_amount.toString(),
+    }));
   }
 
   /**
@@ -162,19 +167,19 @@ export class SummaryService {
       ORDER BY date ASC
     `) as PeriodResult[];
 
-    // Merge the results
+    // Merge the results and convert BigInt to number
     const mergedResults = currentPeriod.map((current) => {
       const previous = previousPeriod.find(
         (p) => p.date.getTime() === current.date.getTime(),
       );
       return {
         date: current.date,
-        current_period: current.current_period,
-        previous_period: previous ? previous.previous_period : 0,
+        current_period: Number(current.current_period),
+        previous_period: previous ? Number(previous.previous_period) : 0,
       };
     });
 
-    return mergedResults as OrderCountSummaryResponse[];
+    return mergedResults;
   }
 
   /**
@@ -233,6 +238,11 @@ export class SummaryService {
       ORDER BY count DESC
     `) as StatusResult[];
 
-    return results;
+    // Convert BigInt to number
+    return results.map((result) => ({
+      status: result.status,
+      count: Number(result.count),
+      percentage: result.percentage,
+    }));
   }
 }
