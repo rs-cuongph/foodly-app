@@ -25,5 +25,6 @@
   "invalid_login_code": "Invalid login code",
   "login_code_expired": "Login code has expired",
   "account_blocked": "Your account has been blocked until {time}",
-  "order_already_paid": "Order is already paid"
+  "order_already_paid": "Order is already paid",
+  "mark_paid_all_failed": "Mark paid all failed"
 }

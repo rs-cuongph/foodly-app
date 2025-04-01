@@ -653,74 +653,80 @@ export class OrderService {
       });
     }
 
-    return this.prismaService.client.$transaction(async (tx) => {
-      const newTransaction = await tx.transaction.create({
-        data: {
-          organization_id: user.organization_id,
-          status: TransactionStatus.AWAITING_CONFIRMATION,
-          type: TransactionType.SETTLEMENT,
-          total_amount: orders.reduce(
-            (prev, curr) => prev + Number(curr.amount),
-            0,
-          ),
-          unique_code: this.generateUniqueCode(),
-          metadata: {
-            orders: orders.map((i) => ({
-              id: i.id,
-              quantity: i.quantity,
-              amount: i.amount,
-              menu: i.menu,
-              price: i.price,
-              payment_method: i.payment_method,
-            })),
-            quanlity: orders.reduce(
-              (prev, curr) => prev + Number(curr.quantity),
-              0,
-            ),
-            amount: orders.reduce(
+    try {
+      return await this.prismaService.client.$transaction(async (tx) => {
+        const newTransaction = await tx.transaction.create({
+          data: {
+            organization_id: user.organization_id,
+            status: TransactionStatus.AWAITING_CONFIRMATION,
+            type: TransactionType.SETTLEMENT,
+            total_amount: orders.reduce(
               (prev, curr) => prev + Number(curr.amount),
               0,
             ),
+            unique_code: this.generateUniqueCode(),
+            metadata: {
+              orders: orders.map((i) => ({
+                id: i.id,
+                quantity: i.quantity,
+                amount: i.amount,
+                menu: i.menu,
+                price: i.price,
+                payment_method: i.payment_method,
+              })),
+              quanlity: orders.reduce(
+                (prev, curr) => prev + Number(curr.quantity),
+                0,
+              ),
+              amount: orders.reduce(
+                (prev, curr) => prev + Number(curr.amount),
+                0,
+              ),
+            },
           },
-        },
-      });
+        });
 
-      await tx.orderOnTransaction.createMany({
-        data: orders.map((i) => ({
-          order_id: i.id,
-          transaction_id: newTransaction.id,
-          amount: i.amount,
-        })),
-      });
+        await tx.orderOnTransaction.createMany({
+          data: orders.map((i) => ({
+            order_id: i.id,
+            transaction_id: newTransaction.id,
+            amount: i.amount,
+          })),
+        });
 
-      // remove old transaction
-      await tx.transaction.deleteMany({
-        where: {
-          id: {
-            in: orders.map((i) => i.transaction_id),
+        // remove old transaction
+        await tx.transaction.deleteMany({
+          where: {
+            id: {
+              in: orders.map((i) => i.transaction_id),
+            },
           },
-        },
-      });
+        });
 
-      await tx.order.updateMany({
-        where: {
-          id: {
-            in: orders.map((i) => i.id),
+        await tx.order.updateMany({
+          where: {
+            id: {
+              in: orders.map((i) => i.id),
+            },
+            status: OrderStatus.INIT,
           },
-          status: OrderStatus.INIT,
-        },
-        data: {
-          status: OrderStatus.PROCESSING,
-          transaction_id: newTransaction.id,
-          updated_by_id: user.id,
-        },
-      });
+          data: {
+            status: OrderStatus.PROCESSING,
+            transaction_id: newTransaction.id,
+            updated_by_id: user.id,
+          },
+        });
 
-      return {
-        success: true,
-        unique_code: newTransaction.unique_code,
-      };
-    });
+        return {
+          success: true,
+          unique_code: newTransaction.unique_code,
+        };
+      });
+    } catch (error) {
+      throw new BadRequestException(
+        this.i18n.t('message.mark_paid_all_failed'),
+      );
+    }
   }
 
   /**
