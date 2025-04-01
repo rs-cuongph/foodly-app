@@ -717,6 +717,7 @@ export class OrderService {
 
       return {
         success: true,
+        unique_code: newTransaction.unique_code,
       };
     });
   }
