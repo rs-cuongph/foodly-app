@@ -199,6 +199,10 @@ export class GroupService {
         },
       },
     });
+
+    console.log('user =========>', user);
+    console.log('findGroup =========>', findGroup);
+
     if (user && findGroup.created_by_id === user.id) {
       return findGroup;
     }
