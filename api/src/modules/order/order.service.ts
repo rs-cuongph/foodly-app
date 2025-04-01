@@ -476,6 +476,42 @@ export class OrderService {
                   mode: 'insensitive',
                 },
               },
+              // {
+              //   created_by: {
+              //     OR: [
+              //       {
+              //         email: {
+              //           contains: keyword,
+              //           mode: 'insensitive',
+              //         },
+              //       },
+              //       {
+              //         display_name: {
+              //           contains: keyword,
+              //           mode: 'insensitive',
+              //         },
+              //       },
+              //     ],
+              //   },
+              // },
+            ],
+          },
+        },
+        {
+          created_by: {
+            OR: [
+              {
+                email: {
+                  contains: keyword,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                display_name: {
+                  contains: keyword,
+                  mode: 'insensitive',
+                },
+              },
             ],
           },
         },
