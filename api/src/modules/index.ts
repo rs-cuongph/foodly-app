@@ -6,6 +6,7 @@ import { GroupModule } from './group/group.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { OrganizationModule } from './organization/organization.module';
 import { SummaryModule } from './summary/summary.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 export default [
   AuthModule,
@@ -16,4 +17,5 @@ export default [
   MenuModule,
   OrganizationModule,
   SummaryModule,
+  AnalyticsModule,
 ];
