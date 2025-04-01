@@ -1,7 +1,6 @@
-# docker-compose.yml
-
 services:
   postgres:
+    hostname: postgres
     image: postgres:15.2
     restart: always
     environment:
@@ -9,6 +8,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres:/var/lib/postgresql/data
+    networks:
+      - nestjs-boilerplate-network
     ports:
       - '5432:5432'
 
@@ -19,6 +20,7 @@ services:
       - '6379:6379'
 
   maildev:
+    hostname: maildev
     build:
       context: .
       dockerfile: maildev.Dockerfile
@@ -27,10 +29,20 @@ services:
       - 1025:1025
     networks:
       - nestjs-boilerplate-network
+  api:
+    hostname: api
+    user: root
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 6100:6100
+    networks:
+      - nestjs-boilerplate-network
 
 volumes:
   postgres:
 
 networks:
   nestjs-boilerplate-network:
-    driver: bridge
+    external: true
