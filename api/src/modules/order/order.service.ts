@@ -671,6 +671,7 @@ export class OrderService {
               amount: i.amount,
               menu: i.menu,
               price: i.price,
+              payment_method: i.payment_method,
             })),
             quanlity: orders.reduce(
               (prev, curr) => prev + Number(curr.quantity),
