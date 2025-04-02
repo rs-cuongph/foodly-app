@@ -7,7 +7,7 @@
   "wrong_credential_format": "Mật khẩu không đúng định dạng.",
   "invite_code_incorrect": "Mã mời không đúng.",
   "group_locked": "Nhóm đã bị khóa.",
-  "wrong_password": "Mật khẩu không đúng.",
+  "wrong_password": "Mật khẩu hiện tại không đúng.",
   "order_not_found": "Đơn hàng không tồn tại.",
   "order_not_in_init_status": "Đơn hàng không ở trạng thái khởi tạo.",
   "invalid_token": "Mã không hợp lệ.",
@@ -26,5 +26,7 @@
   "login_code_expired": "Mã đăng nhập đã hết hạn.",
   "account_blocked": "Tài khoản của bạn đã bị khóa đến {time}.",
   "order_already_paid": "Đơn hàng đã được thanh toán.",
-  "mark_paid_all_failed": "Thanh toán thất bại."
+  "mark_paid_all_failed": "Thanh toán thất bại.",
+  "password_changed": "Mật khẩu đã được thay đổi.",
+  "new_password_same_as_old": "Mật khẩu mới không được trùng với mật khẩu cũ."
 }

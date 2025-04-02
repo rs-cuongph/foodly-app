@@ -7,7 +7,7 @@
   "wrong_credential_format": "Invalid credentials format",
   "invite_code_incorrect": "Invite code is incorrect",
   "group_locked": "Group is locked",
-  "wrong_password": "Password is incorrect",
+  "wrong_password": "Current password is incorrect",
   "order_not_found": "Order not found",
   "order_not_in_init_status": "Order is not in init status",
   "invalid_token": "Invalid token",
@@ -26,5 +26,7 @@
   "login_code_expired": "Login code has expired",
   "account_blocked": "Your account has been blocked until {time}",
   "order_already_paid": "Order is already paid",
-  "mark_paid_all_failed": "Mark paid all failed"
+  "mark_paid_all_failed": "Mark paid all failed",
+  "password_changed": "Password has been changed",
+  "new_password_same_as_old": "New password cannot be the same as the old password"
 }

@@ -337,6 +337,18 @@ export class AuthService {
       throw new BadRequestException(this.i18n.t('message.wrong_password'));
     }
 
+    // Check if new password is the same as old password
+    const isNewPasswordSame = await bcrypt.compare(
+      body.new_password,
+      user.password,
+    );
+
+    if (isNewPasswordSame) {
+      throw new BadRequestException(
+        this.i18n.t('message.new_password_same_as_old'),
+      );
+    }
+
     const hashedNewPassword = await bcrypt.hash(
       body.new_password,
       this.SALT_ROUND,
