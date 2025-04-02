@@ -125,11 +125,23 @@ export class GroupService {
     await this.checkGroupIsLocked(id);
     return this.prismaService.client.$transaction(async (tx) => {
       let inviteCode = null;
-      if (body.share_scope === ShareScope.PRIVATE) {
+
+      const group = await tx.group.findFirst({
+        where: {
+          id,
+          created_by_id: user.id,
+        },
+      });
+
+      if (
+        group.share_scope === ShareScope.PUBLIC &&
+        !group.invite_code &&
+        body.share_scope === ShareScope.PRIVATE
+      ) {
         inviteCode = this.generateInviteCode();
       }
 
-      const group = await tx.group.update({
+      await tx.group.update({
         where: {
           id,
           created_by_id: user.id,
