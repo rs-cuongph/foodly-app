@@ -18,7 +18,7 @@ export class MailService {
       if (this.configService.get('app.nodeEnv') === 'test') {
         return true;
       }
-
+      this.logger.log(`====> start send to job ${JOB_NAME_ENUM.SEND_MAIL}`);
       await this.mailQueue.add(JOB_NAME_ENUM.SEND_MAIL, options);
       return true;
     } catch (e) {
@@ -32,18 +32,25 @@ export class MailService {
     resetToken: string,
     redirectUrl: string,
   ) {
-    const subject = 'Đặt lại mật khẩu';
-    const resetLink = redirectUrl
-      ? `${redirectUrl}?token=${resetToken}`
-      : `${this.configService.get('mail.frontendUrl')}/reset-password?token=${resetToken}`;
-    await this.sendMail({
-      to,
-      subject,
-      template: 'reset-password',
-      context: {
-        resetLink,
-      },
-    });
+    try {
+      const subject = 'Đặt lại mật khẩu';
+      const resetLink = redirectUrl
+        ? `${redirectUrl}?token=${resetToken}`
+        : `${this.configService.get('mail.frontendUrl')}/reset-password?token=${resetToken}`;
+      await this.sendMail({
+        to,
+        subject,
+        template: 'reset-password',
+        context: {
+          resetLink,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `An error occur while sending password reset mail to ${to} with token ${resetToken}`,
+        error,
+      );
+    }
   }
 
   async sendLoginCodeMail(to: string, loginCode: string) {

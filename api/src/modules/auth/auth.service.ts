@@ -4,6 +4,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
 } from '@nestjs/common';
 import { SignUpDTO } from './dto/sign-up.dto';
 import { TokenPayload } from './interfaces/token.interface';
@@ -42,7 +43,7 @@ export class AuthService {
   private MAX_FAILED_ATTEMPTS = 10;
   private ATTEMPTS_WINDOW_MINUTES = 30;
   private BLOCK_DURATION_HOURS = 2;
-
+  private logger = new Logger(AuthService.name);
   constructor(
     @Inject('PrismaService')
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
@@ -393,11 +394,18 @@ export class AuthService {
       },
     });
 
-    await this.mailService.sendPasswordResetMail(
-      user.email,
-      resetToken,
-      body.redirect_url,
-    );
+    try {
+      this.logger.log(
+        `====> start send password reset mail to ${user.email} with token ${resetToken}`,
+      );
+      await this.mailService.sendPasswordResetMail(
+        user.email,
+        resetToken,
+        body.redirect_url,
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   async verifyResetPasswordToken(token: string) {
