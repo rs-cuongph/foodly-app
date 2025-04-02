@@ -73,6 +73,21 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
             host: configService.get('app.redisHost'),
             port: configService.get('app.redisPort'),
           },
+          defaultJobOptions: {
+            attempts: 3,
+            backoff: {
+              type: 'exponential',
+              delay: 1000,
+            },
+          },
+          limiter: {
+            max: 100,
+            duration: 1000,
+          },
+          settings: {
+            lockDuration: 30000,
+            stalledInterval: 30000,
+          },
         };
       },
       inject: [ConfigService],
