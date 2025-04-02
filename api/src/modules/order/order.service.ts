@@ -402,6 +402,7 @@ export class OrderService {
                 share_scope: true,
                 type: true,
                 price: true,
+                status: true,
                 created_by: {
                   select: {
                     id: true,
