@@ -124,6 +124,11 @@ export class GroupService {
   async edit(id: string, body: EditGroupDTO, user: RequestWithUser['user']) {
     await this.checkGroupIsLocked(id);
     return this.prismaService.client.$transaction(async (tx) => {
+      let inviteCode = null;
+      if (body.share_scope === ShareScope.PRIVATE) {
+        inviteCode = this.generateInviteCode();
+      }
+
       const group = await tx.group.update({
         where: {
           id,
@@ -138,6 +143,7 @@ export class GroupService {
           price: body.price ?? 0,
           share_scope: body.share_scope,
           type: body.type,
+          invite_code: inviteCode,
         },
       });
 
