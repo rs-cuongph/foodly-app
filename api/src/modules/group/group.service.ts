@@ -217,9 +217,9 @@ export class GroupService {
   async search(query: SearchGroupDTO, user: RequestWithUser['user'] | null) {
     const { keyword, sort, page, size, is_online, is_mine } = query;
     const whereClause: Prisma.GroupWhereInput = {
-      share_scope: {
-        in: [ShareScope.PUBLIC],
-      },
+      // share_scope: {
+      //   in: [ShareScope.PUBLIC, ShareScope.PRIVATE],
+      // },
     };
     let orderByClause:
       | Prisma.GroupOrderByWithRelationInput
