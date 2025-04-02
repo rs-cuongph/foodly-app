@@ -66,6 +66,8 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
     }),
     BullModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
+        console.log('redisHost', configService.get('app.redisHost'));
+        console.log('redisPort', configService.get('app.redisPort'));
         return {
           redis: {
             host: configService.get('app.redisHost'),
