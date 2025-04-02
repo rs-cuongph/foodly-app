@@ -7,6 +7,7 @@ export interface Config {
   mail: MailConfig;
   aws: AwsConfig;
   prisma: PrismaConfig;
+  openai: OpenAIConfig;
 }
 
 export interface AwsConfig {
@@ -57,4 +58,8 @@ export interface MailConfig {
 
 export interface PrismaConfig {
   logLevel: string;
+}
+
+export interface OpenAIConfig {
+  apiKey: string;
 }

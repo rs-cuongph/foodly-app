@@ -18,4 +18,5 @@ export default [
   OrganizationModule,
   SummaryModule,
   AnalyticsModule,
+  AnalyticsModule,
 ];

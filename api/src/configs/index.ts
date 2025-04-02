@@ -50,6 +50,9 @@ const configs = (): Config => {
     prisma: {
       logLevel: process.env.PRISMA_LOG_LEVEL || 'log',
     },
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY,
+    },
   };
 };
 

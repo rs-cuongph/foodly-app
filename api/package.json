@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",
+    "@huggingface/inference": "^3.6.2",
     "@langchain/community": "^0.3.38",
     "@langchain/core": "^0.3.43",
     "@langchain/openai": "^0.5.2",

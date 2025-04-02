@@ -1,29 +1,10 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { StringField } from '@decorators/validation/string.decorator';
 
 export class FoodTrendAnalysisDTO {
-  @ApiProperty({
-    description: 'Start date for analysis',
-    required: false,
+  @StringField({
+    allowEmpty: false,
   })
-  @IsOptional()
-  @IsDateString()
-  start_date?: string;
-
-  @ApiProperty({
-    description: 'End date for analysis',
-    required: false,
-  })
-  @IsOptional()
-  @IsDateString()
-  end_date?: string;
-
-  @ApiProperty({
-    description: 'Group ID to analyze',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
   group_id?: string;
 }
 

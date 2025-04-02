@@ -1,13 +1,11 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { AnalyticsService } from './analytics.service';
+import { Controller, Get, Query, Req } from '@nestjs/common';
+import { AnalyticsService, SuggestedItemsResponse } from './analytics.service';
 import { FoodTrendAnalysisDTO } from './dto/food-trend.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RequestWithUser } from 'src/types/requests.type';
 
 @ApiTags('Analytics')
 @Controller('analytics')
-@UseGuards(JwtAuthGuard)
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
@@ -17,10 +15,10 @@ export class AnalyticsController {
     status: 200,
     description: 'Returns analysis of food ordering trends',
   })
-  async analyzeFoodTrends(
+  analyzeFoodTrends(
     @Query() query: FoodTrendAnalysisDTO,
-    @CurrentUser() user: any,
-  ) {
-    return this.analyticsService.analyzeFoodTrends(query, user);
+    @Req() req: RequestWithUser,
+  ): Promise<SuggestedItemsResponse> {
+    return this.analyticsService.analyzeFoodTrends(query, req.user);
   }
 }
