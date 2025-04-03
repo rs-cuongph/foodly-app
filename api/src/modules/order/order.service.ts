@@ -645,7 +645,7 @@ export class OrderService {
   }
 
   /**
-   * Marks multiple orders as paid in bulk (only accessible by the group owner)
+   * Marks multiple orders as paid in bulk (only accessible by the order owner)
    * @param body Contains array of order IDs to mark as paid
    * @param user The authenticated user making the request
    * @returns True if successful
@@ -658,7 +658,9 @@ export class OrderService {
     if (!include_ids.length && !exclude_ids.length) {
       orders = await this.prismaService.client.order.findMany({
         where: {
-          status: OrderStatus.INIT,
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+          },
           created_by_id: user.id,
         },
       });
@@ -667,7 +669,9 @@ export class OrderService {
     if (!include_ids.length && exclude_ids.length) {
       orders = await this.prismaService.client.order.findMany({
         where: {
-          status: OrderStatus.INIT,
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+          },
           created_by_id: user.id,
           id: {
             notIn: exclude_ids,
@@ -682,12 +686,23 @@ export class OrderService {
     ) {
       orders = await this.prismaService.client.order.findMany({
         where: {
-          status: OrderStatus.INIT,
+          status: {
+            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+          },
           id: {
             in: include_ids,
           },
         },
       });
+    }
+
+    const ordersNotPay = orders.filter((i) => i.status === OrderStatus.INIT);
+
+    if (!ordersNotPay.length) {
+      return {
+        success: true,
+        unique_code: null,
+      };
     }
 
     try {
@@ -697,13 +712,13 @@ export class OrderService {
             organization_id: user.organization_id,
             status: TransactionStatus.AWAITING_CONFIRMATION,
             type: TransactionType.SETTLEMENT,
-            total_amount: orders.reduce(
+            total_amount: ordersNotPay.reduce(
               (prev, curr) => prev + Number(curr.amount),
               0,
             ),
             unique_code: this.generateUniqueCode(),
             metadata: {
-              orders: orders.map((i) => ({
+              orders: ordersNotPay.map((i) => ({
                 id: i.id,
                 quantity: i.quantity,
                 amount: i.amount,
@@ -711,11 +726,11 @@ export class OrderService {
                 price: i.price,
                 payment_method: i.payment_method,
               })),
-              quanlity: orders.reduce(
+              quanlity: ordersNotPay.reduce(
                 (prev, curr) => prev + Number(curr.quantity),
                 0,
               ),
-              amount: orders.reduce(
+              amount: ordersNotPay.reduce(
                 (prev, curr) => prev + Number(curr.amount),
                 0,
               ),
@@ -724,7 +739,7 @@ export class OrderService {
         });
 
         await tx.orderOnTransaction.createMany({
-          data: orders.map((i) => ({
+          data: ordersNotPay.map((i) => ({
             order_id: i.id,
             transaction_id: newTransaction.id,
             amount: i.amount,
@@ -735,7 +750,7 @@ export class OrderService {
         await tx.transaction.deleteMany({
           where: {
             id: {
-              in: orders.map((i) => i.transaction_id),
+              in: ordersNotPay.map((i) => i.transaction_id),
             },
           },
         });
@@ -743,7 +758,7 @@ export class OrderService {
         await tx.order.updateMany({
           where: {
             id: {
-              in: orders.map((i) => i.id),
+              in: ordersNotPay.map((i) => i.id),
             },
             status: OrderStatus.INIT,
           },
