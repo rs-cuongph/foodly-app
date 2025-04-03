@@ -66,10 +66,27 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
     }),
     BullModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
+        console.log('redisHost', configService.get('app.redisHost'));
+        console.log('redisPort', configService.get('app.redisPort'));
         return {
           redis: {
-            host: configService.get('app.redis_host'),
-            port: configService.get('app.redis_port'),
+            host: configService.get('app.redisHost'),
+            port: configService.get('app.redisPort'),
+          },
+          defaultJobOptions: {
+            attempts: 3,
+            backoff: {
+              type: 'exponential',
+              delay: 1000,
+            },
+          },
+          limiter: {
+            max: 100,
+            duration: 1000,
+          },
+          settings: {
+            lockDuration: 30000,
+            stalledInterval: 30000,
           },
         };
       },
