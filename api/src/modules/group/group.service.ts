@@ -218,8 +218,17 @@ export class GroupService {
       },
     });
 
-    console.log('user =========>', user);
-    console.log('findGroup =========>', findGroup);
+    const isSamePrice = Number(findGroup.price) > 0;
+    findGroup['is_same_price'] = isSamePrice;
+
+    // Get price range of menu items
+    const priceMenuItems = findGroup.menu_items.map((item) =>
+      Number(item.price),
+    );
+
+    findGroup['price_range'] = isSamePrice
+      ? [Math.min(...priceMenuItems), Math.max(...priceMenuItems)]
+      : [];
 
     if (user && findGroup.created_by_id === user.id) {
       return findGroup;

@@ -137,7 +137,7 @@ export class OrderService {
 
       const isSamePrice = Number(group.price) > 0;
       if (isSamePrice) {
-        price = Number(menu[0].price);
+        price = Number(group.price);
         amount = body.quanlity * price;
       } else {
         amount =
