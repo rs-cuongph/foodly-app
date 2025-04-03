@@ -189,7 +189,9 @@ export class OrderService {
     const order = await this.prismaService.client.order.findFirst({
       where: {
         id,
-        status: OrderStatus.INIT,
+        status: {
+          in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+        },
         group: {
           public_start_time: {
             lte: now,
@@ -210,6 +212,7 @@ export class OrderService {
 
     await this.checkInviteCode(order.group, body.invite_code, user);
     await this.checkGroupIsLocked(order.group.id);
+
     if (order.created_by_id !== user.id) throw new ForbiddenException();
 
     const menu = await this.prismaService.client.menuItem.findMany({
@@ -220,16 +223,32 @@ export class OrderService {
         },
       },
     });
+
     if (!menu.length)
       throw new BadRequestException(this.i18n.t('message.wrong_menu_item'));
+
+    const transaction = await this.prismaService.client.transaction.findFirst({
+      where: {
+        id: order.transaction_id,
+        status: {
+          in: [TransactionStatus.INIT, TransactionStatus.PROCESSING],
+        },
+      },
+    });
+
+    if (!transaction)
+      throw new BadRequestException(
+        this.i18n.t('message.transaction_not_found'),
+      );
 
     return this.prismaService.client.$transaction(async (tx) => {
       let price = 0;
       let amount = 0;
 
       const isSamePrice = Number(order.group.price) > 0;
+
       if (isSamePrice) {
-        price = Number(menu[0].price);
+        price = Number(order.group.price);
         amount = body.quanlity * price;
       } else {
         amount =
@@ -248,12 +267,6 @@ export class OrderService {
           menu: body.menu,
           updated_by_id: user.id,
           note: body.note,
-        },
-      });
-
-      const transaction = await tx.transaction.findFirst({
-        where: {
-          id: order.transaction_id,
         },
       });
 
