@@ -659,7 +659,11 @@ export class OrderService {
       orders = await this.prismaService.client.order.findMany({
         where: {
           status: {
-            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+            in: [
+              OrderStatus.INIT,
+              OrderStatus.PROCESSING,
+              OrderStatus.COMPLETED,
+            ],
           },
           created_by_id: user.id,
         },
@@ -670,7 +674,11 @@ export class OrderService {
       orders = await this.prismaService.client.order.findMany({
         where: {
           status: {
-            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+            in: [
+              OrderStatus.INIT,
+              OrderStatus.PROCESSING,
+              OrderStatus.COMPLETED,
+            ],
           },
           created_by_id: user.id,
           id: {
@@ -687,7 +695,11 @@ export class OrderService {
       orders = await this.prismaService.client.order.findMany({
         where: {
           status: {
-            in: [OrderStatus.INIT, OrderStatus.COMPLETED],
+            in: [
+              OrderStatus.INIT,
+              OrderStatus.PROCESSING,
+              OrderStatus.COMPLETED,
+            ],
           },
           id: {
             in: include_ids,
@@ -696,7 +708,10 @@ export class OrderService {
       });
     }
 
-    const ordersNotPay = orders.filter((i) => i.status === OrderStatus.INIT);
+    const ordersNotPay = orders.filter(
+      (i) =>
+        i.status === OrderStatus.INIT || i.status === OrderStatus.PROCESSING,
+    );
 
     if (!ordersNotPay.length) {
       return {
@@ -760,7 +775,9 @@ export class OrderService {
             id: {
               in: ordersNotPay.map((i) => i.id),
             },
-            status: OrderStatus.INIT,
+            status: {
+              in: [OrderStatus.INIT, OrderStatus.PROCESSING],
+            },
           },
           data: {
             status: OrderStatus.PROCESSING,
