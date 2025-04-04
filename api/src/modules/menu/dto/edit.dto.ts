@@ -1,12 +1,14 @@
+import { NumberField } from '@decorators/validation/number.decorator';
 import {
-  NumberField,
-  NumberFieldOptional,
-} from '@decorators/validation/number.decorator';
-import { StringField } from '@decorators/validation/string.decorator';
+  StringField,
+  StringFieldOptional,
+} from '@decorators/validation/string.decorator';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export class EditMenuDTO {
-  @NumberFieldOptional()
+  @StringFieldOptional({
+    maxLength: 255,
+  })
   id?: string;
 
   @StringField({
