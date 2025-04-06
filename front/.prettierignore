@@ -1,0 +1,24 @@
+# Ignore artifacts:
+build
+coverage
+
+# Ignore all HTML files:
+**/*.html
+
+# Ignore all YAML files:
+**/*.yaml
+
+# Ignore all Markdown files:
+**/*.md
+
+# Ignore all XML files:
+**/*.xml
+
+# Ignore migrations:
+src/database/migrations/*.ts
+
+# Ignore all files in the dist directory:
+dist/**
+
+# Ignore all files in the node_modules directory:
+node_modules/**

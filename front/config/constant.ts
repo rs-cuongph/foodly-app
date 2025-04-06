@@ -1,0 +1,14 @@
+export const LOCAL_STORAGE_KEYS = {
+  ACCESS_TOKEN: 'ACCESS_TOKEN',
+  REFRESH_TOKEN: 'REFRESH_TOKEN',
+};
+
+export enum SHARE_SCOPE_ENUM {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+}
+
+export enum GROUP_STATUS_ENUM {
+  INIT = 'INIT',
+  LOCKED = 'LOCKED',
+}

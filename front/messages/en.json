@@ -1,0 +1,63 @@
+{
+  "common": {
+    "empty": "No data available.",
+    "search_placeholder": "Search",
+    "modal_title": {
+      "sign_in": "Sign In",
+      "sign_up": "Sign Up"
+    }
+  },
+
+  "button": {
+    "login": "Sign In",
+    "close": "Close",
+    "confirm": "Confirm",
+    "login_with_code": "Mail Code"
+  },
+  "sign_in_modal": {
+    "organization_code": "Organization Code",
+    "email": "Email",
+    "password": "Password",
+    "forgot_password": "Forgot Password?",
+    "sign_up": "Sign Up",
+    "dont_have_account": "Don't have an account?",
+    "now": "now!",
+    "or": "or sign in by",
+    "placeholder": {
+      "email": "Enter your email",
+      "password": "Enter your password",
+      "organization_code": "Enter your organization code"
+    }
+  },
+  "sign_up_modal": {
+    "organization_code": "Organization Code",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "display_name": "Display Name",
+    "sign_in": "Sign In",
+    "have_account": "Have an account?",
+    "now": "now!",
+    "placeholder": {
+      "email": "Enter your email",
+      "password": "Enter your password",
+      "organization_code": "Enter your organization code",
+      "confirm_password": "Confirm your password",
+      "display_name": "Enter your display name"
+    }
+  },
+  "home": {
+    "filter": {
+      "share_scope": "Share Scope",
+      "status": "Status",
+      "share_scope_label": {
+        "public": "Public",
+        "private": "Private"
+      },
+      "status_label": {
+        "init": "Init",
+        "locked": "Locked"
+      }
+    }
+  }
+}

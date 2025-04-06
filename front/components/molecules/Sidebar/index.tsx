@@ -1,127 +1,118 @@
-"use client";
+'use client';
 
-import clsx from "clsx";
-import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
-import { Icon } from "@iconify/react";
+import { Button, User } from '@heroui/react';
+import clsx from 'clsx';
+import { signOut, useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
 
-import { ROUTES } from "@/shared/constants";
-import CustomIcon from "@/components/atoms/CustomIcon";
+import { siteConfig } from '@/config/site';
 
-export default function Sidebar() {
+export function Sidebar() {
   const router = useRouter();
   const pathName = usePathname();
-  const [status, setStatus] = useState(false);
-  const handleLoginLogout = () => {
-    // TODO
-  };
+  const session = useSession();
+  const t = useTranslations('button');
 
-  const items = [
-    {
-      name: "Trang Chủ",
-      icon: <CustomIcon name="home" />,
-      key: 1,
-      pathRegex: new RegExp(/^\/home+$/g),
-      authenticate: false,
-      onClick: () => {
-        router.push(ROUTES.HOME);
-      },
-    },
-    {
-      name: "Thanh Toán",
-      icon: <CustomIcon name="payment" />,
-      key: 2,
-      pathRegex: new RegExp(/^\/payment/g),
-      authenticate: true,
-      onClick: () => {
-        router.push(ROUTES.PAYMENT);
-      },
-    },
-    {
-      name: "Nhóm Của Tôi",
-      icon: <CustomIcon name="groups" />,
-      key: 3,
-      pathRegex: new RegExp(/^\/groups/g),
-      authenticate: true,
-      onClick: () => {
-        router.push(ROUTES.GROUPS);
-      },
-    },
-    {
-      name: "Tôi",
-      icon: <CustomIcon name="me" />,
-      key: 4,
-      pathRegex: new RegExp(/^\/my-page+$/g),
-      authenticate: true,
-      onClick: () => {
-        router.push(ROUTES.MY_PAGE);
-      },
-    },
+  const menuItems = [
+    // {
+    //   name: 'Home',
+    //   icon: <HomeIcon />,
+    //   pathRegex: new RegExp(/^\/home+$/g),
+    //   requiredAuth: false,
+    //   onClick: () => {
+    //     router.push(siteConfig.routes.home);
+    //   },
+    // },
+    // {
+    //   name: 'History Order',
+    //   icon: <HistoryOrderIcon />,
+    //   pathRegex: new RegExp(/^\/history-order+$/g),
+    //   requiredAuth: true,
+    //   onClick: () => {
+    //     router.push(siteConfig.routes.history);
+    //   },
+    // },
+    // {
+    //   name: 'My Group',
+    //   icon: <GroupIcon />,
+    //   pathRegex: new RegExp(/^\/my-group+$/g),
+    //   requiredAuth: true,
+    //   onClick: () => {
+    //     router.push(siteConfig.routes.my_group);
+    //   },
+    // },
   ];
 
-  const itemsFilter = useMemo(() => {
-    return items;
-  }, []);
+  const isLogin = useMemo(() => {
+    return session.status === 'authenticated';
+  }, [session.status]);
+
+  const MenuItemFiltered = useMemo(() => {
+    return menuItems.filter((item) => {
+      if (isLogin) return true;
+
+      return (item.requiredAuth = false);
+    });
+  }, [isLogin, menuItems]);
+
+  const handleSignInOrSignOUt = () => {
+    if (isLogin) signOut();
+    router.push(siteConfig.routes.login);
+  };
 
   const checkIsActive = useCallback(
     (pathRegex: RegExp) => {
       if (pathRegex.test(pathName)) {
-        return "bg-[#fe724c40] text-[#fe724c]";
+        return 'bg-[#fe724c40] text-[#fe724c]';
       }
 
-      return "";
+      return '';
     },
     [pathName],
   );
 
+  const openSignInModal = () => {
+    // setIsOpenSignInModal(true);
+  };
+
   return (
-    <div className="rounded-2xl shadow-2xl shadow-blue-500/20 backdrop-blur-sm w-[280px] h-[600px] z-[9] ml-2.5 max-md:fixed max-md:h-20 max-md:w-full max-md:m-0 max-md:left-0 max-md:bottom-0 max-md:p-2.5 bg-white">
-      <div className="relative flex gap-1 flex-col w-[280px] h-[600px] px-3 py-3 rounded-[15px]  max-md:w-full  max-md:flex-row  max-md:h-[60px]  max-md:pl-2.5  max-md:pr-[60px]  max-md:py-[5px] max-[400px]:justify-evenly">
-        {itemsFilter.map((item) => {
-          return (
+    <div className="min-w-[300px] flex flex-col gap-2">
+      <div className="w-full bg-white rounded-t-lg px-6 py-4 flex justify-center">
+        {isLogin ? (
+          <User
+            avatarProps={{
+              src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+            }}
+            description="Product Designer"
+            name="Jane Doe"
+          />
+        ) : (
+          <Button className="w-full" color="primary" onClick={openSignInModal}>
+            {t('login').toUpperCase()}
+          </Button>
+        )}
+      </div>
+      <div className="w-full h-[250px] bg-white rounded-b-3xl">
+        <div className="flex flex-row flex-1 justify-around sm:justify-start sm:flex-auto gap-2">
+          {MenuItemFiltered.map((item, index) => (
             <div
-              key={item.key}
-              className={
-                clsx(
-                  `hover:text-[#fe724c] hover:bg-[#fe724c40] rounded-xl nav-item-element-${item.key}`,
-                  checkIsActive(item.pathRegex),
-                ) +
-                " cursor-pointer flex items-center gap-3.5 text-sm px-2.5 py-[10px] max-md:gap-[5px] max-md:h-auto"
-              }
+              key={index}
+              className={clsx(
+                'cursor-pointer flex items-center gap-1 md:gap-2 text-sm px-4 py-2.5 max-md:gap-[5px] max-md:h-auto text-black',
+                `hover:text-[#fe724c] hover:bg-[#fe724c40] rounded-xl nav-item-element-${index} [&_span]:hover:block`,
+                checkIsActive(item.pathRegex),
+              )}
               role="presentation"
               onClick={item.onClick}
             >
-              {checkIsActive(item.pathRegex)}
               <div className="w-6 h-6">{item.icon}</div>
-              <span className="text-sm text-ellipsis line-clamp-2 max-[400px]:hidden">
+              <span className="text-sm text-ellipsis line-clamp-2 max-sm:hidden">
                 {item.name}
               </span>
             </div>
-          );
-        })}
-        <div
-          className="cursor-pointer absolute bg-[#fe724c] flex flex-row items-center shadow-[0px_10px_30px_0px_rgba(254,114,76,0.2)] text-white px-3.5 py-2 rounded-[28.5px] left-5 bottom-[15px] max-md:left-[unset] max-md:right-2.5 max-md:bottom-3"
-          role="presentation"
-          onClick={handleLoginLogout}
-        >
-          {status === true ? (
-            <div className="flex gap-1 items-center">
-              <Icon className="h-5 w-5 text-white" icon="ph:power" />
-              <span className="text-sm not-italic font-normal leading-[100%] max-md:hidden">
-                Đăng Xuất
-              </span>
-            </div>
-          ) : (
-            <div className="flex gap-1 items-center ">
-              <Icon
-                className="h-5 w-5 text-white"
-                icon="lucide:circle-arrow-out-down-right"
-              />
-              <span className="font-bold text-sm not-italic leading-[100%] max-md:hidden">
-                Đăng Nhập
-              </span>
-            </div>
-          )}
+          ))}
         </div>
       </div>
     </div>

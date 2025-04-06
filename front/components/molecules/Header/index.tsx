@@ -1,19 +1,40 @@
-"use client";
-import { Avatar } from "@nextui-org/react";
-import Image from "next/image";
-import clsx from "clsx";
+'use client';
 
-import logo from "@/public/images/logo.webp";
-import { useWindowSize } from "@/hooks/window-size";
+import { Button } from '@heroui/react';
+import clsx from 'clsx';
+import Image from 'next/image';
+import { LanguageIcon } from '@heroicons/react/24/outline';
+import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
+import { setCookie } from 'cookies-next';
+
+import { usePathname, useRouter } from '@/i18n/navigation';
 
 export default function Header() {
-  const { isMobile } = useWindowSize();
+  const t = useTranslations('button');
+  const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Toggle locale
+  const toggleLocale = () => {
+    const newLocale = locale === 'en' ? 'vi' : 'en';
+
+    console.log(newLocale);
+    // Set cookie to remember user preference
+    setCookie('NEXT_LOCALE', newLocale, {
+      maxAge: 365 * 24 * 60 * 60, // 1 year
+      path: '/',
+    });
+
+    // Navigate to new locale
+    router.push(pathname, { locale: newLocale });
+  };
 
   return (
     <div
       className={clsx(
-        "absolute top-[10px] right-[50%] transform translate-x-1/2 flex flex-row w-full pl-4 pr-4 header-wrapper max-w-[1440px] mx-auto ",
-        isMobile ? "justify-center" : "justify-between",
+        'w-full absolute top-[10px] right-[50%] transform translate-x-1/2 flex flex-row header-wrapper mx-auto justify-between md:px-8 sm:px-4',
       )}
     >
       <div className="flex flex-row items-center gap-2 backdrop:blur-md px-2 py-1 backdrop-blur-md bg-[#fe724c91] rounded-[30px]">
@@ -21,23 +42,19 @@ export default function Header() {
           alt="foodly booking"
           className="rounded-[30px]"
           height={40}
-          src={logo.src}
+          src={'/images/logo.webp'}
           width={40}
         />
         <span className="font-bold text-[18px] text-white">FOODLY BOOKING</span>
       </div>
 
-      <div className="flex flex-row  items-center gap-3 ">
-        {!isMobile && (
-          <h3 className="m-0 text-white font-bold text-[14px]">
-            abc@gmail.com
-          </h3>
-        )}
-        <Avatar
-          isBordered
-          color="primary"
-          src="https://i.pravatar.cc/150?u=a04258a2462d826712d"
-        />
+      <div className="flex flex-row items-center gap-2 bg-white rounded-[16px] px-1">
+        <Button isIconOnly color="primary" size="md" onPress={toggleLocale}>
+          <LanguageIcon className="h-6 w-6 text-white" />
+        </Button>
+        <span className="text-sm text-gray-500 pr-2">
+          {locale.toUpperCase()}
+        </span>
       </div>
     </div>
   );
