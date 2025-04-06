@@ -17,13 +17,16 @@ const MyInput = forwardRef(
     };
 
     return (
-      <Input
-        maxLength={255}
-        size="md"
-        {...rest}
-        ref={ref}
-        onChange={handleChange}
-      />
+      <>
+        <Input
+          maxLength={255}
+          size="md"
+          {...rest}
+          ref={ref}
+          isInvalid={!!props.errorMessage}
+          onChange={handleChange}
+        />
+      </>
     );
   },
 );

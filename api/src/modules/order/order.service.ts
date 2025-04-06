@@ -397,6 +397,7 @@ export class OrderService {
       page,
       size,
       is_mine,
+      is_mine_group,
       statuses,
       with_group,
       with_created_by,
@@ -465,6 +466,12 @@ export class OrderService {
 
     if (is_mine && is_mine == 1) {
       whereClause.created_by_id = user.id;
+    }
+
+    if (is_mine_group && is_mine_group == 1) {
+      whereClause.group = {
+        created_by_id: user.id,
+      };
     }
 
     if (keyword) {

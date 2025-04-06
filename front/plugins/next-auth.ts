@@ -7,23 +7,23 @@ import { siteConfig } from "@/config/site";
 
 const AUTHENTICATION_METHODS = {
   EMAIL: {
-    key: "emailLogin",
+    key: 'emailLogin',
     credentials: {
-      email: { type: "text" },
-      password: { type: "password" },
-      organization_id: { type: "text" },
+      email: { type: 'text' },
+      password: { type: 'password' },
+      organization_code: { type: 'text' },
     },
   },
   TOKEN: {
-    key: "tokenLogin",
+    key: 'tokenLogin',
     credentials: {
-      iat: { type: "text" },
-      exp: { type: "text" },
-      type: { type: "text" },
-      user_id: { type: "text" },
-      organization_id: { type: "text" },
-      access_token: { type: "text" },
-      refresh_token: { type: "text" },
+      iat: { type: 'text' },
+      exp: { type: 'text' },
+      type: { type: 'text' },
+      user_id: { type: 'text' },
+      organization_id: { type: 'text' },
+      access_token: { type: 'text' },
+      refresh_token: { type: 'text' },
     },
   },
 };
@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
         const response = await apiClient.post(siteConfig.apiRoutes.login, {
           email: credentials?.email,
           password: credentials?.password,
-          organization_id: credentials?.organization_id,
+          organization_code: credentials?.organization_code,
         });
 
         if (response.data?.message) {

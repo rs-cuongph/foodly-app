@@ -8,24 +8,35 @@ import {
 } from '@heroui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import {
+  ForwardRefExoticComponent,
+  RefAttributes,
+  useEffect,
+  useRef,
+} from 'react';
 
 import SignInModalForm from './form-signin';
 import SignUpModalForm from './form-signup';
 
 import { MyButton } from '@/components/atoms/Button';
+import { LOCAL_STORAGE_KEYS } from '@/config/constant';
 import { FormType, useCommonStore } from '@/stores/common';
 
 interface FormConfig {
   title: string;
-  component: React.ComponentType;
+  component: ForwardRefExoticComponent<RefAttributes<any>>;
   showInNav?: boolean;
 }
 
 export default function SignInModal() {
   const tButton = useTranslations('button');
   const tCommon = useTranslations('common');
-  const { isOpen, selectedForm, setSelectedForm, closeModal } =
+  const searchParams = useSearchParams();
+  const { isOpen, selectedForm, setSelectedForm, closeModal, setIsOpen } =
     useCommonStore();
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const formRegistry: Record<FormType, FormConfig> = {
     [FormType.SIGN_IN]: {
@@ -41,13 +52,35 @@ export default function SignInModal() {
   };
 
   const box = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 },
+    initial: { opacity: 0, x: 100 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -100 },
     transition: { duration: 0.3, ease: 'easeInOut' },
   };
 
   const CurrentForm = formRegistry[selectedForm].component;
+
+  const onSubmit = () => {
+    if (formRef.current) {
+      formRef.current.handleSubmit();
+    }
+  };
+
+  useEffect(() => {
+    const modal = searchParams.get('modal') as FormType;
+    const organizationCode = searchParams.get('organization_code');
+
+    if (modal && [FormType.SIGN_IN, FormType.SIGN_UP].includes(modal)) {
+      setIsOpen(true, modal);
+    }
+
+    if (organizationCode) {
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.ORGANIZATION_CODE,
+        organizationCode,
+      );
+    }
+  }, []);
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
@@ -57,7 +90,7 @@ export default function SignInModal() {
             {formRegistry[selectedForm].title?.toUpperCase()}
           </h3>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className="overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedForm}
@@ -66,7 +99,7 @@ export default function SignInModal() {
               initial="initial"
               variants={box}
             >
-              <CurrentForm />
+              <CurrentForm ref={formRef} />
             </motion.div>
           </AnimatePresence>
         </ModalBody>
@@ -74,7 +107,7 @@ export default function SignInModal() {
           <MyButton variant="light" onClick={closeModal}>
             {tButton('close')}
           </MyButton>
-          <MyButton>{tButton('confirm')}</MyButton>
+          <MyButton onClick={onSubmit}>{tButton('confirm')}</MyButton>
         </ModalFooter>
       </ModalContent>
     </Modal>

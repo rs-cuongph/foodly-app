@@ -14,6 +14,7 @@
     "confirm": "Confirm",
     "login_with_code": "Mail Code"
   },
+
   "sign_in_modal": {
     "organization_code": "Organization Code",
     "email": "Email",
@@ -29,6 +30,7 @@
       "organization_code": "Enter your organization code"
     }
   },
+
   "sign_up_modal": {
     "organization_code": "Organization Code",
     "email": "Email",
@@ -46,6 +48,7 @@
       "display_name": "Enter your display name"
     }
   },
+
   "home": {
     "filter": {
       "share_scope": "Share Scope",
@@ -58,6 +61,24 @@
         "init": "Init",
         "locked": "Locked"
       }
+    }
+  },
+
+  "validation": {
+    "required": "{field} cannot be empty",
+    "email": "{field} needs to be a valid email",
+    "password": "{field} must be at least 8 characters, including uppercase, lowercase, numbers, and special characters",
+    "sameAs": "{field} and {field2} must be the same",
+    "min": "{field} needs to be at least {min} characters",
+    "max": "{field} needs to be less than or equal to {max} characters",
+    "noEmoji": "{field} must not contain emojis",
+    "noSpecialCharacters": "{field} must not contain special characters",
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "display_name": "Display Name",
+      "organization_code": "Organization Code"
     }
   }
 }

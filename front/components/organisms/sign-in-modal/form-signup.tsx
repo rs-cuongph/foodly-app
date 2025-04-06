@@ -1,69 +1,143 @@
 'use client';
 import { Form } from '@heroui/react';
+import { signIn } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+
+import useSignUpForm from './yup-form/signup.yup';
 
 import MyInput from '@/components/atoms/Input';
 import InputPassword from '@/components/atoms/InputPassword';
+import { LOCAL_STORAGE_KEYS } from '@/config/constant';
+import { siteConfig } from '@/config/site';
+import { useSignUpMutation } from '@/hooks/api/auth';
+import { useRouter } from '@/i18n/navigation';
 import { FormType, useCommonStore } from '@/stores/common';
 
-export default function SignUpModalForm() {
-  const tButton = useTranslations('button');
-  const tCommon = useTranslations('common');
-  const tSignUpModal = useTranslations('sign_up_modal');
-  const { setSelectedForm } = useCommonStore();
-
-  return (
-    <Form className="w-full flex flex-col">
-      <div className="w-full flex flex-col gap-4">
-        <MyInput
-          isRequired
-          label={tSignUpModal('organization_code')}
-          labelPlacement="outside"
-          maxLength={40}
-          name="organization_code"
-          placeholder={tSignUpModal('placeholder.organization_code')}
-        />
-        <MyInput
-          isRequired
-          label={tSignUpModal('email')}
-          labelPlacement="outside"
-          name="email"
-          placeholder={tSignUpModal('placeholder.email')}
-          type="email"
-        />
-        <InputPassword
-          isRequired
-          label={tSignUpModal('password')}
-          labelPlacement="outside"
-          name="password"
-          placeholder={tSignUpModal('placeholder.password')}
-        />
-        <InputPassword
-          isRequired
-          label={tSignUpModal('confirm_password')}
-          labelPlacement="outside"
-          name="confirm_password"
-          placeholder={tSignUpModal('placeholder.confirm_password')}
-        />
-        <MyInput
-          label={tSignUpModal('display_name')}
-          labelPlacement="outside"
-          name="display_name"
-          placeholder={tSignUpModal('placeholder.display_name')}
-        />
-      </div>
-
-      <div className="w-full flex justify-center mt-2">
-        <span className="text-sm">{tSignUpModal('have_account')}</span>
-        <span
-          className="text-sm ml-1 text-primary underline cursor-pointer"
-          role="button"
-          onClick={() => setSelectedForm(FormType.SIGN_IN)}
-        >
-          {tSignUpModal('sign_in')}
-        </span>
-        <span className="text-sm ml-1"> {tSignUpModal('now')}</span>
-      </div>
-    </Form>
-  );
+interface SignUpModalFormRef {
+  handleSubmit: () => void;
 }
+
+interface SignUpModalFormProps {}
+
+interface SignUpFormData {
+  organization_code: string;
+  email: string;
+  password: string;
+  confirm_password: string;
+  display_name?: string;
+}
+
+const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
+  (props, ref) => {
+    const tSignUpModal = useTranslations('sign_up_modal');
+    const { setSelectedForm, closeModal } = useCommonStore();
+    const formRef = useRef<HTMLFormElement>(null);
+    const router = useRouter();
+
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+    } = useSignUpForm();
+
+    const signUpMutation = useSignUpMutation();
+
+    const onSubmit = async (data: SignUpFormData) => {
+      try {
+        const response = await signUpMutation.mutateAsync(data);
+
+        if (response.access_token) {
+          localStorage.setItem(
+            LOCAL_STORAGE_KEYS.ACCESS_TOKEN,
+            response.access_token,
+          );
+          localStorage.setItem(
+            LOCAL_STORAGE_KEYS.REFRESH_TOKEN,
+            response.refresh_token,
+          );
+
+          signIn('tokenLogin', {
+            ...response,
+          });
+
+          closeModal();
+          router.push(siteConfig.routes.home);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    useImperativeHandle(ref, () => ({
+      handleSubmit: () => {
+        handleSubmit(onSubmit)();
+      },
+    }));
+
+    return (
+      <Form ref={formRef} className="w-full flex flex-col">
+        <div className="w-full flex flex-col gap-4">
+          <MyInput
+            isRequired
+            label={tSignUpModal('organization_code')}
+            labelPlacement="outside"
+            maxLength={40}
+            placeholder={tSignUpModal('placeholder.organization_code')}
+            {...register('organization_code')}
+            errorMessage={errors.organization_code?.message}
+          />
+          <MyInput
+            isRequired
+            label={tSignUpModal('email')}
+            labelPlacement="outside"
+            placeholder={tSignUpModal('placeholder.email')}
+            type="email"
+            {...register('email')}
+            errorMessage={errors.email?.message}
+          />
+          <InputPassword
+            isRequired
+            showStrengthIndicator
+            label={tSignUpModal('password')}
+            labelPlacement="outside"
+            placeholder={tSignUpModal('placeholder.password')}
+            {...register('password')}
+            errorMessage={errors.password?.message}
+          />
+          <InputPassword
+            isRequired
+            label={tSignUpModal('confirm_password')}
+            labelPlacement="outside"
+            placeholder={tSignUpModal('placeholder.confirm_password')}
+            {...register('confirm_password')}
+            errorMessage={errors.confirm_password?.message}
+          />
+          <MyInput
+            label={tSignUpModal('display_name')}
+            labelPlacement="outside"
+            placeholder={tSignUpModal('placeholder.display_name')}
+            {...register('display_name')}
+            errorMessage={errors.display_name?.message}
+          />
+        </div>
+
+        <div className="w-full flex justify-center mt-2">
+          <span className="text-sm">{tSignUpModal('have_account')}</span>
+          <span
+            className="text-sm ml-1 text-primary underline cursor-pointer"
+            role="button"
+            onClick={() => setSelectedForm(FormType.SIGN_IN)}
+          >
+            {tSignUpModal('sign_in')}
+          </span>
+          <span className="text-sm ml-1"> {tSignUpModal('now')}</span>
+        </div>
+      </Form>
+    );
+  },
+);
+
+SignUpModalForm.displayName = 'SignUpModalForm';
+
+export default SignUpModalForm;

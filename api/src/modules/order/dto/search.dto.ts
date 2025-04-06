@@ -64,6 +64,15 @@ export class SearchOrderDTO {
       toInt: true,
     },
   })
+  is_mine_group?: number;
+
+  @StringFieldOptional({
+    isStringNumber: true,
+    transformTo: true,
+    transformOptions: {
+      toInt: true,
+    },
+  })
   with_group?: number;
 
   @StringFieldOptional({

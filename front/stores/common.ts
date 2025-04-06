@@ -15,7 +15,7 @@ interface CommonStore {
 }
 
 export const useCommonStore = create<CommonStore>((set) => ({
-  isOpen: true,
+  isOpen: false,
   selectedForm: FormType.SIGN_IN,
   setIsOpen: (isOpen, form) => set({ isOpen, selectedForm: form }),
   setSelectedForm: (form) => set({ selectedForm: form }),
