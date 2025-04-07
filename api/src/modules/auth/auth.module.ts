@@ -6,7 +6,7 @@ import { JwtAccessTokenStrategy } from './strategies/jwt-access-token.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { SharedModule } from '@shared/shared.module';
 @Module({
-  imports: [JwtModule.registerAsync({}), SharedModule],
+  imports: [JwtModule, SharedModule],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtAccessTokenStrategy],
   exports: [JwtAccessTokenStrategy],
