@@ -17,10 +17,10 @@ export const removeHeaderToken = () => {
 };
 
 apiClient.interceptors.request.use(async (config) => {
-  if (typeof window !== "undefined") {
-    config.headers.Authorization = localStorage.getItem(
-      LOCAL_STORAGE_KEYS.ACCESS_TOKEN,
-    );
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN);
+
+    config.headers.Authorization = token ? `Bearer ${token}` : '';
   }
 
   return config;
@@ -31,7 +31,7 @@ apiClient.interceptors.response.use(
     return res;
   },
   (e) => {
-    Promise.reject(e);
+    return Promise.reject(e);
   },
 );
 

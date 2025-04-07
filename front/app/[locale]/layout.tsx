@@ -6,9 +6,6 @@ import { notFound } from 'next/navigation';
 
 import { Providers } from '../../providers/hero-ui';
 
-import Header from '@/components/molecules/header';
-import { Sidebar } from '@/components/molecules/sidebar';
-import SignInUpModal from '@/components/organisms/sign-in-modal';
 import { fontSans } from '@/config/fonts';
 import { siteConfig } from '@/config/site';
 import { routing } from '@/i18n/routing';
@@ -23,6 +20,13 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   icons: {
     icon: '/favicon.ico',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
   },
 };
 
@@ -61,16 +65,7 @@ export default async function RootLayout({
             <Providers
               themeProps={{ attribute: 'class', defaultTheme: 'light' }}
             >
-              <NextIntlClientProvider>
-                <div className="relative flex flex-col h-screen overflow-y-hidden bg-center bg-cover bg-banner bg-no-repeat">
-                  <Header />
-                  <main className="w-full mx-auto sm:pt-16 md:pt-[135px] md:px-8 sm:px-4 md:flex md:gap-10">
-                    <Sidebar />
-                    <div className="w-full h-full min-h-screen">{children}</div>
-                  </main>
-                </div>
-                <SignInUpModal />
-              </NextIntlClientProvider>
+              <NextIntlClientProvider>{children}</NextIntlClientProvider>
             </Providers>
           </ReactQueryProvider>
         </NextAuthProvider>

@@ -21,7 +21,7 @@ import SignUpModalForm from './form-signup';
 
 import { MyButton } from '@/components/atoms/Button';
 import { LOCAL_STORAGE_KEYS } from '@/config/constant';
-import { FormType, useCommonStore } from '@/stores/common';
+import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 interface FormConfig {
   title: string;
@@ -29,16 +29,15 @@ interface FormConfig {
   showInNav?: boolean;
 }
 
-export default function SignInModal() {
+export default function SignInUpModal() {
   const tButton = useTranslations('button');
   const tCommon = useTranslations('common');
   const searchParams = useSearchParams();
-  const { isOpen, selectedForm, setSelectedForm, closeModal, setIsOpen } =
-    useCommonStore();
+  const { modalAuth, closeModal, setIsOpen } = useCommonStore();
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  const formRegistry: Record<FormType, FormConfig> = {
+  const formRegistry: Record<string, FormConfig> = {
     [FormType.SIGN_IN]: {
       title: tCommon('modal_title.sign_in'),
       component: SignInModalForm,
@@ -58,7 +57,7 @@ export default function SignInModal() {
     transition: { duration: 0.3, ease: 'easeInOut' },
   };
 
-  const CurrentForm = formRegistry[selectedForm].component;
+  const CurrentForm = formRegistry[modalAuth.selectedForm].component;
 
   const onSubmit = () => {
     if (formRef.current) {
@@ -71,7 +70,7 @@ export default function SignInModal() {
     const organizationCode = searchParams.get('organization_code');
 
     if (modal && [FormType.SIGN_IN, FormType.SIGN_UP].includes(modal)) {
-      setIsOpen(true, modal);
+      setIsOpen(true, ModalType.AUTH, modal);
     }
 
     if (organizationCode) {
@@ -83,17 +82,17 @@ export default function SignInModal() {
   }, []);
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <Modal isOpen={modalAuth.isOpen} onClose={() => closeModal(ModalType.AUTH)}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 text-center">
           <h3 className="text-lg font-semibold">
-            {formRegistry[selectedForm].title?.toUpperCase()}
+            {formRegistry[modalAuth.selectedForm].title?.toUpperCase()}
           </h3>
         </ModalHeader>
         <ModalBody className="overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
-              key={selectedForm}
+              key={modalAuth.selectedForm}
               animate="animate"
               exit="exit"
               initial="initial"
@@ -104,10 +103,12 @@ export default function SignInModal() {
           </AnimatePresence>
         </ModalBody>
         <ModalFooter>
-          <MyButton variant="light" onClick={closeModal}>
+          <MyButton variant="light" onPress={() => closeModal(ModalType.AUTH)}>
             {tButton('close')}
           </MyButton>
-          <MyButton onClick={onSubmit}>{tButton('confirm')}</MyButton>
+          <MyButton isLoading={modalAuth.isLoadingConfirm} onPress={onSubmit}>
+            {tButton('confirm')}
+          </MyButton>
         </ModalFooter>
       </ModalContent>
     </Modal>

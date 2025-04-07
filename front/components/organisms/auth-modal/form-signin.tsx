@@ -11,7 +11,8 @@ import MyInput from '@/components/atoms/Input';
 import InputPassword from '@/components/atoms/InputPassword';
 import { MailIcon } from '@/components/atoms/icons';
 import { LOCAL_STORAGE_KEYS } from '@/config/constant';
-import { FormType, useCommonStore } from '@/stores/common';
+import { useSystemToast } from '@/hooks/toast';
+import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 interface SignInModalFormRef {
   handleSubmit: () => void;
@@ -23,7 +24,10 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
   (props, ref) => {
     const tButton = useTranslations('button');
     const tSignInModal = useTranslations('sign_in_modal');
-    const { setSelectedForm } = useCommonStore();
+    const tSystemMessage = useTranslations('system_message');
+    const { setSelectedForm, setIsLoadingConfirm, closeModal } =
+      useCommonStore();
+    const { showError, showSuccess } = useSystemToast();
     const {
       register,
       handleSubmit,
@@ -38,14 +42,23 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
     const formRef = useRef<HTMLFormElement>(null);
 
     // Handle submit form
-    const onSubmit = (data: SignInSchemaType) => {
-      const res = signIn('emailLogin', {
+    const onSubmit = async (data: SignInSchemaType) => {
+      setIsLoadingConfirm(true, ModalType.AUTH);
+      const res = await signIn('emailLogin', {
         email: data.email,
         password: data.password,
         organization_code: data.organization_code,
+        redirect: false,
       });
 
-      console.log('====>', res);
+      if (res?.error) {
+        showError(res.error);
+      } else {
+        showSuccess(tSystemMessage('success.signin_success'));
+        closeModal(ModalType.AUTH);
+      }
+
+      setIsLoadingConfirm(false, ModalType.AUTH);
     };
 
     // expose handleSubmit to parent
@@ -114,7 +127,7 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
           <span
             className="text-sm ml-1 text-primary underline cursor-pointer"
             role="button"
-            onClick={() => setSelectedForm(FormType.SIGN_UP)}
+            onClick={() => setSelectedForm(FormType.SIGN_UP, ModalType.AUTH)}
           >
             {tSignInModal('sign_up')}
           </span>

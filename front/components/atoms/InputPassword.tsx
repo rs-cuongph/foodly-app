@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from './icons';
 import MyInput, { MyInputProps } from './Input';
 
-interface InputPasswordProps extends MyInputProps {
+export type InputPasswordProps = MyInputProps & {
   showStrengthIndicator?: boolean;
-}
+};
 
 export default function InputPassword({
   value,

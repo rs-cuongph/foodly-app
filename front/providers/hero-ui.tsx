@@ -2,30 +2,39 @@
 
 import type { ThemeProviderProps } from "next-themes";
 
-import * as React from "react";
-import { HeroUIProvider } from "@heroui/system";
-import { useRouter } from "next/navigation";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ToastProvider } from '@heroui/react';
+import { HeroUIProvider } from '@heroui/system';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+
+import { useWindowSize } from '@/hooks/window-size';
 
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
 }
 
-declare module "@react-types/shared" {
+declare module '@react-types/shared' {
   interface RouterConfig {
     routerOptions: NonNullable<
-      Parameters<ReturnType<typeof useRouter>["push"]>[1]
+      Parameters<ReturnType<typeof useRouter>['push']>[1]
     >;
   }
 }
 
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
+  const { isMobile } = useWindowSize();
+
+  const toastPlacement = isMobile ? 'top-center' : 'bottom-right';
 
   return (
     <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+      <NextThemesProvider {...themeProps}>
+        <ToastProvider placement={toastPlacement} />
+        {children}
+      </NextThemesProvider>
     </HeroUIProvider>
   );
 }

@@ -9,6 +9,11 @@ export enum SHARE_SCOPE_ENUM {
   PRIVATE = 'PRIVATE',
 }
 
+export enum GROUP_TYPE_ENUM {
+  MANUAL = 'MANUAL',
+  AUTO = 'AUTO',
+}
+
 export enum GROUP_STATUS_ENUM {
   INIT = 'INIT',
   LOCKED = 'LOCKED',

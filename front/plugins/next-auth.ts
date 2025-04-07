@@ -36,25 +36,28 @@ export const authOptions: NextAuthOptions = {
       id: AUTHENTICATION_METHODS.EMAIL.key,
       credentials: AUTHENTICATION_METHODS.EMAIL.credentials,
       async authorize(credentials) {
-        const response = await apiClient.post(siteConfig.apiRoutes.login, {
-          email: credentials?.email,
-          password: credentials?.password,
-          organization_code: credentials?.organization_code,
-        });
+        try {
+          const response = await apiClient.post(siteConfig.apiRoutes.login, {
+            email: credentials?.email,
+            password: credentials?.password,
+            organization_code: credentials?.organization_code,
+          });
 
-        if (response.data?.message) {
-          throw new Error(response.data.message);
+          if (!response || !response.data) {
+            throw new Error('Invalid credentials');
+          }
+
+          return {
+            id: String(response?.data?.user_id),
+            name: String(response?.data?.display_name),
+            email: String(response?.data?.email),
+            organization_id: String(response?.data?.organization_id),
+            access_token: String(response?.data?.access_token),
+          };
+        } catch (error: any) {
+          throw new Error(error?.response?.data?.message);
         }
-
-        const session = response.data;
-
-        return {
-          id: session.user_id,
-          name: "",
-          email: "",
-          organization_id: session.organization_id,
-          access_token: session.access_token,
-        };
+     
       },
     }),
     CredentialsProvider({

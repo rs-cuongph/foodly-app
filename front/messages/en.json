@@ -4,7 +4,15 @@
     "search_placeholder": "Search",
     "modal_title": {
       "sign_in": "Sign In",
-      "sign_up": "Sign Up"
+      "sign_up": "Sign Up",
+      "create_group": "Create Group"
+    },
+    "placeholder": {
+      "select": "Select"
+    },
+    "share_scope": {
+      "public": "Public",
+      "private": "Private"
     }
   },
 
@@ -12,7 +20,14 @@
     "login": "Sign In",
     "close": "Close",
     "confirm": "Confirm",
-    "login_with_code": "Mail Code"
+    "login_with_code": "Mail Code",
+    "home": "Home",
+    "payment_history": "Payment",
+    "my_group": "My Group",
+    "my_page": "My Page",
+    "detail": "Detail",
+    "order": "Order",
+    "create_group": "Create Group"
   },
 
   "sign_in_modal": {
@@ -49,6 +64,29 @@
     }
   },
 
+  "upsert_group_modal": {
+    "name": "Group Name",
+    "date_range": "Public Date Range",
+    "type": "Type",
+    "manual": "Manual",
+    "auto": "Auto",
+    "menu_name": "Menu Name",
+    "menu_price": "Menu Price",
+    "add_menu": "Add Menu",
+    "is_same_price": "Same Price",
+    "share_scope": "Share Scope",
+    "price": "Price",
+    "placeholder": {
+      "name": "Enter your group name",
+      "menu_name": "Enter menu name",
+      "menu_price": "Enter price",
+      "price": "Enter price"
+    },
+    "description": {
+      "date_range": "* Select the date range before the current date"
+    }
+  },
+
   "home": {
     "filter": {
       "share_scope": "Share Scope",
@@ -71,14 +109,39 @@
     "sameAs": "{field} and {field2} must be the same",
     "min": "{field} needs to be at least {min} characters",
     "max": "{field} needs to be less than or equal to {max} characters",
-    "noEmoji": "{field} must not contain emojis",
-    "noSpecialCharacters": "{field} must not contain special characters",
+    "no_emoji": "{field} must not contain emojis",
+    "no_special_characters": "{field} must not contain special characters",
+    "price_validation": "Price must be between 1,000 and 10,000,000",
+    "numeric": "{field} must be a number",
+    "min_num": "{field} needs to be at least {min}",
+    "max_num": "{field} needs to be less than or equal to {max}",
     "fields": {
       "email": "Email",
       "password": "Password",
       "confirm_password": "Confirm Password",
       "display_name": "Display Name",
-      "organization_code": "Organization Code"
+      "organization_code": "Organization Code",
+      "name": "Group Name",
+      "start_date": "Public Date Range",
+      "end_date": "Public Date Range",
+      "share_scope": "Share Scope",
+      "menus": "Menus",
+      "is_same_price": "Is Same Price",
+      "type": "Type",
+      "menu_name": "Menu Name",
+      "menu_price": "Menu Price",
+      "price": "Price"
+    }
+  },
+
+  "system_message": {
+    "error": {
+      "auth_failed": "Signin Failed",
+      "signup_failed": "Signup Failed"
+    },
+    "success": {
+      "signin_success": "Signin Success",
+      "signup_success": "Signup Success"
     }
   }
 }

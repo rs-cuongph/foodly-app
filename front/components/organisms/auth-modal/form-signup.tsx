@@ -12,7 +12,7 @@ import { LOCAL_STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { useSignUpMutation } from '@/hooks/api/auth';
 import { useRouter } from '@/i18n/navigation';
-import { FormType, useCommonStore } from '@/stores/common';
+import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 interface SignUpModalFormRef {
   handleSubmit: () => void;
@@ -31,7 +31,8 @@ interface SignUpFormData {
 const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
   (props, ref) => {
     const tSignUpModal = useTranslations('sign_up_modal');
-    const { setSelectedForm, closeModal } = useCommonStore();
+    const { setSelectedForm, closeModal, setIsLoadingConfirm } =
+      useCommonStore();
     const formRef = useRef<HTMLFormElement>(null);
     const router = useRouter();
 
@@ -45,6 +46,7 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
 
     const onSubmit = async (data: SignUpFormData) => {
       try {
+        setIsLoadingConfirm(true, ModalType.AUTH);
         const response = await signUpMutation.mutateAsync(data);
 
         if (response.access_token) {
@@ -61,11 +63,13 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
             ...response,
           });
 
-          closeModal();
+          closeModal(ModalType.AUTH);
           router.push(siteConfig.routes.home);
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoadingConfirm(false, ModalType.AUTH);
       }
     };
 
@@ -127,7 +131,7 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
           <span
             className="text-sm ml-1 text-primary underline cursor-pointer"
             role="button"
-            onClick={() => setSelectedForm(FormType.SIGN_IN)}
+            onClick={() => setSelectedForm(FormType.SIGN_IN, ModalType.AUTH)}
           >
             {tSignUpModal('sign_in')}
           </span>

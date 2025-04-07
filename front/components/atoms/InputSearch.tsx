@@ -15,11 +15,7 @@ const InputSearch = forwardRef(
 
     const {
       placeholder = tCommon('search_placeholder'),
-      classNames = {
-        mainWrapper: 'min-w-[320px] max-w-[440px]',
-        input: 'placeholder:text-primary-200',
-        inputWrapper: 'rounded-[32px]',
-      },
+      classNames,
       ...rest
     } = props;
     const startContent = <SearchIcon className="h-6 w-6 text-primary mr-2" />;
