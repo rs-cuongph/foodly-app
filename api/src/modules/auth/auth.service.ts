@@ -116,6 +116,8 @@ export class AuthService {
         exp,
         type: TokenType.BEARER,
         user_id: user.id,
+        name: user.display_name,
+        email: user.email,
         organization_id: user.organization_id,
         access_token,
         refresh_token,
