@@ -111,6 +111,8 @@ export class OrderService {
         public_end_time: {
           gte: now,
         },
+        status: GroupStatus.INIT,
+        deleted_at: null,
       },
     });
 
@@ -199,6 +201,8 @@ export class OrderService {
           public_end_time: {
             gte: now,
           },
+          status: GroupStatus.INIT,
+          deleted_at: null,
         },
         deleted_at: null,
       },
@@ -325,6 +329,8 @@ export class OrderService {
           public_end_time: {
             gte: now,
           },
+          status: GroupStatus.INIT,
+          deleted_at: null,
         },
         transaction: {
           status: {
