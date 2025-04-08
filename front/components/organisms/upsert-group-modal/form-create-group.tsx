@@ -21,7 +21,10 @@ import {
   SquarePlusIcon,
 } from '@/components/atoms/icons';
 import { GROUP_TYPE_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
+import { useCreateGroupMutation } from '@/hooks/api/apps/foodly/group';
+import { CreateGroupParams } from '@/hooks/api/apps/foodly/group/type';
 import { useSystemToast } from '@/hooks/toast';
+import { handleErrFromApi } from '@/shared/helper/validation';
 import { ModalType, useCommonStore } from '@/stores/common';
 
 interface CreateGroupFormRef {
@@ -45,8 +48,9 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
       handleSubmit,
       formState: { errors, defaultValues },
       reset,
-      setValue,
+      setError,
     } = useCreateGroupForm();
+    const { mutateAsync: createGroup } = useCreateGroupMutation();
 
     const {
       fields: menuItems,
@@ -54,7 +58,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
       remove: removeMenu,
     } = useFieldArray({
       control,
-      name: 'menus',
+      name: 'menu_items',
     });
 
     const wType = watch('type');
@@ -89,22 +93,44 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
 
     // Handle submit form
     const onSubmit = async (data: CreateGroupSchemaType) => {
-      setIsLoadingConfirm(true, ModalType.CREATE_GROUP);
-      // const res = await signIn('emailLogin', {
-      //   email: data.email,
-      //   password: data.password,
-      //   organization_code: data.organization_code,
-      //   redirect: false,
-      // });
+      const params: CreateGroupParams = {
+        name: data.name,
+        public_start_time: data.date_range.start as string,
+        public_end_time: data.date_range.end,
+        share_scope: data.share_scope,
+        type: data.type,
+        price: Number(data.price),
+        is_save_template: false,
+        menu_items: data.menu_items.map((menu) => ({
+          name: menu.name,
+          price: Number(menu.price),
+        })),
+      };
 
-      // if (res?.error) {
-      //   showError(res.error);
-      // } else {
-      //   showSuccess(tSystemMessage('success.signin_success'));
-      //   closeModal(ModalType.AUTH);
-      // }
+      if (data.is_same_price.includes('1')) {
+        params.price = Number(data.price);
+        params.menu_items = params.menu_items.map((menu) => ({
+          name: menu.name,
+          price: 0,
+        }));
+      } else {
+        params.price = 0;
+        params.menu_items = data.menu_items.map((menu) => ({
+          name: menu.name,
+          price: Number(menu.price),
+        }));
+      }
 
-      setIsLoadingConfirm(false, ModalType.CREATE_GROUP);
+      try {
+        setIsLoadingConfirm(true, ModalType.CREATE_GROUP);
+        await createGroup(params);
+        showSuccess(tSystemMessage('success.create_group_success'));
+        closeModal(ModalType.CREATE_GROUP);
+      } catch (error) {
+        handleErrFromApi(error, setError, showError);
+      } finally {
+        setIsLoadingConfirm(false, ModalType.CREATE_GROUP);
+      }
     };
 
     const renderMenu = () => {
@@ -115,9 +141,9 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
               <div key={menu.id} className="flex flex-row gap-2 mb-2">
                 <MyInputController
                   control={control}
-                  errorMessage={errors.menus?.[index]?.name?.message}
+                  errorMessage={errors.menu_items?.[index]?.name?.message}
                   label={''}
-                  name={`menus.${index}.name`}
+                  name={`menu_items.${index}.name`}
                   placeholder={tCreateGroupModal('placeholder.menu_name')}
                 />
                 {!wIsSamePrice.includes('1') && (
@@ -125,11 +151,11 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                     isNumber
                     className="w-[250px]"
                     control={control}
-                    errorMessage={errors.menus?.[index]?.price?.message}
+                    errorMessage={errors.menu_items?.[index]?.price?.message}
                     label={''}
                     maxValue={10000000}
                     minValue={1000}
-                    name={`menus.${index}.price`}
+                    name={`menu_items.${index}.price`}
                     placeholder={tCreateGroupModal('placeholder.menu_price')}
                   />
                 )}
@@ -216,8 +242,8 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
             control={control}
             description={tCreateGroupModal('description.date_range')}
             errorMessage={
-              errors.date_range?.start_date?.message ||
-              errors.date_range?.end_date?.message
+              errors.date_range?.start?.message ||
+              errors.date_range?.end?.message
             }
             label={tCreateGroupModal('date_range')}
             name="date_range"

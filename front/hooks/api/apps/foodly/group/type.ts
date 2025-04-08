@@ -38,9 +38,23 @@ export type GroupListParams = {
   page: number;
   size: number;
   keyword: string;
-  // status: string[];
-  // share_scope: string[];
+  status: string[];
+  share_scope: string[];
   sort: string;
-  is_online: number;
+  is_online: string;
   is_mine: number;
+};
+
+export type CreateGroupParams = {
+  name: string;
+  public_start_time: string;
+  public_end_time: string | null;
+  share_scope: string;
+  type: string;
+  price: number;
+  is_save_template: boolean;
+  menu_items: {
+    name: string;
+    price: number;
+  }[];
 };

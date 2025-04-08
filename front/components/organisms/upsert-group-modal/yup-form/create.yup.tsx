@@ -5,16 +5,17 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { GROUP_TYPE_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
+import { DateHelper } from '@/shared/helper/date';
 import { createI18nYupSchema } from '@/shared/yup-validate/i18n-validate-helper';
 
 export type CreateGroupSchemaType = {
   name: string;
   date_range: {
-    start_date: string;
-    end_date: string;
+    start: string | null;
+    end: string | null;
   };
   share_scope: string;
-  menus: {
+  menu_items: {
     name: string;
     price: string | null;
   }[];
@@ -31,13 +32,18 @@ export const useCreateGroupSchema = () => {
   const schema = yupInstance.object().shape({
     name: yupInstance.string().label('name').required(),
     date_range: yupInstance.object().shape({
-      start_date: yupInstance.string().label('start_date').required(),
-      end_date: yupInstance.string().label('end_date').required(),
+      start: yupInstance.string().label('start_date').required(),
+      end: yupInstance.string().label('end_date').required(),
     }),
     share_scope: yupInstance.string().label('share_scope').required(),
-    menus: yupInstance.array().of(
+    menu_items: yupInstance.array().of(
       yupInstance.object().shape({
-        name: yupInstance.string().label('menu_name').required(),
+        name: yupInstance
+          .string()
+          .label('menu_name')
+          .required()
+          .max(255)
+          .noEmoji(),
         price: yupInstance
           .string()
           .label('menu_price')
@@ -133,6 +139,8 @@ export const useCreateGroupSchema = () => {
             path: this.path,
           });
         }
+
+        return true;
       }),
   });
 
@@ -142,20 +150,22 @@ export const useCreateGroupSchema = () => {
 const useCreateGroupForm = () => {
   const [isSamePriceValue, setIsSamePriceValue] =
     React.useState<boolean>(false);
+  const startDate = DateHelper.getNow().add(5, 'minute').toISOString();
+  const endDate = DateHelper.getNow().add(1, 'hour').toISOString();
 
   const form = useForm<CreateGroupSchemaType>({
     mode: 'onChange',
     resolver: yupResolver(useCreateGroupSchema()),
     defaultValues: {
-      name: '',
+      name: 'Test Group',
       date_range: {
-        start_date: '',
-        end_date: '',
+        start: startDate,
+        end: endDate,
       },
       share_scope: SHARE_SCOPE_ENUM.PUBLIC,
       type: GROUP_TYPE_ENUM.MANUAL,
       is_same_price: [],
-      menus: [],
+      menu_items: [],
       price: null,
     },
     context: {

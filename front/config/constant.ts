@@ -17,4 +17,6 @@ export enum GROUP_TYPE_ENUM {
 export enum GROUP_STATUS_ENUM {
   INIT = 'INIT',
   LOCKED = 'LOCKED',
+  AVAILABLE = '1',
+  UNAVAILABLE = '0',
 }

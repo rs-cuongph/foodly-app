@@ -108,7 +108,7 @@ export default function GroupCardItem(props: GroupCardItemProps) {
   };
 
   return (
-    <div className="relative w-full rounded-3xl bg-white shadow-md max-w-[398px]">
+    <div className="relative w-full rounded-3xl bg-white shadow-md max-w-[398px] h-fit">
       {/* Image and Overlay Info */}
       <div className="relative mb-4 h-48 w-full overflow-hidden rounded-2xl">
         <Image

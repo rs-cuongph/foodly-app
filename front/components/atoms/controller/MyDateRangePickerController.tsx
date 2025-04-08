@@ -6,6 +6,10 @@ import MyDateRangePicker, { MyDateRangePickerProps } from '../DateRangePicker';
 export type MyDateRangePickerControllerProps = MyDateRangePickerProps & {
   control: Control<any>;
   name: Path<any>;
+  value?: {
+    start: string;
+    end: string;
+  };
 };
 
 const MyDateRangePickerController = forwardRef<
@@ -16,15 +20,17 @@ const MyDateRangePickerController = forwardRef<
     <Controller
       control={props.control}
       name={props.name}
-      render={({ field }) => (
-        <MyDateRangePicker
-          {...props}
-          {...field}
-          ref={ref}
-          value={field.value}
-          onChange={field.onChange}
-        />
-      )}
+      render={({ field }) => {
+        return (
+          <MyDateRangePicker
+            {...props}
+            {...field}
+            ref={ref}
+            value={field.value}
+            onChange={field.onChange}
+          />
+        );
+      }}
     />
   );
 });

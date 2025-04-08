@@ -22,6 +22,7 @@ export const siteConfig = {
         group: {
           list: '/groups',
           detail: '/groups/:id',
+          create: '/groups',
         },
       },
     },

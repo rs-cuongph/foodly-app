@@ -91,13 +91,21 @@
     "filter": {
       "share_scope": "Share Scope",
       "status": "Status",
+      "my_group": "My Group",
+      "is_online": "Online",
+      "my_group_label": {
+        "mine": "Mine",
+        "other": "Other"
+      },
       "share_scope_label": {
         "public": "Public",
         "private": "Private"
       },
       "status_label": {
         "init": "Init",
-        "locked": "Locked"
+        "locked": "Locked",
+        "available": "Available",
+        "unavailable": "Unavailable"
       }
     }
   },
@@ -141,7 +149,8 @@
     },
     "success": {
       "signin_success": "Signin Success",
-      "signup_success": "Signup Success"
+      "signup_success": "Signup Success",
+      "create_group_success": "Create Group Success"
     }
   }
 }
