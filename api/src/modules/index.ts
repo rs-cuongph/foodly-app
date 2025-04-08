@@ -6,8 +6,10 @@ import { GroupModule } from './group/group.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { OrganizationModule } from './organization/organization.module';
 import { SummaryModule } from './summary/summary.module';
+import { ValidatorsModule } from './validator/validator.module';
 
 export default [
+  ValidatorsModule,
   AuthModule,
   GroupModule,
   OrderModule,

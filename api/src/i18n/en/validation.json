@@ -39,5 +39,7 @@
   "NoEmoji": "$t(validation-properties.{property}) is not support Emoji",
   "OnlyAlphaNumeric": "$t(validation-properties.{property}) must only contain alphabets and numbers",
   "IsPhoneNumber": "$t(validation-properties.{property}) is not a valid phone number format",
-  "IsIdentifyNumber": "$t(validation-properties.{property}) is not a valid identify number format"
+  "IsIdentifyNumber": "$t(validation-properties.{property}) is not a valid identify number format",
+  "IsEmailUnique": "Email already exists",
+  "ExistsInEntity": "$t(validation-properties.{property}) not found"
 }

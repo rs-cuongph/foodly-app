@@ -59,7 +59,7 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
       resolvers: [
         new QueryResolver(['lang', 'locale', 'l']),
         new CookieResolver(),
-        new HeaderResolver(['lang']),
+        new HeaderResolver(['lang', 'x-custom-lang']),
         new AcceptLanguageResolver(),
       ],
       inject: [ConfigService],
