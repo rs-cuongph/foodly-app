@@ -141,20 +141,6 @@ export class AuthService {
       };
       const iat = decodedToken?.iat;
       const exp = decodedToken?.exp;
-
-      // Reset failed login attempts on successful login
-      // await this.prismaService.client.loginAttempt.deleteMany({
-      //   where: {
-      //     email,
-      //     organization_code,
-      //   },
-      // });
-
-      // Reset block_to
-      await this.prismaService.client.user.update({
-        where: { id: user.id },
-        data: { block_to: null },
-      });
       return {
         iat,
         exp,
@@ -228,6 +214,20 @@ export class AuthService {
       );
       throw new BadRequestException(this.i18n.t('message.wrong_account'));
     }
+
+    //Reset failed login attempts on successful login
+    await this.prismaService.client.loginAttempt.deleteMany({
+      where: {
+        email,
+        organization_code,
+      },
+    });
+
+    // Reset block_to
+    await this.prismaService.client.user.update({
+      where: { id: user.id },
+      data: { block_to: null },
+    });
 
     return user;
   }
