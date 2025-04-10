@@ -18,30 +18,31 @@ export default function InputPassword({
   const [password, setPassword] = useState(value);
   // Function to check password strength
   const checkPasswordStrength = (password: string) => {
+    const trimPassword = password.trim();
     let strength = 0;
 
     // Check for uppercase letter
-    if (/(?=.*?[A-Z])/.test(password)) {
+    if (/(?=.*?[A-Z])/.test(trimPassword)) {
       strength += 1;
     }
 
     // Check for lowercase letter
-    if (/(?=.*?[a-z])/.test(password)) {
+    if (/(?=.*?[a-z])/.test(trimPassword)) {
       strength += 1;
     }
 
     // Check for number
-    if (/(?=.*?[0-9])/.test(password)) {
+    if (/(?=.*?[0-9])/.test(trimPassword)) {
       strength += 1;
     }
 
     // Check for special character
-    if (/(?=.*?[#?!@$%^&*-])/.test(password)) {
+    if (/(?=.*?[#?!@$%^&*-])/.test(trimPassword)) {
       strength += 1;
     }
 
     // Check for minimum length
-    if (/.{8,}/.test(password)) {
+    if (/.{8,}/.test(trimPassword)) {
       strength += 1;
     }
 

@@ -55,45 +55,48 @@ export const createI18nYupSchema = (t: any) => {
       yup.string,
       'password',
       function (this, errorMsg?: string) {
-        return this.test(
-          'password',
-          errorMsg ||
-            t('password', {
-              field: t('fields.password'),
-            }),
-          function (value) {
-            const { path, createError } = this;
+       const { label } = this.describe();
+       const currentField = label || 'password';
 
-            if (!value) {
-              return true; // Let required() handle empty values
-            }
+       return this.test(
+         'password',
+         errorMsg ||
+           t('password', {
+             field: t(`fields.${currentField}`),
+           }),
+         function (value) {
+           const { path, createError } = this;
 
-            const hasUpperCase = /(?=.*?[A-Z])/.test(value);
-            const hasLowerCase = /(?=.*?[a-z])/.test(value);
-            const hasNumber = /(?=.*?[0-9])/.test(value);
-            const hasSpecialChar = /(?=.*?[#?!@$%^&*-])/.test(value);
-            const hasMinLength = value.length >= 8;
+           if (!value) {
+             return true; // Let required() handle empty values
+           }
 
-            const isValid =
-              hasUpperCase &&
-              hasLowerCase &&
-              hasNumber &&
-              hasSpecialChar &&
-              hasMinLength;
+           const hasUpperCase = /(?=.*?[A-Z])/.test(value);
+           const hasLowerCase = /(?=.*?[a-z])/.test(value);
+           const hasNumber = /(?=.*?[0-9])/.test(value);
+           const hasSpecialChar = /(?=.*?[#?!@$%^&*-])/.test(value);
+           const hasMinLength = value.length >= 8;
 
-            return (
-              isValid ||
-              createError({
-                path,
-                message:
-                  errorMsg ||
-                  t('password', {
-                    field: t('fields.password'),
-                  }),
-              })
-            );
-          },
-        );
+           const isValid =
+             hasUpperCase &&
+             hasLowerCase &&
+             hasNumber &&
+             hasSpecialChar &&
+             hasMinLength;
+
+           return (
+             isValid ||
+             createError({
+               path,
+               message:
+                 errorMsg ||
+                 t('password', {
+                   field: t('fields.password'),
+                 }),
+             })
+           );
+         },
+       );
       },
     );
 
@@ -102,9 +105,12 @@ export const createI18nYupSchema = (t: any) => {
       yup.string,
       'noEmoji',
       function (this, errorMsg?: string) {
+        const { label } = this.describe();
+        const currentField = label || 'field';
+
         return this.test(
           'noEmoji',
-          errorMsg || t('no_emoji', { field: t('fields.text') }),
+          errorMsg || t('no_emoji', { field: t(`fields.${currentField}`) }),
           function (value) {
             const { path, createError } = this;
 
@@ -135,9 +141,12 @@ export const createI18nYupSchema = (t: any) => {
       yup.string,
       'isNumber',
       function (this, errorMsg?: string) {
+        const { label } = this.describe();
+        const currentField = label || 'field';
+
         return this.test(
           'isNumber',
-          errorMsg || t('isNumber', { field: t('fields.number') }),
+          errorMsg || t('isNumber', { field: t(`fields.${currentField}`) }),
           function (value) {
             const { path, createError } = this;
 
@@ -168,11 +177,14 @@ export const createI18nYupSchema = (t: any) => {
       yup.string,
       'requireSelect',
       function (this, errorMsg?: string) {
+        const { label } = this.describe();
+        const currentField = label || 'field';
+
         return this.test(
           'requireSelect',
           errorMsg ||
             t('requireSelect', {
-              field: t('fields.select'),
+              field: t(`fields.${currentField}`),
             }),
           function (value) {
             const { path, createError } = this;
@@ -198,7 +210,8 @@ export const createI18nYupSchema = (t: any) => {
       yup.string,
       'sameAs',
       function (this, field: string, errorMsg?: string) {
-        const currentField = this.label || 'field';
+        const { label } = this.describe();
+        const currentField = label || 'field';
 
         return this.test(
           'sameAs',

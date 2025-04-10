@@ -26,6 +26,11 @@ const signUp = async (userData: SignUpPayload): Promise<SignUpResponse> => {
   const { data } = await apiClient.post<SignUpResponse>(
     siteConfig.apiRoutes.register,
     userData,
+    {
+      transport: {
+        skipValidation: true,
+      },
+    },
   );
 
   return data;

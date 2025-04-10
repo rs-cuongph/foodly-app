@@ -47,6 +47,14 @@ export class DateHelper {
     return '';
   }
 
+  static toISOString(date?: Date | string | null) {
+    if (date) {
+      return dayjs(date).toISOString();
+    }
+
+    return '';
+  }
+
   static formaToUTC(date?: Date | string | null) {
     if (date) {
       return dayjs(date).utc().toISOString();

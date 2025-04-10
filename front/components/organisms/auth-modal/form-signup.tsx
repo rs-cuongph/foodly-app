@@ -11,7 +11,9 @@ import InputPassword from '@/components/atoms/InputPassword';
 import { LOCAL_STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { useSignUpMutation } from '@/hooks/api/auth';
+import { useSystemToast } from '@/hooks/toast';
 import { useRouter } from '@/i18n/navigation';
+import { handleErrFromApi } from '@/shared/helper/validation';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 interface SignUpModalFormRef {
@@ -35,20 +37,27 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
       useCommonStore();
     const formRef = useRef<HTMLFormElement>(null);
     const router = useRouter();
-
+    const { showError } = useSystemToast();
     const {
       register,
       handleSubmit,
       formState: { errors },
+      watch,
+      setError,
     } = useSignUpForm();
 
     const signUpMutation = useSignUpMutation();
+
+    const organizationCode = localStorage.getItem(
+      LOCAL_STORAGE_KEYS.ORGANIZATION_CODE,
+    );
 
     const onSubmit = async (data: SignUpFormData) => {
       try {
         setIsLoadingConfirm(true, ModalType.AUTH);
         const response = await signUpMutation.mutateAsync(data);
 
+        console.log(response);
         if (response.access_token) {
           localStorage.setItem(
             LOCAL_STORAGE_KEYS.ACCESS_TOKEN,
@@ -67,7 +76,7 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
           router.push(siteConfig.routes.home);
         }
       } catch (error) {
-        console.error(error);
+        handleErrFromApi(error, setError, showError);
       } finally {
         setIsLoadingConfirm(false, ModalType.AUTH);
       }
@@ -89,7 +98,9 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
             maxLength={40}
             placeholder={tSignUpModal('placeholder.organization_code')}
             {...register('organization_code')}
+            disabled={!!organizationCode}
             errorMessage={errors.organization_code?.message}
+            readOnly={!!organizationCode}
           />
           <MyInput
             isRequired
@@ -118,6 +129,7 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
             errorMessage={errors.confirm_password?.message}
           />
           <MyInput
+            isRequired
             label={tSignUpModal('display_name')}
             labelPlacement="outside"
             placeholder={tSignUpModal('placeholder.display_name')}

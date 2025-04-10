@@ -1,5 +1,6 @@
 'use client';
 import { Form } from '@heroui/form';
+import { parseAbsoluteToLocal } from '@internationalized/date';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -24,6 +25,7 @@ import { GROUP_TYPE_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
 import { useCreateGroupMutation } from '@/hooks/api/apps/foodly/group';
 import { CreateGroupParams } from '@/hooks/api/apps/foodly/group/type';
 import { useSystemToast } from '@/hooks/toast';
+import { DateHelper } from '@/shared/helper/date';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { ModalType, useCommonStore } from '@/stores/common';
 
@@ -246,6 +248,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
               errors.date_range?.end?.message
             }
             label={tCreateGroupModal('date_range')}
+            minValue={parseAbsoluteToLocal(DateHelper.getNow().toISOString())}
             name="date_range"
           />
 

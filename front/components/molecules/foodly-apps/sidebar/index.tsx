@@ -1,7 +1,13 @@
 'use client';
 
 import { HomeIcon } from '@heroicons/react/24/outline';
-import { Avatar, User } from '@heroui/react';
+import {
+  Avatar,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  User,
+} from '@heroui/react';
 import clsx from 'clsx';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
@@ -76,10 +82,8 @@ export function Sidebar() {
   const isLogin = useMemo(() => {
     const isLoggedIn = Boolean(status === 'authenticated' && userInfo);
 
-    setIsLoggedIn(isLoggedIn);
-
     return isLoggedIn;
-  }, [status, userInfo, setIsLoggedIn]);
+  }, [status, userInfo]);
 
   const MenuItemFiltered = useMemo(() => {
     return menuItems.filter((item) => {
@@ -115,8 +119,8 @@ export function Sidebar() {
   }, [setUserInfo, userInfo]);
 
   useEffect(() => {
-    console.log('session', session);
-  }, [session]);
+    setIsLoggedIn(isLogin);
+  }, [isLogin]);
 
   return (
     <>
@@ -128,13 +132,49 @@ export function Sidebar() {
           )}
         >
           {isLogin ? (
-            <div className="flex flex-row items-center gap-2 justify-between w-full">
+            <div className="flex flex-row items-center gap-2 justify-between w-full flex-1">
               <User
                 avatarProps={{
                   src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+                  classNames: {
+                    base: 'min-w-[40px] min-h-[40px]',
+                  },
                 }}
-                description={userInfo?.email}
-                name={userInfo?.display_name}
+                classNames={{
+                  description:
+                    'text-ellipsis line-clamp-1 break-words break-all',
+                  name: 'text-ellipsis line-clamp-1 break-words break-all',
+                }}
+                description={
+                  <Popover placement="bottom" showArrow={true}>
+                    <PopoverTrigger>
+                      <span className="cursor-help">{userInfo?.email}</span>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div className="px-1 py-2">
+                        <div className="text-small font-bold">
+                          {userInfo?.email}
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                }
+                name={
+                  <Popover placement="bottom" showArrow={true}>
+                    <PopoverTrigger>
+                      <span className="cursor-help">
+                        {userInfo?.display_name}
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <div className="px-1 py-2">
+                        <div className="text-small font-bold">
+                          {userInfo?.display_name}
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                }
               />
               <MyButton
                 isIconOnly

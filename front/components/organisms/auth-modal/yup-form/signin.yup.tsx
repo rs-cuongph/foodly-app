@@ -17,11 +17,12 @@ export const useSignInSchema = () => {
 
   // Create a schema that exactly matches SignInSchemaType
   const schema = yupInstance.object().shape({
-    email: yupInstance.string().label('email').required().email(),
-    password: yupInstance.string().label('password').required(),
+    email: yupInstance.string().label('email').trim().required().email(),
+    password: yupInstance.string().label('password').trim().required(),
     organization_code: yupInstance
       .string()
       .label('organization_code')
+      .trim()
       .required(),
   });
 

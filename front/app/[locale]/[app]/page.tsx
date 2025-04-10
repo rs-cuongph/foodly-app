@@ -2,8 +2,9 @@
 
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
+import { debounce } from 'lodash';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
 import { CreateGroupIcon } from '@/components/atoms/icons';
@@ -12,7 +13,6 @@ import FilterGroupForm from '@/components/molecules/foodly-apps/filter-group';
 import GroupCardList from '@/components/organisms/group-list';
 import { GROUP_STATUS_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
 import { GroupListParams } from '@/hooks/api/apps/foodly/group/type';
-import { useWindowSize } from '@/hooks/window-size';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
@@ -20,7 +20,6 @@ export default function Home() {
   const tButton = useTranslations('button');
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
-  const { windowSize } = useWindowSize();
 
   const [searchForm, setSearchForm] = useState<GroupListParams>({
     keyword: '',
@@ -49,10 +48,22 @@ export default function Home() {
     }));
   };
 
+  const updateSearchForm = useCallback((keyword: string) => {
+    setSearchForm((prev) => ({ ...prev, keyword }));
+  }, []);
+
+  // Debounce the search to avoid excessive updates while typing
+  const debouncedUpdateSearch = useCallback(
+    debounce((keyword: string) => {
+      updateSearchForm(keyword);
+    }, 300),
+    [updateSearchForm],
+  );
+
   const onChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     const keyword = e.target.value;
 
-    setSearchForm((prev) => ({ ...prev, keyword }));
+    debouncedUpdateSearch(keyword);
   };
 
   const openCreateGroupModal = () => {

@@ -1,11 +1,16 @@
-import axios from "axios";
+import http from 'http';
+import https from 'https';
 
-import { LOCAL_STORAGE_KEYS } from "@/config/constant";
+import axios from 'axios';
+
+import { LOCAL_STORAGE_KEYS } from '@/config/constant';
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
+  httpAgent: new http.Agent({ keepAlive: true }),
+  httpsAgent: new https.Agent({ keepAlive: true }),
 });
 
 export const setHeaderToken = (token: string) => {

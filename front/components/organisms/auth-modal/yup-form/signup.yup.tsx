@@ -18,22 +18,20 @@ export const useSignUpSchema = () => {
   const yupInstance = createI18nYupSchema(t);
 
   const schema = yupInstance.object().shape({
-    email: yupInstance.string().label('email').required().email(),
-    password: yupInstance.string().label('password').required(),
+    email: yupInstance.string().label('email').trim().required().email(),
+    password: yupInstance.string().label('password').trim().required(),
     confirm_password: yupInstance
       .string()
       .label('confirm_password')
+      .trim()
       .required()
       .sameAs('password'),
     organization_code: yupInstance
       .string()
       .label('organization_code')
+      .trim()
       .required(),
-    display_name: yupInstance
-      .string()
-      .label('display_name')
-      .optional()
-      .nullable(),
+    display_name: yupInstance.string().label('display_name').trim().required(),
   });
 
   return schema as yup.ObjectSchema<SignUpSchemaType>;
