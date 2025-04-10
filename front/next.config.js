@@ -1,16 +1,14 @@
+const createNextIntlPlugin = require('next-intl/plugin');
+
+const withNextIntl = createNextIntlPlugin();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@svgr/webpack"],
-  experimental: {
-    turbo: {
-      rules: {
-        "*.svg": {
-          loaders: ["@svgr/webpack"],
-          as: "*.tsx",
-        },
-      },
-    },
+  reactStrictMode: false,
+
+  images: {
+    domains: ['localhost', '127.0.0.1'],
   },
 };
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);

@@ -7,7 +7,8 @@ import {
 } from '@decorators/validation/string.decorator';
 import { CreateMenuDTO } from '@modules/menu/dto/create.dto';
 import { GroupType, ShareScope } from '@prisma/client';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, ValidateIf } from 'class-validator';
+import { ValidateMenuPrices } from '@decorators/validation/group-price.decorator';
 
 export class CreateGroupDTO {
   @StringField({
@@ -30,7 +31,11 @@ export class CreateGroupDTO {
   public_end_time: Date;
 
   @NumberField({
+    min: 1000,
     max: 10000000,
+  })
+  @ValidateIf((object) => {
+    return !object.menu_items?.length;
   })
   price: number;
 
@@ -45,6 +50,7 @@ export class CreateGroupDTO {
     isValidateNested: true,
     minLength: 1,
   })
+  @ValidateMenuPrices()
   menu_items: CreateMenuDTO[];
 
   @StringField({

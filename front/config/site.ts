@@ -1,69 +1,39 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Front",
-  description: "Make beautiful websites regardless of your design experience.",
-  navItems: [
-    {
-      label: "Home",
-      href: "/",
+  name: 'My Apps',
+  apps: {
+    foodly: {
+      title: 'Foodly',
+      description: 'Foodly App',
+      routes: {
+        home: '/foodly',
+        history: '/foodly/my-payment-history',
+        my_group: '/foodly/my-group',
+        my_page: '/foodly/my-page',
+        group: {
+          detail: '/foodly/groups/:id',
+        },
+      },
+      apiRoutes: {
+        login: '/auth/sign-in',
+        register: '/auth/sign-up',
+        my_info: '/auth/user-info',
+        group: {
+          list: '/groups',
+          detail: '/groups/:id',
+          create: '/groups',
+        },
+      },
     },
-    {
-      label: "Docs",
-      href: "/docs",
-    },
-    {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
-    },
-  ],
-  navMenuItems: [
-    {
-      label: "Profile",
-      href: "/profile",
-    },
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-    },
-    {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
-    },
-  ],
-  links: {
-    github: "https://github.com/nextui-org/nextui",
-    twitter: "https://twitter.com/getnextui",
-    docs: "https://nextui.org",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
   },
-};
+  description: '',
+  routes: {
+    home: '/',
+  },
+  apiRoutes: {
+    login: '/auth/sign-in',
+    register: '/auth/sign-up',
+    my_info: '/auth/user-info',
+  },
+} as const;

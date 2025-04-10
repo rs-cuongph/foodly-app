@@ -71,6 +71,7 @@ export class AuthService {
       const existedUser = await this.findUser({
         email,
       });
+
       if (existedUser) {
         throw new ConflictException(
           this.i18n.t('message.email_already_existed'),
@@ -116,6 +117,8 @@ export class AuthService {
         exp,
         type: TokenType.BEARER,
         user_id: user.id,
+        name: user.display_name,
+        email: user.email,
         organization_id: user.organization_id,
         access_token,
         refresh_token,
@@ -143,6 +146,8 @@ export class AuthService {
         exp,
         type: TokenType.BEARER,
         user_id: user.id,
+        name: user.display_name,
+        email: user.email,
         organization_id: user.organization_id,
         access_token,
         refresh_token,
@@ -538,6 +543,7 @@ export class AuthService {
       const organization = await this.findOrganization({
         code: organization_code,
       });
+
       if (!organization) {
         throw new BadRequestException(
           this.i18n.t('message.organization_not_found'),
