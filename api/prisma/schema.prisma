@@ -28,32 +28,59 @@ model Organization {
   Transaction Transaction[]
 }
 
+/**
+ * A user of the application.
+ * A user can login and access their groups and orders.
+ * The `block_to` field is the date and time when the user is blocked until.
+ * The `my_coin` field is the amount of coin that the user has.
+ * The `payment_setting` field is the payment setting of the user.
+ * The `max_order` field is the maximum number of orders that the user can make.
+ * The `organization` field is the organization that the user belongs to.
+ * The `group` field is the groups that the user belongs to.
+ * The `order_created` field is the orders that the user created.
+ * The `order_updated` field is the orders that the user updated.
+ * The `order_group_template` field is the group templates that the user created.
+ * The `login_attempts` field is the login attempts of the user.
+ * The `Transaction` field is the transactions that the user made.
+ * The `current_challenge` field is the current challenge of the user.
+ */
 model User {
-  id                              String          @id @default(uuid())
-  email                           String          @db.VarChar(255)
-  password                        String?         @db.VarChar(255)
-  display_name                    String?         @db.VarChar(255)
-  role                            Role            @default(USER)
+  id                              String               @id @default(uuid())
+  email                           String               @db.VarChar(255)
+  password                        String?              @db.VarChar(255)
+  display_name                    String?              @db.VarChar(255)
+  role                            Role                 @default(USER)
   block_to                        DateTime?
-  my_coin                         Decimal         @default(0) @db.Decimal(15, 2)
+  my_coin                         Decimal              @default(0) @db.Decimal(15, 2)
   payment_setting                 Json?
-  max_order                       Float           @default(5.0)
+  max_order                       Float                @default(5.0)
   organization_id                 String
   reset_password_token            String?
   reset_password_token_expires_at DateTime?
-  login_code                      String?         @db.VarChar(6)
+  login_code                      String?              @db.VarChar(6)
   login_code_expires_at           DateTime?
-  created_at                      DateTime        @default(now())
-  updated_at                      DateTime        @updatedAt
-  organization                    Organization    @relation(fields: [organization_id], references: [id])
+  created_at                      DateTime             @default(now())
+  updated_at                      DateTime             @updatedAt
+  organization                    Organization         @relation(fields: [organization_id], references: [id])
   group                           Group[]
-  order_created                   Order[]         @relation("CreatedBy_Order")
-  order_updated                   Order[]         @relation("UpdatedBy_Order")
-  order_group_template            GroupTemplate[] @relation("CreatedBy_GroupTemplate")
-  login_attempts                  LoginAttempt[]  @relation("UserLoginAttempts")
+  order_created                   Order[]              @relation("CreatedBy_Order")
+  order_updated                   Order[]              @relation("UpdatedBy_Order")
+  order_group_template            GroupTemplate[]      @relation("CreatedBy_GroupTemplate")
+  login_attempts                  LoginAttempt[]       @relation("UserLoginAttempts")
   Transaction                     Transaction[]
+  current_challenge               String?
+  webauthn_credential             WebAuthnCredential[]
 
   @@unique([email, organization_id])
+}
+
+model WebAuthnCredential {
+  credential_id  String   @unique
+  counter        Int      @default(0)
+  credentialJson Json
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id        String
+  created_at     DateTime @default(now())
 }
 
 model Group {

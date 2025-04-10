@@ -7,6 +7,7 @@ export interface Config {
   mail: MailConfig;
   aws: AwsConfig;
   prisma: PrismaConfig;
+  webauthn: WebauthnConfig;
 }
 
 export interface AwsConfig {
@@ -57,4 +58,10 @@ export interface MailConfig {
 
 export interface PrismaConfig {
   logLevel: string;
+}
+
+export interface WebauthnConfig {
+  rpName: string;
+  rpId: string;
+  origin: string;
 }

@@ -28,5 +28,7 @@
   "order_already_paid": "Order is already paid",
   "mark_paid_all_failed": "Mark paid all failed",
   "password_changed": "Password has been changed",
-  "new_password_same_as_old": "New password cannot be the same as the old password"
+  "new_password_same_as_old": "New password cannot be the same as the old password",
+  "authenticator_not_found": "Authenticator not found",
+  "challenge_not_found_or_expired": "Challenge not found or expired"
 }

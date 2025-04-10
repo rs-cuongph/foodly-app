@@ -44,6 +44,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.1.2",
     "@nestjs/swagger": "^7.4.0",
+    "@passwordless-id/webauthn": "^2.3.0",
     "@payos/node": "^1.0.8",
     "@prisma/client": "^6.4.0",
     "@types/lodash": "^4.17.5",

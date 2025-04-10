@@ -26,6 +26,8 @@ import { siteConfig } from '@/config/site';
 import { useGetUserInfoQuery } from '@/hooks/api/auth';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
+import { useWebAuthClient } from '@/hooks/web-authn';
+import { useSystemToast } from '@/hooks/toast';
 
 export function Sidebar() {
   const router = useRouter();
@@ -34,6 +36,14 @@ export function Sidebar() {
   const commonStore = useCommonStore();
   const { data: session, status } = useSession();
   const { setUserInfo, setIsLoggedIn } = useAuthStore();
+  const { showSuccess } = useSystemToast();
+  const {
+    createRegistration,
+    getChallenge,
+    verifyRegistration,
+    createAuthentication,
+    verifyAuthentication,
+  } = useWebAuthClient();
 
   const { data: userInfo } = useGetUserInfoQuery(
     session?.user?.id || '',
@@ -112,6 +122,47 @@ export function Sidebar() {
     router.push(siteConfig.apps.foodly.routes.home);
   };
 
+  const handleRegisterWebAuthn = async () => {
+    if (!userInfo) return;
+    try {
+      const challenge = await getChallenge();
+
+      const registration = await createRegistration({
+        user: {
+          id: userInfo.id,
+          name: userInfo.email,
+        },
+        challenge,
+      });
+
+      await verifyRegistration(challenge, registration);
+      showSuccess('Register WebAuthn success');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      //
+    }
+  };
+
+  const handleSignInWebAuthn = async () => {
+    try {
+      const challenge = await getChallenge();
+
+      const authentication = await createAuthentication({
+        timeout: 60000,
+        challenge,
+        userVerification: 'required',
+      });
+
+      await verifyAuthentication(challenge, authentication);
+      showSuccess('Sign in WebAuthn success');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      //
+    }
+  };
+
   useEffect(() => {
     if (userInfo) {
       setUserInfo(userInfo);
@@ -132,68 +183,86 @@ export function Sidebar() {
           )}
         >
           {isLogin ? (
-            <div className="flex flex-row items-center gap-2 justify-between w-full flex-1">
-              <User
-                avatarProps={{
-                  src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
-                  classNames: {
-                    base: 'min-w-[40px] min-h-[40px]',
-                  },
-                }}
-                classNames={{
-                  description:
-                    'text-ellipsis line-clamp-1 break-words break-all',
-                  name: 'text-ellipsis line-clamp-1 break-words break-all',
-                }}
-                description={
-                  <Popover placement="bottom" showArrow={true}>
-                    <PopoverTrigger>
-                      <span className="cursor-help">{userInfo?.email}</span>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="px-1 py-2">
-                        <div className="text-small font-bold">
-                          {userInfo?.email}
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row items-center gap-2 justify-between w-full flex-1">
+                <User
+                  avatarProps={{
+                    src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+                    classNames: {
+                      base: 'min-w-[40px] min-h-[40px]',
+                    },
+                  }}
+                  classNames={{
+                    description:
+                      'text-ellipsis line-clamp-1 break-words break-all',
+                    name: 'text-ellipsis line-clamp-1 break-words break-all',
+                  }}
+                  description={
+                    <Popover placement="bottom" showArrow={true}>
+                      <PopoverTrigger>
+                        <span className="cursor-help">{userInfo?.email}</span>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="px-1 py-2">
+                          <div className="text-small font-bold">
+                            {userInfo?.email}
+                          </div>
                         </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                }
-                name={
-                  <Popover placement="bottom" showArrow={true}>
-                    <PopoverTrigger>
-                      <span className="cursor-help">
-                        {userInfo?.display_name}
-                      </span>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="px-1 py-2">
-                        <div className="text-small font-bold">
+                      </PopoverContent>
+                    </Popover>
+                  }
+                  name={
+                    <Popover placement="bottom" showArrow={true}>
+                      <PopoverTrigger>
+                        <span className="cursor-help">
                           {userInfo?.display_name}
+                        </span>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="px-1 py-2">
+                          <div className="text-small font-bold">
+                            {userInfo?.display_name}
+                          </div>
                         </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                }
-              />
+                      </PopoverContent>
+                    </Popover>
+                  }
+                />
+                <MyButton
+                  isIconOnly
+                  color="primary"
+                  variant="flat"
+                  onPress={handleSignOut}
+                >
+                  <LogoutIcon className="w-6 h-6 text-primary" />
+                </MyButton>
+              </div>
               <MyButton
-                isIconOnly
+                className="w-full"
                 color="primary"
-                variant="flat"
-                onPress={handleSignOut}
+                onPress={handleRegisterWebAuthn}
               >
-                <LogoutIcon className="w-6 h-6 text-primary" />
+                Register WebAuthn
               </MyButton>
             </div>
           ) : (
-            <MyButton
-              className="w-full"
-              color="primary"
-              onPress={openSignInModal}
-            >
-              <LoginIcon className="w-6 h-6 text-white" />
-              {t('login').toUpperCase()}
-            </MyButton>
+            <div className="flex flex-col gap-2">
+              <MyButton
+                className="w-full"
+                color="primary"
+                onPress={openSignInModal}
+              >
+                <LoginIcon className="w-6 h-6 text-white" />
+                {t('login').toUpperCase()}
+              </MyButton>
+              <MyButton
+                className="w-full"
+                color="primary"
+                onPress={handleSignInWebAuthn}
+              >
+                Authenticate WebAuthn
+              </MyButton>
+            </div>
           )}
         </div>
         <div className="w-full h-[250px] bg-white rounded-b-3xl">

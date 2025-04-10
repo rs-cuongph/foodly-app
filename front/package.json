@@ -24,6 +24,7 @@
     "@heroui/theme": "2.4.12",
     "@hookform/resolvers": "^5.0.1",
     "@internationalized/date": "3.7.0",
+    "@passwordless-id/webauthn": "^2.3.0",
     "@react-aria/i18n": "3.12.7",
     "@react-aria/ssr": "3.9.7",
     "@react-aria/visually-hidden": "3.8.20",

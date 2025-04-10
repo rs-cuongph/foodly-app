@@ -1,3 +1,8 @@
+import {
+  AuthenticationResponseJSON,
+  RegistrationJSON,
+} from '@passwordless-id/webauthn/dist/esm/types';
+
 export type SignInPayload = {
   email: string;
   password: string;
@@ -49,4 +54,14 @@ export type UserInfoResponse = {
   created_at: string;
   updated_at: string;
   can_create_order: boolean;
+};
+
+export type WebAuthnVerifyRegistrationDTO = {
+  challenge: string;
+  response: RegistrationJSON;
+};
+
+export type WebAuthnVerifyAuthenticationDTO = {
+  challenge: string;
+  response: AuthenticationResponseJSON;
 };

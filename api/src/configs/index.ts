@@ -50,6 +50,11 @@ const configs = (): Config => {
     prisma: {
       logLevel: process.env.PRISMA_LOG_LEVEL || 'log',
     },
+    webauthn: {
+      rpName: process.env.WEBAUTHN_RP_NAME || 'Foodly',
+      rpId: process.env.WEBAUTHN_RP_ID || 'localhost:3000',
+      origin: process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000',
+    },
   };
 };
 

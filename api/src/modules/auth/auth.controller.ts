@@ -27,6 +27,10 @@ import {
   ResendLoginCodeDTO,
 } from './dto/login-by-code.dto';
 import { Request } from 'express';
+import {
+  WebAuthnVerifyAuthenticationDTO,
+  WebAuthnVerifyRegistrationDTO,
+} from './dto/webauthn.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -107,5 +111,25 @@ export class AuthController {
   @Put('set-password')
   setPassword(@Body() body: SetPasswordDTO) {
     return this.authService.setPassword(body);
+  }
+
+  @Public()
+  @Post('webauth/register')
+  async generateWebAuthnChallenge() {
+    return this.authService.generateWebAuthnChallenge();
+  }
+
+  @Post('webauth/register/verify')
+  async verifyRegistration(
+    @Body() body: WebAuthnVerifyRegistrationDTO,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.authService.webAuthVerifyChallenge(body, request.user);
+  }
+
+  @Public()
+  @Post('webauth/authenticate')
+  async verifyAuthentication(@Body() body: WebAuthnVerifyAuthenticationDTO) {
+    return this.authService.webAuthVerifyAuthentication(body);
   }
 }

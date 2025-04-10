@@ -28,5 +28,7 @@
   "order_already_paid": "Đơn hàng đã được thanh toán.",
   "mark_paid_all_failed": "Thanh toán thất bại.",
   "password_changed": "Mật khẩu đã được thay đổi.",
-  "new_password_same_as_old": "Mật khẩu mới không được trùng với mật khẩu cũ."
+  "new_password_same_as_old": "Mật khẩu mới không được trùng với mật khẩu cũ.",
+  "authenticator_not_found": "Authenticator không tồn tại.",
+  "challenge_not_found_or_expired": "Challenge không tồn tại hoặc đã hết hạn."
 }

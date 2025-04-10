@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { RegistrationInfo } from '@passwordless-id/webauthn/dist/esm/types';
 
 import {
   SignInPayload,
@@ -6,6 +7,8 @@ import {
   SignUpPayload,
   SignUpResponse,
   UserInfoResponse,
+  WebAuthnVerifyAuthenticationDTO,
+  WebAuthnVerifyRegistrationDTO,
 } from './type';
 
 import { LOCAL_STORAGE_KEYS } from '@/config/constant';
@@ -59,4 +62,42 @@ export const useGetUserInfoQuery = (id: string, accessToken: string) => {
     queryFn: getUserInfo,
     enabled: !!id,
   });
+};
+
+export const getWebAuthnChallenge = async () => {
+  const { data } = await apiClient.post<string>(
+    siteConfig.apiRoutes.webauthn.generate_challenge,
+  );
+
+  return data;
+};
+
+export const verifyWebAuthnRegistration = async ({
+  challenge,
+  response,
+}: WebAuthnVerifyRegistrationDTO) => {
+  const { data } = await apiClient.post<RegistrationInfo>(
+    siteConfig.apiRoutes.webauthn.verify_registration,
+    {
+      challenge,
+      registration: response,
+    },
+  );
+
+  return data;
+};
+
+export const verifyWebAuthnAuthentication = async ({
+  challenge,
+  response,
+}: WebAuthnVerifyAuthenticationDTO) => {
+  const { data } = await apiClient.post<SignInResponse>(
+    siteConfig.apiRoutes.webauthn.verify_authentication,
+    {
+      challenge,
+      authentication: response,
+    },
+  );
+
+  return data;
 };

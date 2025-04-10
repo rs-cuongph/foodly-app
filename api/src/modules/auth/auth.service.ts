@@ -19,7 +19,7 @@ import { RequestWithUser } from 'src/types/requests.type';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
 import { omit } from 'lodash';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 import * as dayjs from 'dayjs';
 import {
@@ -36,6 +36,12 @@ import {
 } from './dto/login-by-code.dto';
 import { Request } from 'express';
 import { ORDER_STATUS_ENUM } from '@enums/status.enum';
+import { server } from '@passwordless-id/webauthn';
+import {
+  WebAuthnVerifyAuthenticationDTO,
+  WebAuthnVerifyRegistrationDTO,
+} from './dto/webauthn.dto';
+import { CredentialInfo } from '@passwordless-id/webauthn/dist/esm/types';
 
 @Injectable()
 export class AuthService {
@@ -44,6 +50,10 @@ export class AuthService {
   private ATTEMPTS_WINDOW_MINUTES = 30;
   private BLOCK_DURATION_HOURS = 2;
   private logger = new Logger(AuthService.name);
+  // RP stands for Relying Party - the website/service using WebAuthn
+  private rpName: string;
+  private rpID: string;
+  private webAuthOrigin: string;
   constructor(
     @Inject('PrismaService')
     private prismaService: CustomPrismaService<ExtendedPrismaClient>,
@@ -51,7 +61,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private i18n: I18nService,
     private mailService: MailService,
-  ) {}
+  ) {
+    this.rpName = this.configService.get<string>('webauthn.rpName');
+    this.rpID = this.configService.get<string>('webauthn.rpId');
+    this.webAuthOrigin = this.configService.get<string>('webauthn.origin');
+  }
 
   async findUser(condition: Prisma.UserWhereInput) {
     return this.prismaService.client.user.findFirst({
@@ -613,6 +627,7 @@ export class AuthService {
       await this.prismaService.client.user.update({
         where: { id: user.id },
         data: {
+          block_to: null,
           login_code: null,
           login_code_expires_at: null,
         },
@@ -725,6 +740,76 @@ export class AuthService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async generateWebAuthnChallenge() {
+    const challenge = server.randomChallenge();
+    return challenge;
+  }
+
+  async webAuthVerifyChallenge(
+    body: WebAuthnVerifyRegistrationDTO,
+    user: RequestWithUser['user'],
+  ) {
+    const expected = {
+      challenge: body.challenge,
+      origin: this.webAuthOrigin,
+    };
+
+    const registrationParsed = await server.verifyRegistration(
+      body.registration,
+      expected,
+    );
+
+    await this.prismaService.client.webAuthnCredential.create({
+      data: {
+        credential_id: registrationParsed.credential.id,
+        user_id: user.id,
+        credentialJson: registrationParsed,
+      },
+    });
+
+    return registrationParsed;
+  }
+
+  async webAuthVerifyAuthentication(body: WebAuthnVerifyAuthenticationDTO) {
+    const expected = {
+      challenge: body.challenge,
+      origin: this.webAuthOrigin,
+      userVerified: true,
+      verbose: true,
+    };
+
+    const webAuthnCredential =
+      await this.prismaService.client.webAuthnCredential.findUnique({
+        where: { credential_id: body.authentication.id },
+      });
+
+    if (!webAuthnCredential) {
+      throw new BadRequestException(this.i18n.t('message.wrong_account'));
+    }
+
+    try {
+      const credentialInfo = (webAuthnCredential.credentialJson as any)
+        .credential;
+
+      const credentialKey = {
+        id: webAuthnCredential.credential_id,
+        publicKey: credentialInfo.publicKey,
+        algorithm: credentialInfo.algorithm,
+        transports: credentialInfo.transports,
+      } as const;
+
+      const authenticationParsed = await server.verifyAuthentication(
+        body.authentication,
+        credentialKey,
+        expected,
+      );
+
+      return authenticationParsed;
+    } catch (error) {
+      throw new BadRequestException(this.i18n.t('message.wrong_account'));
     }
   }
 }
