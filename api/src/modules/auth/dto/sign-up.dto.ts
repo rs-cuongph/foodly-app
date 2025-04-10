@@ -39,7 +39,7 @@ export class SignUpDTO {
   @StringField({
     property: 'organization_code',
     maxLength: 16,
-    allowEmpty: false,
+    allowEmpty: true,
   })
   @ExistsInEntity({
     entity: 'organization',

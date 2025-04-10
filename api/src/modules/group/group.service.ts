@@ -242,7 +242,16 @@ export class GroupService {
   }
 
   async search(query: SearchGroupDTO, user: RequestWithUser['user'] | null) {
-    const { keyword, sort, page, size, is_online, is_mine } = query;
+    const {
+      keyword,
+      sort,
+      page,
+      size,
+      is_online,
+      is_mine,
+      share_scope,
+      status,
+    } = query;
     const whereClause: Prisma.GroupWhereInput = {
       // share_scope: {
       //   in: [ShareScope.PUBLIC, ShareScope.PRIVATE],
@@ -281,14 +290,49 @@ export class GroupService {
       };
     }
 
-    if (is_online && is_online == 1) {
-      whereClause.AND = {
-        public_start_time: {
-          lte: dayjs().toDate(),
-        },
-        public_end_time: {
-          gte: dayjs().toDate(),
-        },
+    if (is_online) {
+      const splitIsOnline = is_online.toString().split(',');
+      console.log('splitIsOnline', splitIsOnline);
+      if (splitIsOnline.includes('1') && splitIsOnline.includes('0')) {
+        //
+      } else if (splitIsOnline.includes('1')) {
+        whereClause.AND = {
+          public_start_time: {
+            lte: dayjs().toDate(),
+          },
+          public_end_time: {
+            gte: dayjs().toDate(),
+          },
+          status: GroupStatus.INIT,
+        };
+      } else if (splitIsOnline.includes('0')) {
+        whereClause.OR = [
+          {
+            status: GroupStatus.LOCKED,
+          },
+          {
+            public_start_time: {
+              gt: dayjs().toDate(),
+            },
+          },
+          {
+            public_end_time: {
+              lt: dayjs().toDate(),
+            },
+          },
+        ];
+      }
+    }
+
+    if (share_scope && share_scope.length > 0) {
+      whereClause.share_scope = {
+        in: share_scope,
+      };
+    }
+
+    if (status && status.length > 0) {
+      whereClause.status = {
+        in: status,
       };
     }
 
