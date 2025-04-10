@@ -30,6 +30,8 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
+    volumes:
+      - maildev_data:/data
     networks:
       - nestjs-boilerplate-network
   api:
@@ -45,6 +47,7 @@ services:
 
 volumes:
   postgres:
+  maildev_data:
 
 networks:
   nestjs-boilerplate-network:
