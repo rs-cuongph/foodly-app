@@ -30,8 +30,7 @@ interface FormConfig {
 }
 
 export default function SignInUpModal() {
-  const tButton = useTranslations('button');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const { modalAuth, closeModal, setIsOpen } = useCommonStore();
 
@@ -39,12 +38,12 @@ export default function SignInUpModal() {
 
   const formRegistry: Record<string, FormConfig> = {
     [FormType.SIGN_IN]: {
-      title: tCommon('modal_title.sign_in'),
+      title: t('common.modal_title.sign_in'),
       component: SignInModalForm,
       showInNav: true,
     },
     [FormType.SIGN_UP]: {
-      title: tCommon('modal_title.sign_up'),
+      title: t('common.modal_title.sign_up'),
       component: SignUpModalForm,
       showInNav: true,
     },
@@ -104,10 +103,10 @@ export default function SignInUpModal() {
         </ModalBody>
         <ModalFooter>
           <MyButton variant="light" onPress={() => closeModal(ModalType.AUTH)}>
-            {tButton('close')}
+            {t('button.close')}
           </MyButton>
           <MyButton isLoading={modalAuth.isLoadingConfirm} onPress={onSubmit}>
-            {tButton('confirm')}
+            {t('button.confirm')}
           </MyButton>
         </ModalFooter>
       </ModalContent>

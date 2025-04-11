@@ -37,10 +37,7 @@ interface CreateGroupFormProps {}
 
 const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
   (props, ref) => {
-    const tButton = useTranslations('button');
-    const tCreateGroupModal = useTranslations('upsert_group_modal');
-    const tCommon = useTranslations('common');
-    const tSystemMessage = useTranslations('system_message');
+    const t = useTranslations();
     const { setSelectedForm, setIsLoadingConfirm, closeModal } =
       useCommonStore();
     const { showError, showSuccess } = useSystemToast();
@@ -69,12 +66,12 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
     const shareScopeOptions = [
       {
         key: SHARE_SCOPE_ENUM.PUBLIC,
-        label: tCommon('share_scope.public'),
+        label: t('common.share_scope.public'),
         startContent: <HomeShareIcon className="w-5 h-5 text-primary" />,
       },
       {
         key: SHARE_SCOPE_ENUM.PRIVATE,
-        label: tCommon('share_scope.private'),
+        label: t('common.share_scope.private'),
         startContent: <AnonymousIcon className="w-5 h-5 text-primary" />,
       },
     ];
@@ -82,7 +79,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
     const typeOptions = [
       {
         key: GROUP_TYPE_ENUM.MANUAL,
-        label: tCreateGroupModal('manual'),
+        label: t('upsert_group_modal.manual'),
       },
       // TODO: add auto type
       // {
@@ -126,7 +123,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
       try {
         setIsLoadingConfirm(true, ModalType.CREATE_GROUP);
         await createGroup(params);
-        showSuccess(tSystemMessage('success.create_group_success'));
+        showSuccess(t('system_message.success.create_group_success'));
         closeModal(ModalType.CREATE_GROUP);
       } catch (error) {
         handleErrFromApi(error, setError, showError);
@@ -146,7 +143,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                   errorMessage={errors.menu_items?.[index]?.name?.message}
                   label={''}
                   name={`menu_items.${index}.name`}
-                  placeholder={tCreateGroupModal('placeholder.menu_name')}
+                  placeholder={t('upsert_group_modal.placeholder.menu_name')}
                 />
                 {!wIsSamePrice.includes('1') && (
                   <MyInputController
@@ -158,7 +155,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                     maxValue={10000000}
                     minValue={1000}
                     name={`menu_items.${index}.price`}
-                    placeholder={tCreateGroupModal('placeholder.menu_price')}
+                    placeholder={t('upsert_group_modal.placeholder.menu_price')}
                   />
                 )}
                 {menuItems.length > 1 && (
@@ -187,7 +184,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                 }
               >
                 <SquarePlusIcon className="w-5 h-5 text-primary" />
-                {tCreateGroupModal('add_menu')}
+                {t('upsert_group_modal.add_menu')}
               </MyButton>
             )}
           </div>
@@ -232,29 +229,29 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
             isRequired
             control={control}
             errorMessage={errors.name?.message}
-            label={tCreateGroupModal('name')}
+            label={t('upsert_group_modal.name')}
             labelPlacement="outside"
             name="name"
-            placeholder={tCreateGroupModal('placeholder.name')}
+            placeholder={t('upsert_group_modal.placeholder.name')}
           />
 
           <MyDateRangePickerController
             hideTimeZone
             isRequired
             control={control}
-            description={tCreateGroupModal('description.date_range')}
+            description={t('upsert_group_modal.description.date_range')}
             errorMessage={
               errors.date_range?.start?.message ||
               errors.date_range?.end?.message
             }
-            label={tCreateGroupModal('date_range')}
+            label={t('upsert_group_modal.date_range')}
             minValue={parseAbsoluteToLocal(DateHelper.getNow().toISOString())}
             name="date_range"
           />
 
           <MyRadioController
             control={control}
-            label={tCreateGroupModal('type')}
+            label={t('upsert_group_modal.type')}
             name="type"
             options={typeOptions}
             orientation="horizontal"
@@ -270,7 +267,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
               options={[
                 {
                   key: '1',
-                  label: tCreateGroupModal('is_same_price'),
+                  label: t('upsert_group_modal.is_same_price'),
                 },
               ]}
             />
@@ -284,14 +281,14 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                 maxValue={10000000}
                 minValue={1000}
                 name="price"
-                placeholder={tCreateGroupModal('placeholder.price')}
+                placeholder={t('upsert_group_modal.placeholder.price')}
               />
             )}
           </div>
           <MySelectController
             className="w-[200px]"
             control={control}
-            label={tCreateGroupModal('share_scope')}
+            label={t('upsert_group_modal.share_scope')}
             name="share_scope"
             options={shareScopeOptions}
           />

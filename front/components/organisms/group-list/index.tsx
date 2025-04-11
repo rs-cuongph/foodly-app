@@ -14,7 +14,7 @@ type GroupCardListProps = {
 };
 
 export default function GroupCardList(props: GroupCardListProps) {
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const { windowSize, isMobile } = useWindowSize();
   const { searchForm } = props;
   const { data, isLoading } = useGetGroupListQuery(searchForm);
@@ -30,7 +30,7 @@ export default function GroupCardList(props: GroupCardListProps) {
   if (data?.groups.length === 0) {
     return (
       <div className="bg-white text-center text-primary rounded-lg p-4">
-        {tCommon('empty')}
+        {t('common.empty')}
       </div>
     );
   }

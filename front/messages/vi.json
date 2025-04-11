@@ -1,5 +1,149 @@
 {
-    "button": {
-        "login": "Đăng nhập"
+  "button": {
+    "login": "Đăng nhập",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "create_group": "Tạo nhóm",
+    "detail": "Chi tiết",
+    "home": "Trang chủ",
+    "login_with_code": "Mã thư",
+    "my_group": "Nhóm của tôi",
+    "my_page": "Trang của tôi",
+    "order": "Đặt hàng",
+    "payment_history": "Sự chi trả"
+  },
+  "common": {
+    "empty": "Không có dữ liệu có sẵn.",
+    "modal_title": {
+      "create_group": "Tạo nhóm",
+      "sign_in": "Đăng nhập",
+      "sign_up": "Đăng ký"
+    },
+    "placeholder": {
+      "select": "Lựa chọn"
+    },
+    "search_placeholder": "Tìm kiếm",
+    "share_scope": {
+      "private": "Riêng tư",
+      "public": "Công cộng"
     }
+  },
+  "home": {
+    "filter": {
+      "is_online": "Trực tuyến",
+      "my_group": "Nhóm của tôi",
+      "my_group_label": {
+        "mine": "Của tôi",
+        "other": "Khác"
+      },
+      "share_scope": "Phạm vi chia sẻ",
+      "share_scope_label": {
+        "private": "Riêng tư",
+        "public": "Công cộng"
+      },
+      "status": "Trạng thái",
+      "status_label": {
+        "available": "Có sẵn",
+        "init": "Init",
+        "locked": "Khóa",
+        "unavailable": "Không có sẵn"
+      }
+    }
+  },
+  "sign_in_modal": {
+    "dont_have_account": "Không có tài khoản?",
+    "email": "E-mail",
+    "forgot_password": "Quên mật khẩu?",
+    "now": "Hiện nay!",
+    "or": "hoặc đăng nhập bởi",
+    "organization_code": "Mã tổ chức",
+    "password": "Mật khẩu",
+    "placeholder": {
+      "email": "Nhập email của bạn",
+      "organization_code": "Nhập mã tổ chức của bạn",
+      "password": "Nhập mật khẩu của bạn"
+    },
+    "sign_up": "Đăng ký"
+  },
+  "sign_up_modal": {
+    "confirm_password": "Xác nhận mật khẩu",
+    "display_name": "Tên hiển thị",
+    "email": "E-mail",
+    "have_account": "Có một tài khoản?",
+    "now": "Hiện nay!",
+    "organization_code": "Mã tổ chức",
+    "password": "Mật khẩu",
+    "placeholder": {
+      "confirm_password": "Xác nhận mật khẩu của bạn",
+      "display_name": "Nhập tên hiển thị của bạn",
+      "email": "Nhập email của bạn",
+      "organization_code": "Nhập mã tổ chức của bạn",
+      "password": "Nhập mật khẩu của bạn"
+    },
+    "sign_in": "Đăng nhập"
+  },
+  "system_message": {
+    "error": {
+      "auth_failed": "Signin thất bại",
+      "signup_failed": "Đăng ký thất bại"
+    },
+    "success": {
+      "create_group_success": "Tạo thành công nhóm",
+      "signin_success": "Thành công",
+      "signup_success": "Đăng ký thành công"
+    }
+  },
+  "upsert_group_modal": {
+    "add_menu": "Thêm menu",
+    "auto": "Tự động",
+    "date_range": "Phạm vi ngày công khai",
+    "description": {
+      "date_range": "* Chọn phạm vi ngày trước ngày hiện tại"
+    },
+    "is_same_price": "Cùng giá",
+    "manual": "Thủ công",
+    "menu_name": "Tên menu",
+    "menu_price": "Giá thực đơn",
+    "name": "Tên nhóm",
+    "placeholder": {
+      "menu_name": "Nhập tên menu",
+      "menu_price": "Nhập giá",
+      "name": "Nhập tên nhóm của bạn",
+      "price": "Nhập giá"
+    },
+    "price": "Giá",
+    "share_scope": "Phạm vi chia sẻ",
+    "type": "Kiểu"
+  },
+  "validation": {
+    "email": "{field} cần phải là một email hợp lệ",
+    "fields": {
+      "confirm_password": "Xác nhận mật khẩu",
+      "display_name": "Tên hiển thị",
+      "email": "E-mail",
+      "end_date": "Phạm vi ngày công khai",
+      "is_same_price": "Là giá tương tự",
+      "menu_name": "Tên menu",
+      "menu_price": "Giá thực đơn",
+      "menus": "Thực đơn",
+      "name": "Tên nhóm",
+      "organization_code": "Mã tổ chức",
+      "password": "Mật khẩu",
+      "price": "Giá",
+      "share_scope": "Phạm vi chia sẻ",
+      "start_date": "Phạm vi ngày công khai",
+      "type": "Kiểu"
+    },
+    "max": "{field} cần nhỏ hơn hoặc bằng {max} ký tự",
+    "max_num": "{field} cần phải nhỏ hơn hoặc bằng {max}",
+    "min": "{field} cần ít nhất {min} ký tự",
+    "min_num": "{field} cần ít nhất {min}",
+    "no_emoji": "{field} không được chứa biểu tượng cảm xúc",
+    "no_special_characters": "{field} không được chứa các ký tự đặc biệt",
+    "numeric": "{field} phải là một số",
+    "password": "{field} phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+    "price_validation": "Giá phải từ 1.000 đến 10.000.000",
+    "required": "{field} không thể trống",
+    "sameAs": "{field} và {field2} phải giống nhau"
+  }
 }

@@ -22,9 +22,7 @@ interface SignInModalFormProps {}
 
 const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
   (props, ref) => {
-    const tButton = useTranslations('button');
-    const tSignInModal = useTranslations('sign_in_modal');
-    const tSystemMessage = useTranslations('system_message');
+    const t = useTranslations();
     const { setSelectedForm, setIsLoadingConfirm, closeModal } =
       useCommonStore();
     const { showError, showSuccess } = useSystemToast();
@@ -54,7 +52,7 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
       if (res?.error) {
         showError(res.error);
       } else {
-        showSuccess(tSystemMessage('success.signin_success'));
+        showSuccess(t('system_message.success.signin_success'));
         closeModal(ModalType.AUTH);
       }
 
@@ -87,10 +85,10 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
         <div className="w-full flex flex-col gap-4">
           <MyInput
             isRequired
-            label={tSignInModal('organization_code')}
+            label={t('sign_in_modal.organization_code')}
             labelPlacement="outside"
             maxLength={40}
-            placeholder={tSignInModal('placeholder.organization_code')}
+            placeholder={t('sign_in_modal.placeholder.organization_code')}
             type="text"
             {...register('organization_code')}
             disabled={!!organizationCode}
@@ -99,51 +97,53 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
           />
           <MyInput
             isRequired
-            label={tSignInModal('email')}
+            label={t('sign_in_modal.email')}
             labelPlacement="outside"
             maxLength={255}
-            placeholder={tSignInModal('placeholder.email')}
+            placeholder={t('sign_in_modal.placeholder.email')}
             type="email"
             {...register('email')}
             errorMessage={errors.email?.message}
           />
           <InputPassword
             isRequired
-            label={tSignInModal('password')}
+            label={t('sign_in_modal.password')}
             labelPlacement="outside"
             maxLength={255}
-            placeholder={tSignInModal('placeholder.password')}
+            placeholder={t('sign_in_modal.placeholder.password')}
             {...register('password')}
             errorMessage={errors.password?.message}
           />
         </div>
         <div className="w-full flex justify-end mt-2">
           <span className="text-sm text-primary underline cursor-pointer">
-            {tSignInModal('forgot_password')}
+            {t('sign_in_modal.forgot_password')}
           </span>
         </div>
         <div className="w-full flex justify-center mt-2">
-          <span className="text-sm">{tSignInModal('dont_have_account')}</span>
+          <span className="text-sm">
+            {t('sign_in_modal.dont_have_account')}
+          </span>
           <span
             className="text-sm ml-1 text-primary underline cursor-pointer"
             role="button"
             onClick={() => setSelectedForm(FormType.SIGN_UP, ModalType.AUTH)}
           >
-            {tSignInModal('sign_up')}
+            {t('sign_in_modal.sign_up')}
           </span>
-          <span className="text-sm ml-1"> {tSignInModal('now')}</span>
+          <span className="text-sm ml-1"> {t('sign_in_modal.now')}</span>
         </div>
         <div className="w-fit flex justify-center items-center mt-2 mx-auto">
           <div className="h-[1px] w-[100px] bg-primary-200" />
           <span className="text-sm text-primary-200 mx-2 flex-1">
-            {tSignInModal('or')}
+            {t('sign_in_modal.or')}
           </span>
           <div className="h-[1px] w-[100px] bg-primary-200" />
         </div>
         <div className="w-full flex justify-center mt-2">
           <MyButton color="danger" role="button" type="button" variant="shadow">
             <MailIcon className="w-6 h-6 text-white" />
-            {tButton('login_with_code')}
+            {t('button.login_with_code')}
           </MyButton>
         </div>
       </Form>

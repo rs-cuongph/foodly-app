@@ -21,15 +21,14 @@ interface FormConfig {
 }
 
 export default function UpsertGroupModal() {
-  const tButton = useTranslations('button');
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const { modalUpsertGroup, closeModal } = useCommonStore();
 
   const formRef = useRef<HTMLFormElement>(null);
 
   const formRegistry: Record<string, FormConfig> = {
     [FormType.CREATE_GROUP]: {
-      title: tCommon('modal_title.create_group'),
+      title: t('common.modal_title.create_group'),
       component: CreateGroupForm,
     },
   };
@@ -79,13 +78,13 @@ export default function UpsertGroupModal() {
             variant="light"
             onPress={() => closeModal(ModalType.CREATE_GROUP)}
           >
-            {tButton('close')}
+            {t('button.close')}
           </MyButton>
           <MyButton
             isLoading={modalUpsertGroup.isLoadingConfirm}
             onPress={onSubmit}
           >
-            {tButton('confirm')}
+            {t('button.confirm')}
           </MyButton>
         </ModalFooter>
       </ModalContent>

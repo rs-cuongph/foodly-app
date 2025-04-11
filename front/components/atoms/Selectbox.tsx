@@ -13,7 +13,7 @@ export type MySelectProps = Omit<SelectProps, 'children'> & {
 };
 
 const MySelect = forwardRef<HTMLSelectElement, MySelectProps>((props, ref) => {
-  const tCommon = useTranslations('common');
+  const t = useTranslations();
   const [selectedKeys, setSelectedKeys] = useState<string[]>(
     props.value ? [props.value as string] : [],
   );
@@ -27,7 +27,7 @@ const MySelect = forwardRef<HTMLSelectElement, MySelectProps>((props, ref) => {
   return (
     <Select
       labelPlacement="outside"
-      placeholder={tCommon('placeholder.select')}
+      placeholder={t('common.placeholder.select')}
       {...props}
       ref={ref}
       renderValue={(items) => {

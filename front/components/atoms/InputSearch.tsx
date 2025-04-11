@@ -11,10 +11,10 @@ interface InputSearchProps extends InputProps {
 
 const InputSearch = forwardRef(
   (props: InputSearchProps, ref: Ref<HTMLInputElement>) => {
-    const tCommon = useTranslations('common');
+    const t = useTranslations();
 
     const {
-      placeholder = tCommon('search_placeholder'),
+      placeholder = t('common.search_placeholder'),
       classNames,
       ...rest
     } = props;

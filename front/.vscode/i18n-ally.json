@@ -1,0 +1,11 @@
+{
+  "sourceLanguage": "en",
+  "languages": ["en", "vi"],
+  "pathMatcher": "messages/{locale}.json",
+  "displayLanguage": "en",
+  "usageMatchRegex": [
+    "[^\\w\\d]t\\(['\"`]({key})['\"`]\\)",
+    "[^\\w\\d]t\\(['\"`]({namespace}:{key})['\"`]\\)",
+    "[^\\w\\d]t\\w*\\(['\"`]({key})['\"`]\\)"
+  ]
+}

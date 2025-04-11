@@ -48,7 +48,7 @@ export default function GroupCardItem(props: GroupCardItemProps) {
     menuItems,
     groupPrice,
   } = props;
-  const tButton = useTranslations('button');
+  const t = useTranslations();
   const router = useRouter();
   const { status } = useSession();
   const isLoggedIn = status === 'authenticated';

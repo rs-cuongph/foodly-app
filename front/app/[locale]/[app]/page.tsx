@@ -17,7 +17,7 @@ import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 export default function Home() {
-  const tButton = useTranslations('button');
+  const t = useTranslations();
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
 
@@ -121,7 +121,7 @@ export default function Home() {
           >
             <CreateGroupIcon className="h-6 w-6 text-white" />
             <span className="w-0 opacity-0 group-hover:w-[100px] group-hover:opacity-100 transition-all duration-500 ease-in-out group-hover:ml-2">
-              {tButton('create_group')}
+              {t('button.create_group')}
             </span>
           </MyButton>
         </div>

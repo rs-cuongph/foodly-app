@@ -32,7 +32,7 @@ interface SignUpFormData {
 
 const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
   (props, ref) => {
-    const tSignUpModal = useTranslations('sign_up_modal');
+    const t = useTranslations();
     const { setSelectedForm, closeModal, setIsLoadingConfirm } =
       useCommonStore();
     const formRef = useRef<HTMLFormElement>(null);
@@ -93,10 +93,10 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
         <div className="w-full flex flex-col gap-4">
           <MyInput
             isRequired
-            label={tSignUpModal('organization_code')}
+            label={t('sign_up_modal.organization_code')}
             labelPlacement="outside"
             maxLength={40}
-            placeholder={tSignUpModal('placeholder.organization_code')}
+            placeholder={t('sign_up_modal.placeholder.organization_code')}
             {...register('organization_code')}
             disabled={!!organizationCode}
             errorMessage={errors.organization_code?.message}
@@ -104,9 +104,9 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
           />
           <MyInput
             isRequired
-            label={tSignUpModal('email')}
+            label={t('sign_up_modal.email')}
             labelPlacement="outside"
-            placeholder={tSignUpModal('placeholder.email')}
+            placeholder={t('sign_up_modal.placeholder.email')}
             type="email"
             {...register('email')}
             errorMessage={errors.email?.message}
@@ -114,40 +114,40 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
           <InputPassword
             isRequired
             showStrengthIndicator
-            label={tSignUpModal('password')}
+            label={t('sign_up_modal.password')}
             labelPlacement="outside"
-            placeholder={tSignUpModal('placeholder.password')}
+            placeholder={t('sign_up_modal.placeholder.password')}
             {...register('password')}
             errorMessage={errors.password?.message}
           />
           <InputPassword
             isRequired
-            label={tSignUpModal('confirm_password')}
+            label={t('sign_up_modal.confirm_password')}
             labelPlacement="outside"
-            placeholder={tSignUpModal('placeholder.confirm_password')}
+            placeholder={t('sign_up_modal.placeholder.confirm_password')}
             {...register('confirm_password')}
             errorMessage={errors.confirm_password?.message}
           />
           <MyInput
             isRequired
-            label={tSignUpModal('display_name')}
+            label={t('sign_up_modal.display_name')}
             labelPlacement="outside"
-            placeholder={tSignUpModal('placeholder.display_name')}
+            placeholder={t('sign_up_modal.placeholder.display_name')}
             {...register('display_name')}
             errorMessage={errors.display_name?.message}
           />
         </div>
 
         <div className="w-full flex justify-center mt-2">
-          <span className="text-sm">{tSignUpModal('have_account')}</span>
+          <span className="text-sm">{t('sign_up_modal.have_account')}</span>
           <span
             className="text-sm ml-1 text-primary underline cursor-pointer"
             role="button"
             onClick={() => setSelectedForm(FormType.SIGN_IN, ModalType.AUTH)}
           >
-            {tSignUpModal('sign_in')}
+            {t('sign_up_modal.sign_in')}
           </span>
-          <span className="text-sm ml-1"> {tSignUpModal('now')}</span>
+          <span className="text-sm ml-1"> {t('sign_up_modal.now')}</span>
         </div>
       </Form>
     );

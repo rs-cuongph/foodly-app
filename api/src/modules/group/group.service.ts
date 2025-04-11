@@ -257,6 +257,10 @@ export class GroupService {
       //   in: [ShareScope.PUBLIC, ShareScope.PRIVATE],
       // },
     };
+
+    whereClause.OR = [];
+    whereClause.AND = [];
+
     let orderByClause:
       | Prisma.GroupOrderByWithRelationInput
       | Prisma.GroupOrderByWithRelationInput[] = {
@@ -285,40 +289,50 @@ export class GroupService {
     }
 
     if (is_mine && is_mine == 1 && user) {
-      whereClause.AND = {
-        created_by_id: user.id,
-      };
+      whereClause.AND = [
+        ...whereClause.AND,
+        {
+          created_by_id: user.id,
+        },
+      ];
     }
 
     if (is_online) {
       const splitIsOnline = is_online.toString().split(',');
-      console.log('splitIsOnline', splitIsOnline);
       if (splitIsOnline.includes('1') && splitIsOnline.includes('0')) {
         //
       } else if (splitIsOnline.includes('1')) {
-        whereClause.AND = {
-          public_start_time: {
-            lte: dayjs().toDate(),
-          },
-          public_end_time: {
-            gte: dayjs().toDate(),
-          },
-          status: GroupStatus.INIT,
-        };
-      } else if (splitIsOnline.includes('0')) {
-        whereClause.OR = [
-          {
-            status: GroupStatus.LOCKED,
-          },
+        whereClause.AND = [
+          ...whereClause.AND,
           {
             public_start_time: {
-              gt: dayjs().toDate(),
+              lte: dayjs().toDate(),
             },
-          },
-          {
             public_end_time: {
-              lt: dayjs().toDate(),
+              gte: dayjs().toDate(),
             },
+            status: GroupStatus.INIT,
+          },
+        ];
+      } else if (splitIsOnline.includes('0')) {
+        whereClause.AND = [
+          ...whereClause.AND,
+          {
+            OR: [
+              {
+                status: GroupStatus.LOCKED,
+              },
+              {
+                public_start_time: {
+                  gt: dayjs().toDate(),
+                },
+              },
+              {
+                public_end_time: {
+                  lt: dayjs().toDate(),
+                },
+              },
+            ],
           },
         ];
       }
