@@ -47,13 +47,14 @@ export class GroupService {
     ).join('');
   }
 
-  private async checkGroupIsLocked(id: string) {
+  async checkGroupIsLocked(id: string, notThrowError = false) {
     const group = await this.prismaService.client.group.findFirst({
       where: {
         id,
       },
     });
     if (group.status == GroupStatus.LOCKED) {
+      if (notThrowError) return null;
       throw new ForbiddenException(this.i18n.t('message.group_locked'));
     }
     return group;

@@ -46,6 +46,13 @@ export class GroupController {
     return this.groupService.show(id, query, request.user);
   }
 
+  @Public()
+  @Get('/:id/check')
+  async checkGroup(@Param('id') id: string) {
+    const group = await this.groupService.checkGroupIsLocked(id, true);
+    return Boolean(group);
+  }
+
   @Delete('/:id')
   delete(@Param('id') id: string, @Req() request: RequestWithUser) {
     return this.groupService.delete(id, request.user);
