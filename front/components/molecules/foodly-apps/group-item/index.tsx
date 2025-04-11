@@ -177,13 +177,13 @@ export default function GroupCardItem(props: GroupCardItemProps) {
           <MyButton className="group" variant="ghost" onPress={goToDetailGroup}>
             <SquareInformationIcon className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
             <span className="group-hover:text-primary-foreground">
-              {tButton('detail')}
+              {t('button.detail')}
             </span>
           </MyButton>
           <MyButton className="" onPress={openOrderModal}>
             <ShoppingBagIcon className="h-5 w-5 text-white group-hover:text-primary-foreground" />
             <span className="group-hover:text-primary-foreground">
-              {tButton('order')}
+              {t('button.order')}
             </span>
           </MyButton>
         </div>

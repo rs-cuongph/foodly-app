@@ -338,6 +338,14 @@ export class GroupService {
       }
     }
 
+    if (whereClause.AND.length === 0) {
+      delete whereClause.AND;
+    }
+
+    if (whereClause.OR.length === 0) {
+      delete whereClause.OR;
+    }
+
     if (share_scope && share_scope.length > 0) {
       whereClause.share_scope = {
         in: share_scope,

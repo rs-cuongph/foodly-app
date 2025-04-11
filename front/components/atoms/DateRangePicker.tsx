@@ -10,7 +10,7 @@ export type MyDateRangePickerProps = DateRangePickerProps & {
     start: string;
     end: string;
   };
-  onChange: (value: { start: string; end: string }) => void;
+  onChange?: (value: { start: string; end: string }) => void;
   minValueErrorMessage?: string;
 };
 const timezone = 'Asia/Ho_Chi_Minh';
@@ -38,7 +38,7 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
     }
 
     return (
-      <I18nProvider locale={'vi-VN'}>
+      <I18nProvider locale={lang as string}>
         <DateRangePicker
           hideTimeZone
           hourCycle={24}
@@ -80,7 +80,7 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
               end: end.toISOString(),
             };
 
-            props.onChange(newValue);
+            props.onChange?.(newValue);
           }}
         />
       </I18nProvider>

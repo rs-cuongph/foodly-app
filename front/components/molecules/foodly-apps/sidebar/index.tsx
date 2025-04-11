@@ -24,10 +24,10 @@ import {
 } from '@/components/atoms/icons';
 import { siteConfig } from '@/config/site';
 import { useGetUserInfoQuery } from '@/hooks/api/auth';
+import { useSystemToast } from '@/hooks/toast';
+import { useWebAuthClient } from '@/hooks/web-authn';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
-import { useWebAuthClient } from '@/hooks/web-authn';
-import { useSystemToast } from '@/hooks/toast';
 
 export function Sidebar() {
   const router = useRouter();
@@ -237,16 +237,16 @@ export function Sidebar() {
                   <LogoutIcon className="w-6 h-6 text-primary" />
                 </MyButton>
               </div>
-              <MyButton
+              {/* <MyButton
                 className="w-full"
                 color="primary"
                 onPress={handleRegisterWebAuthn}
               >
                 Register WebAuthn
-              </MyButton>
+              </MyButton> */}
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 w-full">
               <MyButton
                 className="w-full"
                 color="primary"
@@ -255,13 +255,13 @@ export function Sidebar() {
                 <LoginIcon className="w-6 h-6 text-white" />
                 {t('login').toUpperCase()}
               </MyButton>
-              <MyButton
+              {/* <MyButton
                 className="w-full"
                 color="primary"
                 onPress={handleSignInWebAuthn}
               >
                 Authenticate WebAuthn
-              </MyButton>
+              </MyButton> */}
             </div>
           )}
         </div>

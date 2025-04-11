@@ -55,7 +55,9 @@ export const authOptions: NextAuthOptions = {
             access_token: String(response?.data?.access_token),
           };
         } catch (error: any) {
-          throw new Error(error?.response?.data?.message);
+          throw new Error(
+            error?.response?.data?.message || 'Invalid credentials',
+          );
         }
      
       },
