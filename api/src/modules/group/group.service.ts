@@ -245,7 +245,25 @@ export class GroupService {
       this.checkInviteCode(findGroup, query.invite_code);
     }
 
-    return findGroup;
+    const stats = await this.prismaService.client.order.groupBy({
+      by: ['group_id'],
+      where: {
+        group_id: id,
+        deleted_at: null,
+      },
+      _count: {
+        id: true,
+      },
+      _sum: {
+        quantity: true,
+      },
+    });
+
+    return {
+      ...findGroup,
+      order_count: stats?.[0]?._count?.id || 0,
+      total_quantity: stats?.[0]?._sum?.quantity || 0,
+    };
   }
 
   async search(query: SearchGroupDTO, user: RequestWithUser['user'] | null) {
