@@ -515,6 +515,12 @@ export class GroupService {
       };
     }
 
+    if (group.share_scope === ShareScope.PUBLIC) {
+      return {
+        canAccess: true,
+      };
+    }
+
     if (group.status === GroupStatus.LOCKED) {
       const hasOrder = await this.prismaService.client.order.findFirst({
         where: {
@@ -527,14 +533,8 @@ export class GroupService {
       };
     }
 
-    if (group.share_scope === ShareScope.PRIVATE) {
-      return {
-        canAccess: false,
-      };
-    }
-
     return {
-      canAccess: true,
+      canAccess: false,
     };
   }
 }
