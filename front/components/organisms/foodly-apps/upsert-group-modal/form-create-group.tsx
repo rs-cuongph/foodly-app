@@ -164,7 +164,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                     className="w-fit"
                     color="danger"
                     variant="flat"
-                    onClick={() => removeMenu(index)}
+                    onPress={() => removeMenu(index)}
                   >
                     <CloseIcon className="w-5 h-5 text-danger" />
                   </MyButton>
@@ -176,7 +176,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                 className="w-fit"
                 color="primary"
                 variant="flat"
-                onClick={() =>
+                onPress={() =>
                   appendMenu({
                     name: '',
                     price: null,
@@ -191,10 +191,6 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
         </div>
       );
     };
-
-    useEffect(() => {
-      console.log(errors);
-    }, [errors]);
 
     // expose handleSubmit to parent
     useImperativeHandle(ref, () => ({

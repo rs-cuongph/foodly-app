@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
 import { RegistrationInfo } from '@passwordless-id/webauthn/dist/esm/types';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
   SignInPayload,
@@ -11,7 +11,7 @@ import {
   WebAuthnVerifyRegistrationDTO,
 } from './type';
 
-import { LOCAL_STORAGE_KEYS } from '@/config/constant';
+import { STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { apiClient } from '@/plugins/axios';
 export const signIn = async (
@@ -55,7 +55,7 @@ export const useSignUpMutation = () => {
 };
 
 export const useGetUserInfoQuery = (id: string, accessToken: string) => {
-  localStorage.setItem(LOCAL_STORAGE_KEYS.ACCESS_TOKEN, accessToken || '');
+  localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken || '');
 
   return useQuery({
     queryKey: ['get-user-info', id],

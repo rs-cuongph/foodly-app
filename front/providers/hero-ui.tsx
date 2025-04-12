@@ -5,7 +5,7 @@ import type { ThemeProviderProps } from "next-themes";
 import { ToastProvider } from '@heroui/react';
 import { HeroUIProvider } from '@heroui/system';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import { useWindowSize } from '@/hooks/window-size';
@@ -26,11 +26,12 @@ declare module '@react-types/shared' {
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
   const { isMobile } = useWindowSize();
+  const { locale } = useParams();
 
   const toastPlacement = isMobile ? 'top-center' : 'bottom-right';
 
   return (
-    <HeroUIProvider navigate={router.push}>
+    <HeroUIProvider locale={locale as string} navigate={router.push}>
       <NextThemesProvider {...themeProps}>
         <ToastProvider placement={toastPlacement} />
         {children}

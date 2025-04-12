@@ -10,7 +10,7 @@
     "my_group": "Nhóm của tôi",
     "my_page": "Trang của tôi",
     "order": "Đặt hàng",
-    "payment_history": "Sự chi trả"
+    "payment_history": "Lịch sử thanh toán"
   },
   "common": {
     "empty": "Không có dữ liệu có sẵn.",
@@ -54,7 +54,7 @@
     "dont_have_account": "Không có tài khoản?",
     "email": "E-mail",
     "forgot_password": "Quên mật khẩu?",
-    "now": "Hiện nay!",
+    "now": "Ngay",
     "or": "hoặc đăng nhập bởi",
     "organization_code": "Mã tổ chức",
     "password": "Mật khẩu",
@@ -144,6 +144,8 @@
     "password": "{field} phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
     "price_validation": "Giá phải từ 1.000 đến 10.000.000",
     "required": "{field} không thể trống",
-    "sameAs": "{field} và {field2} phải giống nhau"
+    "sameAs": "{field} và {field2} phải giống nhau",
+    "date_cannot_be_earlier_than_minimum_date": "Ngày không thể sớm hơn ngày tối thiểu",
+    "start_date_must_be_before_end_date": "Ngày bắt đầu phải là trước ngày kết thúc"
   }
 }

@@ -124,7 +124,7 @@ export default function GroupCardItem(props: GroupCardItemProps) {
                 ? commaFormat(Number(groupPrice))
                 : `${commaFormat(minPrice)} ~ ${commaFormat(maxPrice)}`}
             </span>
-            <span className="text-primary text-xs font-bold">vnđ</span>
+            {/* <span className="text-primary text-xs font-bold">vnđ</span> */}
           </div>
         </div>
       </div>

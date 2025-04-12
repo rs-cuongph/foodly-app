@@ -10,6 +10,10 @@ const MyInput = forwardRef(
     const { trim = true, ...rest } = props;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      props.onChange?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
       if (trim) {
         e.target.value = e.target.value.trim();
       }
@@ -24,6 +28,7 @@ const MyInput = forwardRef(
           {...rest}
           ref={ref}
           isInvalid={!!props.errorMessage}
+          onBlur={handleBlur}
           onChange={handleChange}
         />
       </>

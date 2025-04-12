@@ -1,9 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { CreateGroupParams, GroupListParams, GroupListResponse } from './type';
+import {
+  CreateGroupParams,
+  GroupDetailResponse,
+  GroupListParams,
+  GroupListResponse,
+} from './type';
 
 import { siteConfig } from '@/config/site';
 import { apiClient } from '@/plugins/axios';
+import { formatRoute } from '@/shared/helper/format';
 
 const getGroupListApi = async (params: GroupListParams) => {
   const { data } = await apiClient.get<GroupListResponse>(
@@ -42,4 +48,26 @@ export const useCreateGroupMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['group-list'] });
     },
   });
+};
+
+export const checkGroupApi = async (id: string) => {
+  const { data } = await apiClient.get<{
+    canAccess: boolean;
+  }>(formatRoute(siteConfig.apps.foodly.apiRoutes.group.check, { id }));
+
+  return data;
+};
+
+export const getGroupApi = async (
+  id: string,
+  params: { invite_code: string },
+) => {
+  const { data } = await apiClient.get<GroupDetailResponse>(
+    formatRoute(siteConfig.apps.foodly.apiRoutes.group.detail, { id }),
+    {
+      params,
+    },
+  );
+
+  return data;
 };

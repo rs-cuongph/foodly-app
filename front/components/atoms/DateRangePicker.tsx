@@ -2,8 +2,11 @@ import { DateRangePicker, DateRangePickerProps } from '@heroui/react';
 import { parseAbsolute } from '@internationalized/date';
 import { I18nProvider } from '@react-aria/i18n';
 import { omit } from 'lodash';
+import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { forwardRef, Ref } from 'react';
+
+import { useWindowSize } from '@/hooks/window-size';
 
 export type MyDateRangePickerProps = DateRangePickerProps & {
   value?: {
@@ -19,6 +22,8 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
   (props: MyDateRangePickerProps, ref: Ref<HTMLInputElement>) => {
     const { labelPlacement = 'outside', minValueErrorMessage, ...rest } = props;
     const { lang } = useParams();
+    const t = useTranslations();
+    const { isMobile } = useWindowSize();
 
     // Handle the value properly
     let value = undefined;
@@ -44,8 +49,8 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
           hourCycle={24}
           labelPlacement={labelPlacement}
           pageBehavior="single"
-          // showMonthAndYearPickers
-          visibleMonths={2}
+          // showMonthAndYearPickers={isMobile}
+          visibleMonths={isMobile ? 1 : 2}
           {...omit(rest, ['value', 'onChange'])}
           ref={ref}
           errorMessage={props.errorMessage}
@@ -57,14 +62,14 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
 
             // Basic validation for start <= end
             if (start > end) {
-              return 'Start date must be before end date';
+              return t('validation.start_date_must_be_before_end_date');
             }
 
             // Custom validation for minValue
             if (props.minValue && value.start < props.minValue) {
               return (
                 minValueErrorMessage ||
-                'Date cannot be earlier than minimum date'
+                t('validation.date_cannot_be_earlier_than_minimum_date')
               );
             }
 

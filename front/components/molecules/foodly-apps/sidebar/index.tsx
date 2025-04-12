@@ -183,7 +183,7 @@ export function Sidebar() {
           )}
         >
           {isLogin ? (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 w-full">
               <div className="flex flex-row items-center gap-2 justify-between w-full flex-1">
                 <User
                   avatarProps={{

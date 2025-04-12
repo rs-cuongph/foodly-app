@@ -8,7 +8,7 @@ import useSignUpForm from './yup-form/signup.yup';
 
 import MyInput from '@/components/atoms/Input';
 import InputPassword from '@/components/atoms/InputPassword';
-import { LOCAL_STORAGE_KEYS } from '@/config/constant';
+import { STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { useSignUpMutation } from '@/hooks/api/auth';
 import { useSystemToast } from '@/hooks/toast';
@@ -49,7 +49,7 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
     const signUpMutation = useSignUpMutation();
 
     const organizationCode = localStorage.getItem(
-      LOCAL_STORAGE_KEYS.ORGANIZATION_CODE,
+      STORAGE_KEYS.ORGANIZATION_CODE,
     );
 
     const onSubmit = async (data: SignUpFormData) => {
@@ -60,11 +60,11 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
         console.log(response);
         if (response.access_token) {
           localStorage.setItem(
-            LOCAL_STORAGE_KEYS.ACCESS_TOKEN,
+            STORAGE_KEYS.ACCESS_TOKEN,
             response.access_token,
           );
           localStorage.setItem(
-            LOCAL_STORAGE_KEYS.REFRESH_TOKEN,
+            STORAGE_KEYS.REFRESH_TOKEN,
             response.refresh_token,
           );
 

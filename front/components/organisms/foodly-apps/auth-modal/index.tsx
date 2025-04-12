@@ -20,7 +20,7 @@ import SignInModalForm from './form-signin';
 import SignUpModalForm from './form-signup';
 
 import { MyButton } from '@/components/atoms/Button';
-import { LOCAL_STORAGE_KEYS } from '@/config/constant';
+import { STORAGE_KEYS } from '@/config/constant';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 interface FormConfig {
@@ -73,10 +73,7 @@ export default function SignInUpModal() {
     }
 
     if (organizationCode) {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEYS.ORGANIZATION_CODE,
-        organizationCode,
-      );
+      localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, organizationCode);
     }
   }, []);
 

@@ -12,7 +12,7 @@ export const siteConfig = {
         my_group: '/foodly/my-group',
         my_page: '/foodly/my-page',
         group: {
-          detail: '/foodly/groups/:id',
+          detail: '/foodly/group/:id',
         },
       },
       apiRoutes: {
@@ -23,6 +23,7 @@ export const siteConfig = {
           list: '/groups',
           detail: '/groups/:id',
           create: '/groups',
+          check: '/groups/:id/check',
         },
       },
     },

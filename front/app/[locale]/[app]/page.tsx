@@ -1,16 +1,15 @@
 'use client';
 
-import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { debounce } from 'lodash';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useCallback, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
-import { CreateGroupIcon } from '@/components/atoms/icons';
+import { CreateGroupIcon, FilterIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
 import FilterGroupForm from '@/components/molecules/foodly-apps/filter-group';
-import GroupCardList from '@/components/organisms/group-list';
+import GroupCardList from '@/components/organisms/foodly-apps/group-list';
 import { GROUP_STATUS_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
 import { GroupListParams } from '@/hooks/api/apps/foodly/group/type';
 import { useAuthStore } from '@/stores/auth';
@@ -21,6 +20,7 @@ export default function Home() {
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
 
+  const [popoverState, setPopoverState] = useState(false);
   const [searchForm, setSearchForm] = useState<GroupListParams>({
     keyword: '',
     page: 1,
@@ -92,10 +92,18 @@ export default function Home() {
             size="lg"
             onChange={onChangeKeyword}
           />
-          <Popover backdrop={'transparent'} offset={10} placement="right-start">
+          <Popover
+            backdrop={'transparent'}
+            isOpen={popoverState}
+            offset={10}
+            placement="right-start"
+          >
             <PopoverTrigger>
-              <MyButton isIconOnly>
-                <AdjustmentsHorizontalIcon className="h-6 w-6 text-white" />
+              <MyButton
+                isIconOnly
+                onPress={() => setPopoverState(!popoverState)}
+              >
+                <FilterIcon className="h-6 w-6 text-white" />
               </MyButton>
             </PopoverTrigger>
             <PopoverContent className="w-[240px]">

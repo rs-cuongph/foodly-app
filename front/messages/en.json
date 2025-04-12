@@ -15,7 +15,6 @@
       "private": "Private"
     }
   },
-
   "button": {
     "login": "Sign In",
     "close": "Close",
@@ -27,9 +26,15 @@
     "my_page": "My Page",
     "detail": "Detail",
     "order": "Order",
-    "create_group": "Create Group"
+    "create_group": "Create Group",
+    "chat": "Chat",
+    "lock": "Lock",
+    "edit": "Edit",
+    "share": "Share",
+    "delete": "Delete",
+    "see_less": "see less",
+    "see_more": "see more"
   },
-
   "sign_in_modal": {
     "organization_code": "Organization Code",
     "email": "Email",
@@ -45,7 +50,6 @@
       "organization_code": "Enter your organization code"
     }
   },
-
   "sign_up_modal": {
     "organization_code": "Organization Code",
     "email": "Email",
@@ -63,7 +67,6 @@
       "display_name": "Enter your display name"
     }
   },
-
   "upsert_group_modal": {
     "name": "Group Name",
     "date_range": "Public Date Range",
@@ -86,7 +89,15 @@
       "date_range": "* Select the date range before the current date"
     }
   },
-
+  "invite_code_modal": {
+    "title": "Confirm Invite Code",
+    "placeholder": {
+      "invite_code": "Enter your invite code"
+    },
+    "label": {
+      "invite_code": "Invite Code"
+    }
+  },
   "home": {
     "filter": {
       "share_scope": "Share Scope",
@@ -109,7 +120,6 @@
       }
     }
   },
-
   "validation": {
     "required": "{field} cannot be empty",
     "email": "{field} needs to be a valid email",
@@ -123,6 +133,8 @@
     "numeric": "{field} must be a number",
     "min_num": "{field} needs to be at least {min}",
     "max_num": "{field} needs to be less than or equal to {max}",
+    "start_date_must_be_before_end_date": "Start date must be before end date",
+    "date_cannot_be_earlier_than_minimum_date": "Date cannot be earlier than minimum date",
     "fields": {
       "email": "Email",
       "password": "Password",
@@ -138,19 +150,21 @@
       "type": "Type",
       "menu_name": "Menu Name",
       "menu_price": "Menu Price",
-      "price": "Price"
+      "price": "Price",
+      "invite_code": "Invite Code"
     }
   },
-
   "system_message": {
     "error": {
       "auth_failed": "Signin Failed",
-      "signup_failed": "Signup Failed"
+      "signup_failed": "Signup Failed",
+      "invite_code": "Invite Code Failed"
     },
     "success": {
       "signin_success": "Signin Success",
       "signup_success": "Signup Success",
-      "create_group_success": "Create Group Success"
+      "create_group_success": "Create Group Success",
+      "invite_code_success": "Join Group Success"
     }
   }
 }

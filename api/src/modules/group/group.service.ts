@@ -505,19 +505,36 @@ export class GroupService {
     const group = await this.prismaService.client.group.findFirst({
       where: {
         id,
-        share_scope: ShareScope.PRIVATE,
         deleted_at: null,
       },
     });
 
     if (!group) {
       return {
-        isPrivate: false,
+        canAccess: false,
+      };
+    }
+
+    if (group.status === GroupStatus.LOCKED) {
+      const hasOrder = await this.prismaService.client.order.findFirst({
+        where: {
+          group_id: id,
+        },
+      });
+
+      return {
+        canAccess: !!hasOrder,
+      };
+    }
+
+    if (group.share_scope === ShareScope.PRIVATE) {
+      return {
+        canAccess: false,
       };
     }
 
     return {
-      isPrivate: true,
+      canAccess: true,
     };
   }
 }

@@ -10,7 +10,7 @@ import { MyButton } from '@/components/atoms/Button';
 import MyInput from '@/components/atoms/Input';
 import InputPassword from '@/components/atoms/InputPassword';
 import { MailIcon } from '@/components/atoms/icons';
-import { LOCAL_STORAGE_KEYS } from '@/config/constant';
+import { STORAGE_KEYS } from '@/config/constant';
 import { useSystemToast } from '@/hooks/toast';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
@@ -34,7 +34,7 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
     } = useSignInForm();
 
     const organizationCode = localStorage.getItem(
-      LOCAL_STORAGE_KEYS.ORGANIZATION_CODE,
+      STORAGE_KEYS.ORGANIZATION_CODE,
     );
 
     const formRef = useRef<HTMLFormElement>(null);
