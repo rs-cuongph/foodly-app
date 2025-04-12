@@ -10,14 +10,23 @@
     "my_group": "Nhóm của tôi",
     "my_page": "Trang của tôi",
     "order": "Đặt hàng",
-    "payment_history": "Lịch sử thanh toán"
+    "payment_history": "Lịch sử thanh toán",
+    "chat": "Trò chuyện",
+    "delete": "Xóa bỏ",
+    "edit": "Biên tập",
+    "lock": "Khóa",
+    "see_less": "Xem ít hơn",
+    "see_more": "Xem thêm",
+    "share": "Chia sẻ"
   },
   "common": {
     "empty": "Không có dữ liệu có sẵn.",
     "modal_title": {
       "create_group": "Tạo nhóm",
       "sign_in": "Đăng nhập",
-      "sign_up": "Đăng ký"
+      "sign_up": "Đăng ký",
+      "confirm_delete": "Xác nhận xóa",
+      "confirm_lock": "Xác nhận khóa"
     },
     "placeholder": {
       "select": "Lựa chọn"
@@ -26,6 +35,10 @@
     "share_scope": {
       "private": "Riêng tư",
       "public": "Công cộng"
+    },
+    "modal_description": {
+      "confirm_delete": "Bạn có chắc là bạn muốn xóa nhóm này?",
+      "confirm_lock": "Bạn có chắc là bạn muốn khóa nhóm này?"
     }
   },
   "home": {
@@ -85,12 +98,16 @@
   "system_message": {
     "error": {
       "auth_failed": "Signin thất bại",
-      "signup_failed": "Đăng ký thất bại"
+      "signup_failed": "Đăng ký thất bại",
+      "invite_code": "Mời mã không thành công"
     },
     "success": {
       "create_group_success": "Tạo thành công nhóm",
       "signin_success": "Thành công",
-      "signup_success": "Đăng ký thành công"
+      "signup_success": "Đăng ký thành công",
+      "delete_group": "Xóa thành công nhóm",
+      "invite_code_success": "Tham gia thành công nhóm",
+      "lock_group": "Khóa thành công của nhóm"
     }
   },
   "upsert_group_modal": {
@@ -132,7 +149,8 @@
       "price": "Giá",
       "share_scope": "Phạm vi chia sẻ",
       "start_date": "Phạm vi ngày công khai",
-      "type": "Kiểu"
+      "type": "Kiểu",
+      "invite_code": "Mời mã"
     },
     "max": "{field} cần nhỏ hơn hoặc bằng {max} ký tự",
     "max_num": "{field} cần phải nhỏ hơn hoặc bằng {max}",
@@ -147,5 +165,19 @@
     "sameAs": "{field} và {field2} phải giống nhau",
     "date_cannot_be_earlier_than_minimum_date": "Ngày không thể sớm hơn ngày tối thiểu",
     "start_date_must_be_before_end_date": "Ngày bắt đầu phải là trước ngày kết thúc"
+  },
+  "invite_code_modal": {
+    "label": {
+      "invite_code": "Mời mã"
+    },
+    "placeholder": {
+      "invite_code": "Nhập mã mời của bạn"
+    },
+    "title": "Xác nhận mã mời"
+  },
+  "toast": {
+    "share": {
+      "success": "Sao chép vào bảng tạm"
+    }
   }
 }
