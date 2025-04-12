@@ -30,5 +30,6 @@
   "password_changed": "Password has been changed",
   "new_password_same_as_old": "New password cannot be the same as the old password",
   "authenticator_not_found": "Authenticator not found",
-  "challenge_not_found_or_expired": "Challenge not found or expired"
+  "challenge_not_found_or_expired": "Challenge not found or expired",
+  "group_not_found": "Group not found"
 }

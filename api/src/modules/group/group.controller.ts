@@ -49,8 +49,7 @@ export class GroupController {
   @Public()
   @Get('/:id/check')
   async checkGroup(@Param('id') id: string) {
-    const group = await this.groupService.checkGroupIsLocked(id, true);
-    return Boolean(group);
+    return this.groupService.checkGroupIsPrivate(id);
   }
 
   @Delete('/:id')

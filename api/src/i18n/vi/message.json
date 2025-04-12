@@ -30,5 +30,6 @@
   "password_changed": "Mật khẩu đã được thay đổi.",
   "new_password_same_as_old": "Mật khẩu mới không được trùng với mật khẩu cũ.",
   "authenticator_not_found": "Authenticator không tồn tại.",
-  "challenge_not_found_or_expired": "Challenge không tồn tại hoặc đã hết hạn."
+  "challenge_not_found_or_expired": "Challenge không tồn tại hoặc đã hết hạn.",
+  "group_not_found": "Nhóm không tồn tại."
 }

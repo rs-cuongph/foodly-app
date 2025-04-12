@@ -53,10 +53,16 @@ export class GroupService {
         id,
       },
     });
+
+    if (!group) {
+      throw new NotFoundException(this.i18n.t('message.group_not_found'));
+    }
+
     if (group.status == GroupStatus.LOCKED) {
       if (notThrowError) return null;
       throw new ForbiddenException(this.i18n.t('message.group_locked'));
     }
+
     return group;
   }
 
@@ -475,5 +481,25 @@ export class GroupService {
       this.logger.error('Error locking expired groups:', error);
       throw error;
     }
+  }
+
+  async checkGroupIsPrivate(id: string) {
+    const group = await this.prismaService.client.group.findFirst({
+      where: {
+        id,
+        share_scope: ShareScope.PRIVATE,
+        deleted_at: null,
+      },
+    });
+
+    if (!group) {
+      return {
+        isPrivate: false,
+      };
+    }
+
+    return {
+      isPrivate: true,
+    };
   }
 }
