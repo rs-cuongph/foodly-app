@@ -1,6 +1,3 @@
-import http from 'http';
-import https from 'https';
-
 import axios from 'axios';
 
 import { STORAGE_KEYS } from '@/config/constant';
@@ -9,8 +6,6 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  httpAgent: new http.Agent({ keepAlive: true }),
-  httpsAgent: new https.Agent({ keepAlive: true }),
 });
 
 export const setHeaderToken = (token: string) => {
@@ -18,6 +13,11 @@ export const setHeaderToken = (token: string) => {
 };
 
 export const removeHeaderToken = () => {
+  // trigger custom event to force login
+  const event = new CustomEvent('forceLogin');
+
+  window.dispatchEvent(event);
+
   localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
 };
 
@@ -36,6 +36,12 @@ apiClient.interceptors.response.use(
     return res;
   },
   (e) => {
+    const statusCode = e.response?.status;
+
+    if (statusCode === 401) {
+      removeHeaderToken();
+    }
+
     return Promise.reject(e);
   },
 );

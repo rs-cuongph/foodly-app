@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import type { ThemeProviderProps } from "next-themes";
+import type { ThemeProviderProps } from 'next-themes';
 
 import { ToastProvider } from '@heroui/react';
 import { HeroUIProvider } from '@heroui/system';

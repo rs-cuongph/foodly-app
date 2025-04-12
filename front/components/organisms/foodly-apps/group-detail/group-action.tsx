@@ -1,5 +1,7 @@
 import { cn } from '@heroui/theme';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 import {
   DeleteIcon,
@@ -10,9 +12,25 @@ import {
 import GroupActionBtn, {
   ListboxItem,
 } from '@/components/molecules/foodly-apps/group-action-button';
+import { GROUP_STATUS_ENUM } from '@/config/constant';
+import { useSystemToast } from '@/hooks/toast';
+import { useAuthStore } from '@/stores/auth';
+import { useCommonStore } from '@/stores/common';
+import { useGroupStore } from '@/stores/group';
 
 export default function MoreActionInGroup() {
   const t = useTranslations();
+  const { isGroupOwner } = useAuthStore();
+  const { groupInfo } = useGroupStore();
+  const { showSuccess } = useSystemToast();
+  const { setModalConfirm } = useCommonStore();
+  const [_, copy] = useCopyToClipboard();
+
+  const isLocked = useMemo(
+    () => groupInfo?.status === GROUP_STATUS_ENUM.LOCKED,
+    [groupInfo],
+  );
+
   const items: ListboxItem[] = [
     {
       key: 'edit',
@@ -21,7 +39,7 @@ export default function MoreActionInGroup() {
       description: 'Edit this group',
       className: cn('font-medium text-medium text-black'),
       showDivider: false,
-      isShow: true,
+      isShow: () => !isLocked && !!isGroupOwner,
       onPress: () => {},
     },
     {
@@ -32,7 +50,15 @@ export default function MoreActionInGroup() {
       className: cn('font-medium text-medium text-black'),
       showDivider: false,
       isShow: true,
-      onPress: () => {},
+      onPress: (setPopoverState: (state: boolean) => void) => {
+        const url = window.location.href;
+
+        copy(
+          `${url}${groupInfo?.invite_code ? `?invite_code=${groupInfo?.invite_code}` : ''}`,
+        );
+        showSuccess(t('toast.share.success'));
+        setPopoverState(false);
+      },
     },
     {
       key: 'lock',
@@ -42,8 +68,15 @@ export default function MoreActionInGroup() {
       description: "Lock this group, you can't unlock it later",
       className: cn('font-medium text-medium text-warning'),
       showDivider: true,
-      isShow: true,
-      onPress: () => {},
+      isShow: () => !isLocked && !!isGroupOwner,
+      onPress: (setPopoverState: (state: boolean) => void) => {
+        setPopoverState(false);
+        setModalConfirm({
+          kind: 'lock',
+          isOpen: true,
+          isLoadingConfirm: false,
+        });
+      },
     },
     {
       key: 'delete',
@@ -52,9 +85,16 @@ export default function MoreActionInGroup() {
       className: cn('font-medium text-medium text-danger'),
       description: 'Permanently delete this group',
       showDivider: false,
-      isShow: true,
+      isShow: () => !isLocked && !!isGroupOwner,
       color: 'danger',
-      onPress: () => {},
+      onPress: (setPopoverState: (state: boolean) => void) => {
+        setPopoverState(false);
+        setModalConfirm({
+          kind: 'delete',
+          isOpen: true,
+          isLoadingConfirm: false,
+        });
+      },
     },
   ];
 

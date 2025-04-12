@@ -71,3 +71,60 @@ export const getGroupApi = async (
 
   return data;
 };
+
+export const useGetGroupQuery = (
+  id: string,
+  params: { invite_code: string },
+  enabled: boolean,
+) => {
+  return useQuery({
+    queryKey: ['group', id],
+    queryFn: () => getGroupApi(id, params),
+    enabled,
+  });
+};
+
+export const lockGroupApi = async (id: string, invite_code: string | null) => {
+  const { data } = await apiClient.put(
+    formatRoute(siteConfig.apps.foodly.apiRoutes.group.lock, { id }),
+    {},
+    {
+      params: { invite_code },
+    },
+  );
+
+  return data;
+};
+
+export const deleteGroupApi = async (
+  id: string,
+  invite_code: string | null,
+) => {
+  const { data } = await apiClient.delete(
+    formatRoute(siteConfig.apps.foodly.apiRoutes.group.delete, { id }),
+    {
+      params: { invite_code: invite_code },
+    },
+  );
+
+  return data;
+};
+
+export const useLockGroupMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { id: string; invite_code: string | null }) =>
+      lockGroupApi(data.id, data.invite_code),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['group', data.id] });
+    },
+  });
+};
+
+export const useDeleteGroupMutation = () => {
+  return useMutation({
+    mutationFn: (data: { id: string; invite_code: string | null }) =>
+      deleteGroupApi(data.id, data.invite_code),
+  });
+};

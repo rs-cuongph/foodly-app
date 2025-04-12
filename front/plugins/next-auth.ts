@@ -1,9 +1,9 @@
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-import { apiClient } from "./axios";
+import { apiClient } from './axios';
 
-import { siteConfig } from "@/config/site";
+import { siteConfig } from '@/config/site';
 
 const AUTHENTICATION_METHODS = {
   EMAIL: {
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: String(response?.data?.user_id),
-            name: String(response?.data?.display_name),
+            name: String(response?.data?.name || ''),
             email: String(response?.data?.email),
             organization_id: String(response?.data?.organization_id),
             access_token: String(response?.data?.access_token),
@@ -59,27 +59,26 @@ export const authOptions: NextAuthOptions = {
             error?.response?.data?.message || 'Invalid credentials',
           );
         }
-     
       },
     }),
-    CredentialsProvider({
-      id: AUTHENTICATION_METHODS.TOKEN.key,
-      credentials: AUTHENTICATION_METHODS.TOKEN.credentials,
-      async authorize(credentials) {
-        if (credentials) {
-          return {
-            ...credentials,
-            id: credentials.user_id,
-          };
-        }
+    // CredentialsProvider({
+    //   id: AUTHENTICATION_METHODS.TOKEN.key,
+    //   credentials: AUTHENTICATION_METHODS.TOKEN.credentials,
+    //   async authorize(credentials) {
+    //     if (credentials) {
+    //       return {
+    //         ...credentials,
+    //         id: credentials.user_id,
+    //       };
+    //     }
 
-        return null;
-      },
-    }),
+    //     return null;
+    //   },
+    // }),
   ],
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: MAX_AGE,
   },
   jwt: {
@@ -96,12 +95,12 @@ export const authOptions: NextAuthOptions = {
       };
     },
     async jwt({ token, user, trigger, session }) {
-      if (trigger === "update" && session.info) {
-        return {
-          ...token,
-          ...session.info,
-        };
-      }
+      // if (trigger === 'update' && session.info) {
+      //   return {
+      //     ...token,
+      //     ...session.info,
+      //   };
+      // }
 
       if (user) {
         return {
@@ -112,9 +111,13 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async redirect({ baseUrl }) {
-      return baseUrl + siteConfig.routes.home;
+    async redirect({ baseUrl, url }) {
+      if (url.startsWith('/en')) {
+        return baseUrl + '/en' + siteConfig.routes.home;
+      }
+
+      return baseUrl + '/vi' + siteConfig.routes.home;
     },
   },
-  secret: process.env.NEXTAUTH_URL,
+  secret: process.env.NEXTAUTH_SECRET,
 };

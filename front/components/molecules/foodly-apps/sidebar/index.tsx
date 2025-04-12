@@ -11,7 +11,7 @@ import {
 import clsx from 'clsx';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
@@ -26,6 +26,7 @@ import { siteConfig } from '@/config/site';
 import { useGetUserInfoQuery } from '@/hooks/api/auth';
 import { useSystemToast } from '@/hooks/toast';
 import { useWebAuthClient } from '@/hooks/web-authn';
+import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
@@ -48,6 +49,7 @@ export function Sidebar() {
   const { data: userInfo } = useGetUserInfoQuery(
     session?.user?.id || '',
     session?.user?.access_token || '',
+    pathName,
   );
 
   const menuItems = [
@@ -172,6 +174,16 @@ export function Sidebar() {
   useEffect(() => {
     setIsLoggedIn(isLogin);
   }, [isLogin]);
+
+  useEffect(() => {
+    // add event listener
+    window.addEventListener('forceLogin', handleSignOut);
+
+    return () => {
+      // remove event listener
+      window.removeEventListener('forceLogin', handleSignOut);
+    };
+  }, []);
 
   return (
     <>

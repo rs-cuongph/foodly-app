@@ -2,7 +2,7 @@ import { FieldValues, Path, UseFormSetError } from 'react-hook-form';
 
 export const handleErrFromApi = <T extends FieldValues>(
   error: any,
-  setError: UseFormSetError<T>,
+  setError?: UseFormSetError<T>,
   toastError?: (message: string, title?: string) => void,
   options?: { title?: string },
 ) => {
@@ -14,13 +14,13 @@ export const handleErrFromApi = <T extends FieldValues>(
 
     if (errors.length) {
       errors.forEach((error: any) => {
-        setError(error.path as Path<T>, { message: error.messages[0] });
+        setError?.(error.path as Path<T>, { message: error.messages[0] });
       });
     }
   }
 
-  if (statusCode === 400) {
-    setError('root.serverError', {
+  if (statusCode === 400 || statusCode === 403) {
+    setError?.('root.serverError', {
       message: responseData.message,
     });
     toastError?.(responseData.message, options?.title);

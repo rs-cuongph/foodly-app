@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/molecules/foodly-apps/header';
 import { Sidebar } from '@/components/molecules/foodly-apps/sidebar';
 import SignInUpModal from '@/components/organisms/foodly-apps/auth-modal';
+import ConfirmModal from '@/components/organisms/foodly-apps/confirm-modal';
 import UpsertGroupModal from '@/components/organisms/foodly-apps/upsert-group-modal';
 import { siteConfig } from '@/config/site';
 import { routing } from '@/i18n/routing';
@@ -53,6 +54,7 @@ export default async function RootLayout({
       </div>
       <SignInUpModal />
       <UpsertGroupModal />
+      <ConfirmModal />
     </>
   );
 }

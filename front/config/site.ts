@@ -24,6 +24,8 @@ export const siteConfig = {
           detail: '/groups/:id',
           create: '/groups',
           check: '/groups/:id/check',
+          lock: '/groups/:id/lock',
+          delete: '/groups/:id',
         },
       },
     },

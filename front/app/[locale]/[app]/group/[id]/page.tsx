@@ -5,7 +5,7 @@ import './scrollbar.css';
 import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 
@@ -28,10 +28,11 @@ import {
   STORAGE_KEYS,
 } from '@/config/constant';
 import { siteConfig } from '@/config/site';
-import { checkGroupApi, getGroupApi } from '@/hooks/api/apps/foodly/group';
-import { GroupDetailResponse } from '@/hooks/api/apps/foodly/group/type';
+import { checkGroupApi, useGetGroupQuery } from '@/hooks/api/apps/foodly/group';
+import { useRouter } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { commaFormat } from '@/shared/helper/format';
+import { useGroupStore } from '@/stores/group';
 
 export default function GroupDetail() {
   const router = useRouter();
@@ -40,18 +41,27 @@ export default function GroupDetail() {
   const [inviteCodes, setInviteCodes] = useSessionStorage<
     Record<string, string>
   >(STORAGE_KEYS.GROUP_INVITE_CODE, {});
+  const [allowLoadGroup, setAllowLoadGroup] = useState(false);
+  const { groupInfo, setGroupInfo } = useGroupStore();
+  const { data: groupInfoRes } = useGetGroupQuery(
+    id!,
+    { invite_code: inviteCodes[id ?? ''] },
+    allowLoadGroup,
+  );
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [openInviteCodeModal, setOpenInviteCodeModal] = useState(false);
-  const [groupInfo, setGroupInfo] = useState<GroupDetailResponse | null>(null);
   const [timeCountDown, setTimeCountDown] = useState(0);
   const [showMoreItems, setShowMoreItems] = useState(false);
   const groupPrice = Number(groupInfo?.price ?? 0);
   const isSamePrice = Number(groupInfo?.price ?? 0) > 0;
   const menuPrice = groupInfo?.menu_items.map((item) => Number(item.price));
-
   const minPrice = useMemo(() => Math.min(...(menuPrice ?? [])), [menuPrice]);
   const maxPrice = useMemo(() => Math.max(...(menuPrice ?? [])), [menuPrice]);
+  const isLocked = useMemo(
+    () => groupInfo?.status === GROUP_STATUS_ENUM.LOCKED,
+    [groupInfo],
+  );
 
   const calculateTimeCountDown = () => {
     if (!groupInfo?.public_end_time) return 0;
@@ -80,11 +90,8 @@ export default function GroupDetail() {
 
   const getGroupInfo = async (invite_code: string) => {
     try {
-      const response = await getGroupApi(id!, { invite_code });
-
-      setGroupInfo(response);
       setInviteCodes((prev) => ({ ...prev, [id!.toString()]: invite_code }));
-      setIsLoaded(true);
+      setAllowLoadGroup(true);
     } catch (error) {
       throw error;
     }
@@ -93,7 +100,7 @@ export default function GroupDetail() {
   const renderStatusIcon = () => {
     if (!groupInfo) return null;
 
-    if (groupInfo.status === GROUP_STATUS_ENUM.LOCKED) {
+    if (isLocked) {
       return <LockIcon className="h-6 w-6 text-black-500" />;
     }
 
@@ -103,6 +110,13 @@ export default function GroupDetail() {
 
     return <HomeShareIcon className="h-6 w-6 text-green-500" />;
   };
+
+  useEffect(() => {
+    if (groupInfoRes) {
+      setGroupInfo(groupInfoRes);
+      setIsLoaded(true);
+    }
+  }, [groupInfoRes]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;

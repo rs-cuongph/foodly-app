@@ -29,11 +29,6 @@ const signUp = async (userData: SignUpPayload): Promise<SignUpResponse> => {
   const { data } = await apiClient.post<SignUpResponse>(
     siteConfig.apiRoutes.register,
     userData,
-    {
-      transport: {
-        skipValidation: true,
-      },
-    },
   );
 
   return data;
@@ -54,12 +49,17 @@ export const useSignUpMutation = () => {
   });
 };
 
-export const useGetUserInfoQuery = (id: string, accessToken: string) => {
+export const useGetUserInfoQuery = (
+  id: string,
+  accessToken: string,
+  pathName?: string,
+) => {
   localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken || '');
 
   return useQuery({
-    queryKey: ['get-user-info', id],
+    queryKey: ['get-user-info', id, pathName],
     queryFn: getUserInfo,
+
     enabled: !!id,
   });
 };

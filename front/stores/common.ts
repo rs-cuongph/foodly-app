@@ -1,14 +1,18 @@
 import { create } from 'zustand';
 
+import { ConfirmModalKind } from '@/components/organisms/foodly-apps/confirm-modal';
+
 export enum FormType {
   SIGN_IN = 'signIn',
   SIGN_UP = 'signUp',
   CREATE_GROUP = 'createGroup',
+  CONFIRM = 'modalConfirm',
 }
 
 export enum ModalType {
   AUTH = 'modalAuth',
   CREATE_GROUP = 'modalUpsertGroup',
+  CONFIRM = 'modalConfirm',
 }
 
 interface CommonStore {
@@ -23,12 +27,19 @@ interface CommonStore {
     isLoadingConfirm: boolean;
     selectedForm: FormType;
   };
+  modalConfirm: {
+    isOpen: boolean;
+    isLoadingConfirm: boolean;
+    selectedForm: FormType;
+    kind: ConfirmModalKind;
+  };
   // Actions
   setIsOpen: (isOpen: boolean, modal: ModalType, form?: FormType) => void;
   setSelectedForm: (form: FormType, modal: ModalType) => void;
   openForm: (form: FormType, modal: ModalType) => void;
   closeModal: (modal: ModalType) => void;
   setIsLoadingConfirm: (isLoadingConfirm: boolean, modal: ModalType) => void;
+  setModalConfirm: (modalConfirm: Partial<CommonStore['modalConfirm']>) => void;
 }
 
 export const useCommonStore = create<CommonStore>((set) => ({
@@ -38,6 +49,12 @@ export const useCommonStore = create<CommonStore>((set) => ({
     isLoadingConfirm: false,
   },
   modalUpsertGroup: {
+    isOpen: false,
+    isLoadingConfirm: false,
+    selectedForm: FormType.CREATE_GROUP,
+  },
+  modalConfirm: {
+    kind: 'delete',
     isOpen: false,
     isLoadingConfirm: false,
     selectedForm: FormType.CREATE_GROUP,
@@ -149,4 +166,11 @@ export const useCommonStore = create<CommonStore>((set) => ({
 
       return state;
     }),
+  setModalConfirm: (modalConfirm: Partial<CommonStore['modalConfirm']>) =>
+    set((state) => ({
+      modalConfirm: {
+        ...state.modalConfirm,
+        ...modalConfirm,
+      },
+    })),
 }));
