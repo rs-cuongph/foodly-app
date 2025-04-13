@@ -21,6 +21,7 @@ import {
 } from '@/components/atoms/icons';
 import SkeletonWrapper from '@/components/molecules/foodly-apps/skeleton-wrapper';
 import MoreActionInGroup from '@/components/organisms/foodly-apps/group-detail/group-action';
+import OrderListTable from '@/components/organisms/foodly-apps/group-detail/order-list';
 import InviteCodeModal from '@/components/organisms/foodly-apps/invite-code-modal';
 import {
   GROUP_STATUS_ENUM,
@@ -247,20 +248,23 @@ export default function GroupDetail() {
                 </div>
               </div>
 
-              <div className="flex flex-row gap-2 items-end">
-                <MyButton key="sss" className="group/chat" variant="ghost">
-                  <ChatIcon className="h-5 w-5 text-primary group-hover/chat:text-primary-foreground" />
-                  {t('button.chat')}
-                </MyButton>
-                <MyButton className="">
-                  <ShoppingBagIcon className="h-5 w-5 text-white " />
-                  {t('button.order')}
-                </MyButton>
-              </div>
+              {!isLocked && (
+                <div className="flex flex-row gap-2 items-end">
+                  <MyButton key="sss" className="group/chat" variant="ghost">
+                    <ChatIcon className="h-5 w-5 text-primary group-hover/chat:text-primary-foreground" />
+                    {t('button.chat')}
+                  </MyButton>
+                  <MyButton className="">
+                    <ShoppingBagIcon className="h-5 w-5 text-white " />
+                    {t('button.order')}
+                  </MyButton>
+                </div>
+              )}
             </div>
           </SkeletonWrapper>
         </div>
       </div>
+      <OrderListTable className="mt-5" groupId={groupInfo?.id} />
       <InviteCodeModal
         isOpen={openInviteCodeModal}
         onClose={() => handleCloseInviteCodeModal()}

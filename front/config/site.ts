@@ -27,6 +27,9 @@ export const siteConfig = {
           lock: '/groups/:id/lock',
           delete: '/groups/:id',
         },
+        order: {
+          list: '/orders',
+        },
       },
     },
   },

@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { MyButton } from '@/components/atoms/Button';
 import {
   GroupOwnerIcon,
+  MoneyIcon,
   ShoppingBagIcon,
   SquareInformationIcon,
   TimerIcon,
@@ -118,13 +119,13 @@ export default function GroupCardItem(props: GroupCardItemProps) {
           src={'/images/image_default.webp'}
         />
         <div className="absolute left-4 top-4 flex gap-4">
-          <div className="rounded-full bg-white px-3 py-1 text-coral-red">
+          <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1">
+            <MoneyIcon className="h-4 w-4 text-primary" />
             <span className="font-bold text-sm text-black mr-1">
               {isSamePrice
                 ? commaFormat(Number(groupPrice))
                 : `${commaFormat(minPrice)} ~ ${commaFormat(maxPrice)}`}
             </span>
-            {/* <span className="text-primary text-xs font-bold">vnđ</span> */}
           </div>
         </div>
       </div>

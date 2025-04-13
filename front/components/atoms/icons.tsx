@@ -771,3 +771,25 @@ export const ShareIcon = ({ className }: IconProps) => {
     </svg>
   );
 };
+
+export const ArrowDown = ({ className }: IconProps) => {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M19.92 8.94995L13.4 15.47C12.63 16.24 11.37 16.24 10.6 15.47L4.07996 8.94995"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeMiterlimit="10"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+};

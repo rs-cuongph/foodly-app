@@ -57,7 +57,7 @@
       "status": "Trạng thái",
       "status_label": {
         "available": "Có sẵn",
-        "init": "Init",
+        "init": "Khởi tạo",
         "locked": "Khóa",
         "unavailable": "Không có sẵn"
       }

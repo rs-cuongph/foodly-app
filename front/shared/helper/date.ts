@@ -47,6 +47,19 @@ export class DateHelper {
     return '';
   }
 
+  static prettyDatetime(
+    date: Date | string | null | undefined,
+    lang: string = 'en',
+  ) {
+    if (date) {
+      return dayjs(date).format(
+        lang === 'vi' ? 'dd/MM/yyyy HH:mm' : 'YYYY/MM/DD HH:mm',
+      );
+    }
+
+    return '';
+  }
+
   static toISOString(date?: Date | string | null) {
     if (date) {
       return dayjs(date).toISOString();

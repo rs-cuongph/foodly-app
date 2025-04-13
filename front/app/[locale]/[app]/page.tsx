@@ -3,7 +3,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { debounce } from 'lodash';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
 import { CreateGroupIcon, FilterIcon } from '@/components/atoms/icons';
@@ -12,6 +12,7 @@ import FilterGroupForm from '@/components/molecules/foodly-apps/filter-group';
 import GroupCardList from '@/components/organisms/foodly-apps/group-list';
 import { GROUP_STATUS_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
 import { GroupListParams } from '@/hooks/api/apps/foodly/group/type';
+import { useClickOutside } from '@/hooks/click-outside';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
@@ -20,6 +21,7 @@ export default function Home() {
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
 
+  const popoverRef = useRef<HTMLFormElement>(null);
   const [popoverState, setPopoverState] = useState(false);
   const [searchForm, setSearchForm] = useState<GroupListParams>({
     keyword: '',
@@ -78,6 +80,8 @@ export default function Home() {
     }
   };
 
+  useClickOutside(popoverRef, () => setPopoverState(false));
+
   return (
     <section className="">
       <div className="flex items-center justify-between">
@@ -108,6 +112,7 @@ export default function Home() {
             </PopoverTrigger>
             <PopoverContent className="w-[240px]">
               <FilterGroupForm
+                ref={popoverRef}
                 defaultValue={{
                   status: [
                     ...searchForm.status,

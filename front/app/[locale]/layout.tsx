@@ -51,6 +51,15 @@ export default async function RootLayout({
     notFound();
   }
 
+  // Load messages for the current locale
+  let messages;
+
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default;
+  } catch {
+    notFound();
+  }
+
   return (
     <html suppressHydrationWarning lang={locale}>
       <head />
@@ -65,7 +74,9 @@ export default async function RootLayout({
             <Providers
               themeProps={{ attribute: 'class', defaultTheme: 'light' }}
             >
-              <NextIntlClientProvider>{children}</NextIntlClientProvider>
+              <NextIntlClientProvider locale={locale} messages={messages}>
+                {children}
+              </NextIntlClientProvider>
             </Providers>
           </ReactQueryProvider>
         </NextAuthProvider>

@@ -39,7 +39,7 @@ export default function MoreActionInGroup() {
       description: 'Edit this group',
       className: cn('font-medium text-medium text-black'),
       showDivider: false,
-      isShow: () => !isLocked && !!isGroupOwner,
+      isShow: () => !isLocked && !!isGroupOwner(),
       onPress: () => {},
     },
     {
@@ -68,7 +68,7 @@ export default function MoreActionInGroup() {
       description: "Lock this group, you can't unlock it later",
       className: cn('font-medium text-medium text-warning'),
       showDivider: true,
-      isShow: () => !isLocked && !!isGroupOwner,
+      isShow: () => !isLocked && !!isGroupOwner(),
       onPress: (setPopoverState: (state: boolean) => void) => {
         setPopoverState(false);
         setModalConfirm({
@@ -85,7 +85,7 @@ export default function MoreActionInGroup() {
       className: cn('font-medium text-medium text-danger'),
       description: 'Permanently delete this group',
       showDivider: false,
-      isShow: () => !isLocked && !!isGroupOwner,
+      isShow: () => !isLocked && !!isGroupOwner(),
       color: 'danger',
       onPress: (setPopoverState: (state: boolean) => void) => {
         setPopoverState(false);

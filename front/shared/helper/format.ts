@@ -33,3 +33,11 @@ export function formatRoute(
 
   return result;
 }
+
+export function calculateNo(
+  index: number,
+  currentPage: number | undefined,
+  pageSize: number,
+) {
+  return index + 1 + ((currentPage ?? 1) - 1) * pageSize;
+}

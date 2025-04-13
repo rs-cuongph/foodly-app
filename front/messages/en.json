@@ -19,6 +19,15 @@
     "share_scope": {
       "public": "Public",
       "private": "Private"
+    },
+    "status": {
+      "label": "Status",
+      "order": {
+        "init": "Init",
+        "processing": "Processing",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      }
     }
   },
   "button": {
@@ -178,6 +187,23 @@
   "toast": {
     "share": {
       "success": "Copied to clipboard"
+    }
+  },
+  "table": {
+    "columns": {
+      "no": "No",
+      "user": {
+        "display_name": "Name"
+      },
+      "menu_name": "Menu Name",
+      "quantity": "Quanlity",
+      "price": "Price",
+      "total": "Total Amount",
+      "note": "Note",
+      "payment_method": "Payment Method",
+      "status": "Status",
+      "created_at": "Created At",
+      "action": "Action"
     }
   }
 }

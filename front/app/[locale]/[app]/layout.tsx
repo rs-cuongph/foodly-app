@@ -54,7 +54,7 @@ export default async function RootLayout({
         <Header />
         <main className="w-full mx-auto pt-16 md:pt-[135px] md:px-8 px-4 md:flex md:gap-4 lg:gap-10">
           <Sidebar />
-          <div className="w-full h-full min-h-screen md:mt-0 mt-[85px]">
+          <div className="w-full h-full min-h-screen md:mt-0 mt-[85px] overflow-auto overflow-x-hidden">
             {children}
           </div>
         </main>

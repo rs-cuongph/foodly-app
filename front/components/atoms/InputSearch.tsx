@@ -22,11 +22,11 @@ const InputSearch = forwardRef(
 
     return (
       <MyInput
+        startContent={startContent}
         {...props}
         ref={ref}
         classNames={classNames}
         placeholder={placeholder}
-        startContent={startContent}
       />
     );
   },
