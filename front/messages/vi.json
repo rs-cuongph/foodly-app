@@ -97,7 +97,7 @@
   },
   "system_message": {
     "error": {
-      "auth_failed": "Signin thất bại",
+      "auth_failed": "Đăng nhập thất bại",
       "signup_failed": "Đăng ký thất bại",
       "invite_code": "Mời mã không thành công"
     },

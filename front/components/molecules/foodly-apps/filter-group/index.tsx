@@ -24,7 +24,7 @@ export default function FilterGroupForm({
   defaultValue,
   ...props
 }: FilterGroupFormProps) {
-  const t = useTranslations('home');
+  const t = useTranslations();
 
   const [isMine, setIsMine] = useState<string[]>([]);
   const [shareScope, setShareScope] = useState<string[]>([]);
@@ -43,14 +43,14 @@ export default function FilterGroupForm({
   ];
 
   const shareScopeLabels: Record<string, string> = {
-    [SHARE_SCOPE_ENUM.PUBLIC]: t('filter.share_scope_label.public'),
-    [SHARE_SCOPE_ENUM.PRIVATE]: t('filter.share_scope_label.private'),
+    [SHARE_SCOPE_ENUM.PUBLIC]: t('home.filter.share_scope_label.public'),
+    [SHARE_SCOPE_ENUM.PRIVATE]: t('home.filter.share_scope_label.private'),
   };
   const statusLabels: Record<string, string> = {
-    [GROUP_STATUS_ENUM.INIT]: t('filter.status_label.init'),
-    [GROUP_STATUS_ENUM.LOCKED]: t('filter.status_label.locked'),
-    [GROUP_STATUS_ENUM.AVAILABLE]: t('filter.status_label.available'),
-    [GROUP_STATUS_ENUM.UNAVAILABLE]: t('filter.status_label.unavailable'),
+    [GROUP_STATUS_ENUM.INIT]: t('home.filter.status_label.init'),
+    [GROUP_STATUS_ENUM.LOCKED]: t('home.filter.status_label.locked'),
+    [GROUP_STATUS_ENUM.AVAILABLE]: t('home.filter.status_label.available'),
+    [GROUP_STATUS_ENUM.UNAVAILABLE]: t('home.filter.status_label.unavailable'),
   };
 
   const onChangeShareScope = (v: string[]) => {
@@ -86,15 +86,15 @@ export default function FilterGroupForm({
           return (
             <Checkbox key={option} value={option}>
               {option === '1'
-                ? t('filter.my_group_label.mine')
-                : t('filter.my_group_label.other')}
+                ? t('home.filter.my_group_label.mine')
+                : t('home.filter.my_group_label.other')}
             </Checkbox>
           );
         })}
       </CheckboxGroup>
 
       <CheckboxGroup
-        label={t('filter.share_scope')}
+        label={t('home.filter.share_scope')}
         orientation="horizontal"
         value={shareScope}
         onChange={onChangeShareScope}
@@ -108,7 +108,7 @@ export default function FilterGroupForm({
         })}
       </CheckboxGroup>
       <CheckboxGroup
-        label={t('filter.status')}
+        label={t('home.filter.status')}
         value={status}
         onChange={onChangeStatus}
       >

@@ -33,7 +33,7 @@ import { FormType, ModalType, useCommonStore } from '@/stores/common';
 export function Sidebar() {
   const router = useRouter();
   const pathName = usePathname();
-  const t = useTranslations('button');
+  const t = useTranslations();
   const commonStore = useCommonStore();
   const { data: session, status } = useSession();
   const { setUserInfo, setIsLoggedIn } = useAuthStore();
@@ -54,7 +54,7 @@ export function Sidebar() {
 
   const menuItems = [
     {
-      name: t('home'),
+      name: t('button.home'),
       icon: <HomeIcon className="w-7 h-7 text-primary" />,
       pathRegex: '/[a-z]{2}/foodly+',
       requiredAuth: false,
@@ -63,7 +63,7 @@ export function Sidebar() {
       },
     },
     {
-      name: t('payment_history'),
+      name: t('button.payment_history'),
       icon: <DocumentIcon className="w-7 h-7 text-primary" />,
       pathRegex: '/[a-z]{2}/foodly/history-order',
       requiredAuth: true,
@@ -72,7 +72,7 @@ export function Sidebar() {
       },
     },
     {
-      name: t('my_group'),
+      name: t('button.my_group'),
       icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
       pathRegex: '/[a-z]{2}/foodly/my-group',
       requiredAuth: true,
@@ -81,7 +81,7 @@ export function Sidebar() {
       },
     },
     {
-      name: t('my_page'),
+      name: t('button.my_page'),
       icon: <SettingIcon className="w-7 h-7 text-primary" />,
       pathRegex: '/[a-z]{2}/foodly/my-page',
       requiredAuth: true,
@@ -265,7 +265,7 @@ export function Sidebar() {
                 onPress={openSignInModal}
               >
                 <LoginIcon className="w-6 h-6 text-white" />
-                {t('login').toUpperCase()}
+                {t('button.login').toUpperCase()}
               </MyButton>
               {/* <MyButton
                 className="w-full"

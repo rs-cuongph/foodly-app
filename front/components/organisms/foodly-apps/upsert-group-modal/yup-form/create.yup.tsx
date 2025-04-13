@@ -25,7 +25,7 @@ export type CreateGroupSchemaType = {
 };
 
 export const useCreateGroupSchema = () => {
-  const t = useTranslations('validation');
+  const t = useTranslations();
   const yupInstance = createI18nYupSchema(t);
 
   // Create a schema that exactly matches SignInSchemaType
@@ -58,7 +58,9 @@ export const useCreateGroupSchema = () => {
 
             if (!value) {
               return this.createError({
-                message: t('required', { field: t('fields.price') }),
+                message: t('validation.required', {
+                  field: t('validation.fields.price'),
+                }),
                 path: this.path,
               });
             }
@@ -67,23 +69,28 @@ export const useCreateGroupSchema = () => {
 
             if (isNaN(numValue)) {
               return this.createError({
-                message: t('numeric', { field: t('fields.price') }),
+                message: t('validation.numeric', {
+                  field: t('validation.fields.price'),
+                }),
                 path: this.path,
               });
             }
 
             if (numValue < 1000) {
               return this.createError({
-                message: t('min_num', { min: 1000, field: t('fields.price') }),
+                message: t('validation.min_num', {
+                  min: 1000,
+                  field: t('validation.fields.price'),
+                }),
                 path: this.path,
               });
             }
 
             if (numValue > 10000000) {
               return this.createError({
-                message: t('max_num', {
+                message: t('validation.max_num', {
                   max: 10000000,
-                  field: t('fields.price'),
+                  field: t('validation.fields.price'),
                 }),
                 path: this.path,
               });
@@ -109,7 +116,9 @@ export const useCreateGroupSchema = () => {
 
         if (!value) {
           return this.createError({
-            message: t('required', { field: t('fields.price') }),
+            message: t('validation.required', {
+              field: t('validation.fields.price'),
+            }),
             path: this.path,
           });
         }
@@ -118,23 +127,28 @@ export const useCreateGroupSchema = () => {
 
         if (isNaN(numValue)) {
           return this.createError({
-            message: t('numeric', { field: t('fields.price') }),
+            message: t('validation.numeric', {
+              field: t('validation.fields.price'),
+            }),
             path: this.path,
           });
         }
 
         if (numValue < 1000) {
           return this.createError({
-            message: t('min_num', { min: 1000, field: t('fields.price') }),
+            message: t('validation.min_num', {
+              min: 1000,
+              field: t('validation.fields.price'),
+            }),
             path: this.path,
           });
         }
 
         if (numValue > 10000000) {
           return this.createError({
-            message: t('max_num', {
+            message: t('validation.max_num', {
               max: 10000000,
-              field: t('fields.price'),
+              field: t('validation.fields.price'),
             }),
             path: this.path,
           });

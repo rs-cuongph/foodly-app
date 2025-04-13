@@ -8,26 +8,26 @@ export const createI18nYupSchema = (t: any) => {
   const locale = {
     mixed: {
       required: ({ label }: { label: string }) => {
-        return t('required', {
-          field: t(`fields.${label}`),
+        return t('validation.required', {
+          field: t(`validation.fields.${label}`),
         });
       },
     },
     string: {
       email: ({ label }: { label: string }) => {
-        return t('email', {
-          field: t(`fields.${label}`),
+        return t('validation.email', {
+          field: t(`validation.fields.${label}`),
         });
       },
       min: ({ label, min }: { label: string; min: number }) => {
-        return t('min', {
-          field: t(`fields.${label}`),
+        return t('validation.min', {
+          field: t(`validation.fields.${label}`),
           min,
         });
       },
       max: ({ label, max }: { label: string; max: number }) => {
-        return t('max', {
-          field: t(`fields.${label}`),
+        return t('validation.max', {
+          field: t(`validation.fields.${label}`),
           max,
         });
       },
@@ -55,48 +55,48 @@ export const createI18nYupSchema = (t: any) => {
       yup.string,
       'password',
       function (this, errorMsg?: string) {
-       const { label } = this.describe();
-       const currentField = label || 'password';
+        const { label } = this.describe();
+        const currentField = label || 'password';
 
-       return this.test(
-         'password',
-         errorMsg ||
-           t('password', {
-             field: t(`fields.${currentField}`),
-           }),
-         function (value) {
-           const { path, createError } = this;
+        return this.test(
+          'password',
+          errorMsg ||
+            t('validation.password', {
+              field: t(`validation.fields.${currentField}`),
+            }),
+          function (value) {
+            const { path, createError } = this;
 
-           if (!value) {
-             return true; // Let required() handle empty values
-           }
+            if (!value) {
+              return true; // Let required() handle empty values
+            }
 
-           const hasUpperCase = /(?=.*?[A-Z])/.test(value);
-           const hasLowerCase = /(?=.*?[a-z])/.test(value);
-           const hasNumber = /(?=.*?[0-9])/.test(value);
-           const hasSpecialChar = /(?=.*?[#?!@$%^&*-])/.test(value);
-           const hasMinLength = value.length >= 8;
+            const hasUpperCase = /(?=.*?[A-Z])/.test(value);
+            const hasLowerCase = /(?=.*?[a-z])/.test(value);
+            const hasNumber = /(?=.*?[0-9])/.test(value);
+            const hasSpecialChar = /(?=.*?[#?!@$%^&*-])/.test(value);
+            const hasMinLength = value.length >= 8;
 
-           const isValid =
-             hasUpperCase &&
-             hasLowerCase &&
-             hasNumber &&
-             hasSpecialChar &&
-             hasMinLength;
+            const isValid =
+              hasUpperCase &&
+              hasLowerCase &&
+              hasNumber &&
+              hasSpecialChar &&
+              hasMinLength;
 
-           return (
-             isValid ||
-             createError({
-               path,
-               message:
-                 errorMsg ||
-                 t('password', {
-                   field: t('fields.password'),
-                 }),
-             })
-           );
-         },
-       );
+            return (
+              isValid ||
+              createError({
+                path,
+                message:
+                  errorMsg ||
+                  t('validation.password', {
+                    field: t('validation.fields.password'),
+                  }),
+              })
+            );
+          },
+        );
       },
     );
 
@@ -110,7 +110,10 @@ export const createI18nYupSchema = (t: any) => {
 
         return this.test(
           'noEmoji',
-          errorMsg || t('no_emoji', { field: t(`fields.${currentField}`) }),
+          errorMsg ||
+            t('validation.no_emoji', {
+              field: t(`validation.fields.${currentField}`),
+            }),
           function (value) {
             const { path, createError } = this;
 
@@ -126,8 +129,8 @@ export const createI18nYupSchema = (t: any) => {
                 path,
                 message:
                   errorMsg ||
-                  t('no_emoji', {
-                    field: t('fields.text'),
+                  t('validation.no_emoji', {
+                    field: t('validation.fields.text'),
                   }),
               })
             );
@@ -146,7 +149,10 @@ export const createI18nYupSchema = (t: any) => {
 
         return this.test(
           'isNumber',
-          errorMsg || t('isNumber', { field: t(`fields.${currentField}`) }),
+          errorMsg ||
+            t('validation.isNumber', {
+              field: t(`validation.fields.${currentField}`),
+            }),
           function (value) {
             const { path, createError } = this;
 
@@ -162,8 +168,8 @@ export const createI18nYupSchema = (t: any) => {
                 path,
                 message:
                   errorMsg ||
-                  t('isNumber', {
-                    field: t('fields.number'),
+                  t('validation.isNumber', {
+                    field: t('validation.fields.number'),
                   }),
               })
             );
@@ -183,8 +189,8 @@ export const createI18nYupSchema = (t: any) => {
         return this.test(
           'requireSelect',
           errorMsg ||
-            t('requireSelect', {
-              field: t(`fields.${currentField}`),
+            t('validation.requireSelect', {
+              field: t(`validation.fields.${currentField}`),
             }),
           function (value) {
             const { path, createError } = this;
@@ -195,8 +201,8 @@ export const createI18nYupSchema = (t: any) => {
                 path,
                 message:
                   errorMsg ||
-                  t('requireSelect', {
-                    field: t('fields.select'),
+                  t('validation.requireSelect', {
+                    field: t('validation.fields.select'),
                   }),
               })
             );
@@ -216,9 +222,9 @@ export const createI18nYupSchema = (t: any) => {
         return this.test(
           'sameAs',
           errorMsg ||
-            t('sameAs', {
-              field: t(`fields.${currentField}`),
-              field2: t(`fields.${field}`).toLowerCase(),
+            t('validation.sameAs', {
+              field: t(`validation.fields.${currentField}`),
+              field2: t(`validation.fields.${field}`).toLowerCase(),
             }),
           function (value) {
             const { path, createError, parent } = this;
@@ -229,9 +235,9 @@ export const createI18nYupSchema = (t: any) => {
                 path,
                 message:
                   errorMsg ||
-                  t('sameAs', {
-                    field: t(`fields.${currentField}`),
-                    field2: t(`fields.${field}`).toLowerCase(),
+                  t('validation.sameAs', {
+                    field: t(`validation.fields.${currentField}`),
+                    field2: t(`validation.fields.${field}`).toLowerCase(),
                   }),
               })
             );

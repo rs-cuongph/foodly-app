@@ -12,7 +12,7 @@ export type SignInSchemaType = {
 };
 
 export const useSignInSchema = () => {
-  const t = useTranslations('validation');
+  const t = useTranslations();
   const yupInstance = createI18nYupSchema(t);
 
   // Create a schema that exactly matches SignInSchemaType

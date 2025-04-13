@@ -14,7 +14,7 @@ export type SignUpSchemaType = {
 };
 
 export const useSignUpSchema = () => {
-  const t = useTranslations('validation');
+  const t = useTranslations();
   const yupInstance = createI18nYupSchema(t);
 
   const schema = yupInstance.object().shape({
