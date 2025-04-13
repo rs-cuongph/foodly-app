@@ -10,6 +10,7 @@ import {
 import { isNil } from 'lodash';
 import { useTranslations } from 'next-intl';
 import { forwardRef, ReactNode } from 'react';
+import { FoodLoading } from './FoodLoading';
 
 export type MyTableColumnProps = {
   key: string;
@@ -38,6 +39,7 @@ export type MyTableRowProps = {
 
 type MyDatatableProps = {
   title: string;
+  defaultColumnVisibility?: string[];
   columns: MyTableColumnProps[];
   isLoading?: boolean;
   loadingContent?: ReactNode;
@@ -66,14 +68,19 @@ export const MyDatatable = forwardRef<HTMLElement, MyDatatableProps>(
       columns,
       rows,
       isLoading = false,
-      loadingContent,
+      loadingContent = <FoodLoading />,
       className,
       classNames,
+      defaultColumnVisibility,
     } = props;
     const t = useTranslations();
 
     const filterColumn = (columns: MyTableColumnProps[]) => {
-      return columns.filter((column) => column.show !== false);
+      return columns.filter(
+        (column) =>
+          column.show !== false &&
+          defaultColumnVisibility?.includes(column.key),
+      );
     };
 
     const filterRow = (rows: MyTableRowProps[]) => {

@@ -28,6 +28,9 @@
         "completed": "Completed",
         "cancelled": "Cancelled"
       }
+    },
+    "table_column": {
+      "label": "Columns"
     }
   },
   "button": {

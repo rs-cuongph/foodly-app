@@ -22,9 +22,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
     return groupInfo?.created_by_id === get().userInfo?.id;
   },
-  // isOrderOwner: (id: string) => {
-  //   return id === get().userInfo?.id;
-  // },
+  isOrderOwner: (order: OrderListItem) => {
+    return order.created_by_id === get().userInfo?.id;
+  },
   setUserInfo: (userInfo) => set({ userInfo }),
   setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
 }));

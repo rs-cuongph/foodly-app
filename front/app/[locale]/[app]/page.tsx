@@ -1,9 +1,8 @@
 'use client';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
-import { debounce } from 'lodash';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
 import { CreateGroupIcon, FilterIcon } from '@/components/atoms/icons';
@@ -54,20 +53,6 @@ export default function Home() {
     setSearchForm((prev) => ({ ...prev, keyword }));
   }, []);
 
-  // Debounce the search to avoid excessive updates while typing
-  const debouncedUpdateSearch = useCallback(
-    debounce((keyword: string) => {
-      updateSearchForm(keyword);
-    }, 300),
-    [updateSearchForm],
-  );
-
-  const onChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
-    const keyword = e.target.value;
-
-    debouncedUpdateSearch(keyword);
-  };
-
   const openCreateGroupModal = () => {
     if (!authStore.isLoggedIn) {
       commonStore.setIsOpen(true, ModalType.AUTH, FormType.SIGN_IN);
@@ -94,7 +79,7 @@ export default function Home() {
               inputWrapper: 'rounded-[32px]',
             }}
             size="lg"
-            onChange={onChangeKeyword}
+            onChangeDebounce={updateSearchForm}
           />
           <Popover
             backdrop={'transparent'}

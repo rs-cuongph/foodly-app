@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { OrderListParams, OrderListResponse } from './type';
 
@@ -24,5 +24,6 @@ export const useGetOrderListQuery = (
     queryFn: () => getOrderListByGroupId(params),
     queryKey: ['order-list', params],
     enabled,
+    placeholderData: keepPreviousData,
   });
 };

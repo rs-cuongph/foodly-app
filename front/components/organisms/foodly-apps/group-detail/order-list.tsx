@@ -2,6 +2,7 @@ import { Pagination } from '@heroui/react';
 import { cn } from '@heroui/theme';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 
 import { BadgeStatus } from '@/components/atoms/BadgeStatus';
 import MyDatatable, {
@@ -9,9 +10,11 @@ import MyDatatable, {
   MyTableRowProps,
 } from '@/components/atoms/Datatable';
 import MyDropdown from '@/components/atoms/Dropdown';
-import { ArrowDown, SearchIcon } from '@/components/atoms/icons';
+import { ArrowDown, SearchIcon, SettingIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
 import { StripContent } from '@/components/molecules/strip-content';
+import OrderActionTable from '@/components/organisms/foodly-apps/order-action-table';
+import { ORDER_STATUS_ENUM } from '@/config/constant';
 import { useGetOrderListQuery } from '@/hooks/api/apps/foodly/order';
 import { useStateQueryParams } from '@/hooks/query';
 import { DateHelper } from '@/shared/helper/date';
@@ -27,6 +30,21 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
   const t = useTranslations();
   const { lang } = useParams();
 
+  StatusHelper.setTranslation(t);
+  const statusOptions = StatusHelper.getStatusOptions();
+
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([
+    'no',
+    'name',
+    'menu_name',
+    'quantity',
+    'price',
+    'total',
+    'note',
+    'status',
+    'action',
+  ]);
+
   const [searchParams, , setSpecificValue] = useStateQueryParams({
     group_id: groupId,
     page: 1,
@@ -35,9 +53,15 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
     keyword: '',
     with_created_by: 1,
     with_group: 1,
+    statuses: Object.values(ORDER_STATUS_ENUM).map((status) =>
+      status.toString(),
+    ),
   });
 
-  const { data: orderList } = useGetOrderListQuery(searchParams, !!groupId);
+  const { data: orderList, isPending } = useGetOrderListQuery(
+    searchParams,
+    !!groupId,
+  );
 
   // Define columns for the datatable
   const columns: MyTableColumnProps[] = [
@@ -161,12 +185,20 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
         created_at: {
           render: DateHelper.prettyDatetime(order.created_at, lang as string),
         },
-        action: '',
+        action: {
+          render: <OrderActionTable order={order} />,
+        },
       };
     }) ?? [];
 
-  StatusHelper.setTranslation(t);
-  const statusOptions = StatusHelper.getStatusOptions();
+  const columnsOptions = columns.map((column) => ({
+    uid: column.key,
+    name: column.label as string,
+  }));
+
+  const handleStatusChange = (keys: string[]) => {
+    setSpecificValue('statuses', keys);
+  };
 
   const setCurrentPage = (page: number) => {
     setSpecificValue('page', page);
@@ -174,36 +206,55 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
 
   return (
     <div className={cn('rounded-xl bg-white p-4', className)}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex flex-row gap-2 justify-between">
-          <div className="flex flex-row gap-2">
-            <InputSearch
-              classNames={{
-                mainWrapper:
-                  'md:min-w-[320px] md:max-w-[440px] xss:min-w-full xs:max-w-full sm:min-w-[320px] sm:max-w-full',
-                input: 'placeholder:text-gray-500',
-                inputWrapper: 'rounded-[32px] border border-gray-500',
-              }}
-              size="lg"
-              startContent={
-                <SearchIcon className="h-6 w-6 text-gray-500 mr-2" />
-              }
-            />
-            <MyDropdown
-              columns={statusOptions}
-              myButtonProps={{
-                className: 'w-[150px]',
-                endContent: <ArrowDown className="h-4 w-4 text-red-500" />,
-              }}
-              triggerContent={t('common.status.label')}
-            />
-          </div>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div className="flex flex-row gap-2 justify-between items-center">
+          <InputSearch
+            classNames={{
+              mainWrapper:
+                'md:min-w-[320px] md:max-w-[440px] xss:min-w-full xs:max-w-full sm:min-w-[320px] sm:max-w-full',
+              input: 'placeholder:text-gray-500',
+              inputWrapper: 'rounded-[32px] border border-gray-500',
+            }}
+            size="lg"
+            startContent={<SearchIcon className="h-6 w-6 text-gray-500 mr-2" />}
+            onChangeDebounce={(value) => setSpecificValue('keyword', value)}
+          />
+          <MyDropdown
+            columns={statusOptions}
+            dropdownMenuProps={{
+              selectedKeys: searchParams.statuses,
+              onSelectionChange: handleStatusChange,
+            }}
+            myButtonProps={{
+              className: 'min-w-[150px] text-md',
+              endContent: <ArrowDown className="h-4 w-4 text-gray-500" />,
+              color: 'default',
+              size: 'md',
+            }}
+            triggerContent={t('common.status.label').toLowerCase()}
+          />
         </div>
+        <MyDropdown
+          columns={columnsOptions}
+          dropdownMenuProps={{
+            selectedKeys: selectedColumns,
+            onSelectionChange: setSelectedColumns,
+          }}
+          myButtonProps={{
+            className: 'min-w-[150px] text-md',
+            startContent: <SettingIcon className="h-5 w-5 text-gray-500" />,
+            color: 'default',
+            size: 'md',
+          }}
+          triggerContent={t('common.table_column.label').toLowerCase()}
+        />
       </div>
       <div className="flex flex-col">
         <MyDatatable
           className="max-h-[700px]"
           columns={columns}
+          defaultColumnVisibility={selectedColumns}
+          isLoading={isPending}
           rows={rows}
           title="Order List"
         />
