@@ -23,6 +23,7 @@ import {
   MarkPaidDTO,
 } from './dto/edit.dto';
 import { SearchOrderDTO } from './dto/search.dto';
+import { Public } from '@decorators/auth.decorator';
 
 @Controller('/orders')
 @ApiTags('orders')
@@ -57,6 +58,7 @@ export class OrderController {
     return this.orderService.cancel(id, body, request.user);
   }
 
+  @Public()
   @Get('/')
   search(@Query() query: SearchOrderDTO, @Req() request: RequestWithUser) {
     return this.orderService.search(query, request.user);

@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
@@ -473,10 +474,12 @@ export class OrderService {
     }
 
     if (is_mine && is_mine == 1) {
+      if (!user) throw new UnauthorizedException();
       whereClause.created_by_id = user.id;
     }
 
     if (is_mine_group && is_mine_group == 1) {
+      if (!user) throw new UnauthorizedException();
       whereClause.group = {
         created_by_id: user.id,
       };
