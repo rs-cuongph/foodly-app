@@ -361,13 +361,15 @@ export class OrderService {
       } else if (order.created_by_id === user.id) {
         // is order creator
         if (order.created_at < dayjs().subtract(10, 'minute').toDate()) {
-          throw new BadRequestException(this.i18n.t('message.order_not_found'));
+          throw new BadRequestException(
+            this.i18n.t('message.order_over_10_minutes'),
+          );
         }
 
         if (
           order.transaction.status === TransactionStatus.AWAITING_CONFIRMATION
         ) {
-          throw new BadRequestException(this.i18n.t('message.order_not_found'));
+          throw new BadRequestException(this.i18n.t('message.order_has_paid'));
         }
       }
 

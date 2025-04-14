@@ -31,5 +31,7 @@
   "new_password_same_as_old": "New password cannot be the same as the old password",
   "authenticator_not_found": "Authenticator not found",
   "challenge_not_found_or_expired": "Challenge not found or expired",
-  "group_not_found": "Group not found"
+  "group_not_found": "Group not found",
+  "order_over_10_minutes": "This order was placed more than 10 minutes ago. You cannot cancel it yourself. Please contact the group owner to request cancellation.",
+  "order_has_paid": "This order has already been paid. You cannot cancel it yourself. Please contact the group owner to request cancellation."
 }
