@@ -59,7 +59,7 @@ export class CreateOrderDTO {
   menu: Menu[];
 
   @StringField({
-    maxLength: 255,
+    maxLength: 500,
     allowEmpty: true,
   })
   note?: string;
