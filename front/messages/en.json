@@ -2,6 +2,9 @@
   "common": {
     "empty": "No data available.",
     "search_placeholder": "Search",
+    "order_table": {
+      "total": "{total} orders ({amount})"
+    },
     "modal_title": {
       "sign_in": "Sign In",
       "sign_up": "Sign Up",

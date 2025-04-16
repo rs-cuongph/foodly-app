@@ -13,7 +13,7 @@ import MyDropdown from '@/components/atoms/Dropdown';
 import { ArrowDown, SearchIcon, SettingIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
 import { StripContent } from '@/components/molecules/strip-content';
-import OrderActionTable from '@/components/organisms/foodly-apps/order-action-table';
+import OrderActionTable from '@/components/organisms/foodly-apps/group-detail/order-action';
 import { ORDER_STATUS_ENUM } from '@/config/constant';
 import { useGetOrderListQuery } from '@/hooks/api/apps/foodly/order';
 import { useStateQueryParams } from '@/hooks/query';
@@ -59,7 +59,7 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
   });
 
   const { data: orderList, isPending } = useGetOrderListQuery(
-    searchParams,
+    { ...searchParams, group_id: groupId },
     !!groupId,
   );
 
@@ -248,6 +248,18 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
           }}
           triggerContent={t('common.table_column.label').toLowerCase()}
         />
+      </div>
+      <div className="mb-2">
+        {orderList?.total_quantity !== undefined &&
+          orderList?.total_quantity > 0 && (
+            <p className="text-medium text-primary">
+              {t('common.order_table.total', {
+                total: commaFormat(Number(orderList?.total_quantity ?? 0)),
+                amount:
+                  commaFormat(Number(orderList?.total_amount ?? 0)) + ' VND',
+              })}
+            </p>
+          )}
       </div>
       <div className="flex flex-col">
         <MyDatatable

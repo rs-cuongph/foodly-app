@@ -30,6 +30,13 @@ export const siteConfig = {
         },
         order: {
           list: '/orders',
+          create: '/orders',
+          edit: '/orders/:id',
+          mark_paid: '/orders/:id/mark-paid',
+          cancel: '/orders/:id/cancel',
+          confirm_paid: '/orders/:id/confirm-paid',
+          mark_paid_all: '/orders/mark-paid-all',
+          confirm_paid_all: '/orders/confirm-paid-all',
         },
       },
     },

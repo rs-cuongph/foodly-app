@@ -63,4 +63,6 @@ export type OrderListItem = {
 export type OrderListResponse = {
   orders: OrderListItem[];
   meta: MetaResponse;
+  total_quantity: number;
+  total_amount: number;
 };
