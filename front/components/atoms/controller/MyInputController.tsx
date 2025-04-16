@@ -28,6 +28,7 @@ const MyInputController = forwardRef<HTMLInputElement, MyInputControllerProps>(
               <InputPassword
                 {...props}
                 ref={ref}
+                aria-label={props.placeholder}
                 value={field.value}
                 onChange={field.onChange}
               />
@@ -38,6 +39,7 @@ const MyInputController = forwardRef<HTMLInputElement, MyInputControllerProps>(
               <MyInputNumber
                 {...props}
                 ref={ref}
+                aria-label={props.placeholder}
                 value={field.value}
                 onChange={field.onChange}
               />
@@ -47,6 +49,7 @@ const MyInputController = forwardRef<HTMLInputElement, MyInputControllerProps>(
             <MyInput
               {...props}
               ref={ref}
+              aria-label={props.placeholder}
               value={field.value}
               onChange={field.onChange}
             />

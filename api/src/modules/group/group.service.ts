@@ -47,6 +47,31 @@ export class GroupService {
     ).join('');
   }
 
+  /**
+   * Process menu item prices based on group price
+   * If group price is not zero, menu item prices are optional
+   * @param groupPrice - The price of the group
+   * @param menuItems - Array of menu items to process
+   */
+  private processMenuItemPrices<T extends { price: number; name: string }>(
+    groupPrice: number,
+    menuItems: T[],
+  ): T[] {
+    // If group price is zero, we need to validate menu item prices
+    // If group price is not zero, menu items don't need prices (optional validation)
+    if (groupPrice !== 0) {
+      // For non-zero group price, ensure all menu items have at least minimum price
+      // Menu items without price will inherit group price
+      return menuItems.map((item) => ({
+        ...item,
+        price: item.price || groupPrice,
+      }));
+    }
+    // If group price is zero, all menu items must have their own prices
+    // No modifications needed as validation will be handled by class-validator
+    return menuItems;
+  }
+
   async checkGroupIsLocked(id: string, notThrowError = false) {
     const group = await this.prismaService.client.group.findFirst({
       where: {
@@ -84,6 +109,11 @@ export class GroupService {
       }
 
       body.public_start_time = body.public_start_time || dayjs().toDate();
+      // Process menu items prices based on group price
+      const processedMenuItems = this.processMenuItemPrices(
+        body.price,
+        body.menu_items,
+      );
 
       return this.prismaService.client.$transaction(async (tx) => {
         const group = await tx.group.create({
@@ -103,7 +133,7 @@ export class GroupService {
           },
         });
         await tx.menuItem.createMany({
-          data: body.menu_items.map((item) => {
+          data: processedMenuItems.map((item) => {
             return {
               group_id: group.id,
               name: item.name,
@@ -130,6 +160,11 @@ export class GroupService {
 
   async edit(id: string, body: EditGroupDTO, user: RequestWithUser['user']) {
     await this.checkGroupIsLocked(id);
+    // Process menu items prices based on group price
+    const processedMenuItems = this.processMenuItemPrices(
+      body.price,
+      body.menu_items,
+    );
     return this.prismaService.client.$transaction(async (tx) => {
       let inviteCode = '';
 
@@ -168,7 +203,7 @@ export class GroupService {
         },
       });
 
-      for (const item of body.menu_items) {
+      for (const item of processedMenuItems) {
         if (item?.id && item?._destroy) {
           await tx.menuItem.delete({
             where: {

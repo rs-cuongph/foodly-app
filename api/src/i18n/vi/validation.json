@@ -10,6 +10,7 @@
   "IsNumber": "$t(validation-properties.{property}) phải là số",
   "Min": "$t(validation-properties.{property}) phải lớn hơn hoặc bằng {constraints.0}",
   "Max": "$t(validation-properties.{property}) phải nhỏ hơn hoặc bằng {constraints.0}",
+  "PriceRange": "$t(validation-properties.{property}) phải nằm trong khoảng {min} - {max}",
   "IsPositive": "$t(validation-properties.{property}) phải là số dương",
   "Equals": "$t(validation-properties.{property}) phải bằng \"{value}\"",
   "IsEnum": "$t(validation-properties.{property}) phải là một trong các giá trị: {enum}",

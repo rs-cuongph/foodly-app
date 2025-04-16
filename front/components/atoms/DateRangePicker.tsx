@@ -8,13 +8,17 @@ import { forwardRef, Ref } from 'react';
 
 import { useWindowSize } from '@/hooks/window-size';
 
-export type MyDateRangePickerProps = DateRangePickerProps & {
+export type MyDateRangePickerProps = Omit<
+  DateRangePickerProps,
+  'value' | 'onChange' | 'minValue'
+> & {
   value?: {
     start: string;
     end: string;
   };
   onChange?: (value: { start: string; end: string }) => void;
   minValueErrorMessage?: string;
+  minValue?: string | null;
 };
 const timezone = 'Asia/Ho_Chi_Minh';
 
@@ -42,6 +46,10 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
       };
     }
 
+    const minValue = props.minValue
+      ? parseAbsolute(props.minValue, timezone)
+      : undefined;
+
     return (
       <I18nProvider locale={lang as string}>
         <DateRangePicker
@@ -55,6 +63,7 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
           ref={ref}
           errorMessage={props.errorMessage}
           isInvalid={!!props.errorMessage}
+          minValue={minValue}
           validate={(value) => {
             if (!value) return null;
             const start = value.start.toDate(timezone);

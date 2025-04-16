@@ -11,6 +11,7 @@
   "IsJSON": "$t(validation-properties.{property}) needs to be JSON",
   "Min": "$t(validation-properties.{property}) must be greater than or equal to {constraints.0}",
   "Max": "$t(validation-properties.{property}) must be less than or equal to {constraints.0}",
+  "PriceRange": "$t(validation-properties.{property}) must be between {min} and {max}",
   "IsPositive": "$t(validation-properties.{property}) needs to be positive",
   "Equals": "$t(validation-properties.{property}) needs to be equal with \"{value}\"",
   "IsEnum": "$t(validation-properties.{property}) needs to be one of these values: {enum}",

@@ -7,7 +7,8 @@
       "sign_up": "Sign Up",
       "create_group": "Create Group",
       "confirm_delete": "Confirm Delete",
-      "confirm_lock": "Confirm Lock"
+      "confirm_lock": "Confirm Lock",
+      "update_group": "Edit Group"
     },
     "modal_description": {
       "confirm_delete": "Are you sure you want to delete this group?",
@@ -184,7 +185,8 @@
       "create_group_success": "Create Group Success",
       "invite_code_success": "Join Group Success",
       "lock_group": "Lock Group Success",
-      "delete_group": "Delete Group Success"
+      "delete_group": "Delete Group Success",
+      "update_group_success": "Update Group Success"
     }
   },
   "toast": {

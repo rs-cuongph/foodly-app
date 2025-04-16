@@ -1,4 +1,4 @@
-import { NumberField } from '@decorators/validation/number.decorator';
+import { ValidateMenuItemPrice } from '@decorators/validation/group-price.decorator';
 import {
   StringField,
   StringFieldOptional,
@@ -17,10 +17,7 @@ export class EditMenuDTO {
   })
   name: string;
 
-  @NumberField({
-    min: 1000,
-    max: 10000000,
-  })
+  @ValidateMenuItemPrice()
   price: number;
 
   @IsBoolean()

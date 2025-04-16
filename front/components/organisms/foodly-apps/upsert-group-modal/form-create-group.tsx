@@ -1,6 +1,5 @@
 'use client';
 import { Form } from '@heroui/form';
-import { parseAbsoluteToLocal } from '@internationalized/date';
 import { useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -38,23 +37,26 @@ interface CreateGroupFormProps {}
 const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
   (props, ref) => {
     const t = useTranslations();
-    const { setSelectedForm, setIsLoadingConfirm, closeModal } =
-      useCommonStore();
+    const { setIsLoadingConfirm, closeModal } = useCommonStore();
     const { showError, showSuccess } = useSystemToast();
     const {
       control,
       watch,
       handleSubmit,
-      formState: { errors, defaultValues },
+      formState: { errors },
       reset,
       setError,
+      getValues,
+      setValue,
     } = useCreateGroupForm();
     const { mutateAsync: createGroup } = useCreateGroupMutation();
+    const formRef = useRef<HTMLFormElement>(null);
 
     const {
       fields: menuItems,
       append: appendMenu,
       remove: removeMenu,
+      update: updateMenu,
     } = useFieldArray({
       control,
       name: 'menu_items',
@@ -88,7 +90,23 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
       // },
     ];
 
-    const formRef = useRef<HTMLFormElement>(null);
+    const onChangeSamePrice = () => {
+      const isSamePrice = getValues('is_same_price');
+      const menuItems = getValues('menu_items');
+      const price = getValues('price');
+
+      if (isSamePrice.includes('1')) {
+        menuItems.forEach((menu, index) => {
+          updateMenu(index, { name: menu.name, price: null });
+        });
+        setValue('price', menuItems[0].price);
+      } else {
+        menuItems.forEach((menu, index) => {
+          updateMenu(index, { name: menu.name, price: price });
+        });
+        setValue('price', 0);
+      }
+    };
 
     // Handle submit form
     const onSubmit = async (data: CreateGroupSchemaType) => {
@@ -241,7 +259,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
               errors.date_range?.end?.message
             }
             label={t('upsert_group_modal.date_range')}
-            minValue={parseAbsoluteToLocal(DateHelper.getNow().toISOString())}
+            minValue={DateHelper.getNow().toISOString()}
             name="date_range"
           />
 
@@ -266,6 +284,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
                   label: t('upsert_group_modal.is_same_price'),
                 },
               ]}
+              onChange={onChangeSamePrice}
             />
             {wIsSamePrice.includes('1') && (
               <MyInputController

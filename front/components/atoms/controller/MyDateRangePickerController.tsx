@@ -26,6 +26,7 @@ const MyDateRangePickerController = forwardRef<
             {...props}
             {...field}
             ref={ref}
+            aria-label={props.name}
             value={field.value}
             onChange={field.onChange}
           />

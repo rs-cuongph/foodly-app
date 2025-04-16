@@ -1,5 +1,6 @@
 import { ArrayField } from '@decorators/validation/array.decorator';
 import { EnumField } from '@decorators/validation/enum.decorator';
+import { ValidateMenuPrices } from '@decorators/validation/group-price.decorator';
 import { NumberField } from '@decorators/validation/number.decorator';
 import {
   StringField,

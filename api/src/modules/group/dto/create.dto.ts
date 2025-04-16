@@ -8,7 +8,6 @@ import {
 import { CreateMenuDTO } from '@modules/menu/dto/create.dto';
 import { GroupType, ShareScope } from '@prisma/client';
 import { IsBoolean, ValidateIf } from 'class-validator';
-import { ValidateMenuPrices } from '@decorators/validation/group-price.decorator';
 
 export class CreateGroupDTO {
   @StringField({
@@ -50,7 +49,6 @@ export class CreateGroupDTO {
     isValidateNested: true,
     minLength: 1,
   })
-  @ValidateMenuPrices()
   menu_items: CreateMenuDTO[];
 
   @StringField({

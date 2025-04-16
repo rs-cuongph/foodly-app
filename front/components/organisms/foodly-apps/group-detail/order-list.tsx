@@ -213,7 +213,7 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
               mainWrapper:
                 'md:min-w-[320px] md:max-w-[440px] xss:min-w-full xs:max-w-full sm:min-w-[320px] sm:max-w-full',
               input: 'placeholder:text-gray-500',
-              inputWrapper: 'rounded-[32px] border border-gray-500',
+              inputWrapper: 'rounded-[32px] border border-gray-100',
             }}
             size="lg"
             startContent={<SearchIcon className="h-6 w-6 text-gray-500 mr-2" />}

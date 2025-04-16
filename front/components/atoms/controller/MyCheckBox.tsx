@@ -20,7 +20,10 @@ const MyCheckBoxController = forwardRef<
           {...props}
           ref={ref}
           value={field.value}
-          onChange={field.onChange}
+          onChange={(value) => {
+            field.onChange(value);
+            props.onChange?.(value);
+          }}
         />
       )}
     />

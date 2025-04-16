@@ -103,3 +103,28 @@ export type GroupDetailResponse = {
   order_count: number;
   total_quantity: number;
 };
+
+type UpdateMenu =
+  | {
+      id?: string;
+      name: string;
+      price: number;
+      _destroy?: boolean;
+    }
+  | {
+      id: string;
+      _destroy: boolean;
+    };
+
+export type UpdateGroupParams = {
+  id: string;
+  name: string;
+  public_start_time: string;
+  public_end_time: string | null;
+  share_scope: string;
+  type: string;
+  price: number;
+  is_save_template: boolean;
+  menu_items: UpdateMenu[];
+  invite_code: string | null;
+};

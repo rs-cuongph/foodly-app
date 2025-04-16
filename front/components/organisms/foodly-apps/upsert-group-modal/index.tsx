@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { ForwardRefExoticComponent, RefAttributes, useRef } from 'react';
 
 import CreateGroupForm from './form-create-group';
+import UpdateGroupForm from './form-update-group';
 
 import { MyButton } from '@/components/atoms/Button';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
@@ -30,6 +31,10 @@ export default function UpsertGroupModal() {
     [FormType.CREATE_GROUP]: {
       title: t('common.modal_title.create_group'),
       component: CreateGroupForm,
+    },
+    [FormType.UPDATE_GROUP]: {
+      title: t('common.modal_title.update_group'),
+      component: UpdateGroupForm,
     },
   };
 

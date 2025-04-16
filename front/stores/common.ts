@@ -7,6 +7,7 @@ export enum FormType {
   SIGN_UP = 'signUp',
   CREATE_GROUP = 'createGroup',
   CONFIRM = 'modalConfirm',
+  UPDATE_GROUP = 'updateGroup',
 }
 
 export enum ModalType {

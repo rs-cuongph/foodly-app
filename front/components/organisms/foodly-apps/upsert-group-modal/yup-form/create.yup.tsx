@@ -17,11 +17,11 @@ export type CreateGroupSchemaType = {
   share_scope: string;
   menu_items: {
     name: string;
-    price: string | null;
+    price: number | string | null;
   }[];
   is_same_price: string[];
   type: string;
-  price: string | null;
+  price: number | string | null;
 };
 
 export const useCreateGroupSchema = () => {

@@ -26,6 +26,7 @@ export const siteConfig = {
           check: '/groups/:id/check',
           lock: '/groups/:id/lock',
           delete: '/groups/:id',
+          update: '/groups/:id',
         },
         order: {
           list: '/orders',

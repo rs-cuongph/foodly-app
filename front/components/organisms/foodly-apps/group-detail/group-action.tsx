@@ -15,7 +15,7 @@ import GroupActionBtn, {
 import { GROUP_STATUS_ENUM } from '@/config/constant';
 import { useSystemToast } from '@/hooks/toast';
 import { useAuthStore } from '@/stores/auth';
-import { useCommonStore } from '@/stores/common';
+import { FormType, ModalType, useCommonStore } from '@/stores/common';
 import { useGroupStore } from '@/stores/group';
 
 export default function MoreActionInGroup() {
@@ -23,7 +23,7 @@ export default function MoreActionInGroup() {
   const { isGroupOwner } = useAuthStore();
   const { groupInfo } = useGroupStore();
   const { showSuccess } = useSystemToast();
-  const { setModalConfirm } = useCommonStore();
+  const { setModalConfirm, setIsOpen } = useCommonStore();
   const [_, copy] = useCopyToClipboard();
 
   const isLocked = useMemo(
@@ -40,7 +40,10 @@ export default function MoreActionInGroup() {
       className: cn('font-medium text-medium text-black'),
       showDivider: false,
       isShow: () => !isLocked && !!isGroupOwner(),
-      onPress: () => {},
+      onPress: (setPopoverState: (state: boolean) => void) => {
+        setIsOpen(true, ModalType.CREATE_GROUP, FormType.UPDATE_GROUP);
+        setPopoverState(false);
+      },
     },
     {
       key: 'share',

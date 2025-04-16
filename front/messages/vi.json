@@ -107,7 +107,8 @@
       "signup_success": "Đăng ký thành công",
       "delete_group": "Xóa thành công nhóm",
       "invite_code_success": "Tham gia thành công nhóm",
-      "lock_group": "Khóa thành công của nhóm"
+      "lock_group": "Khóa thành công của nhóm",
+      "update_group_success": "Cập nhật thành công nhóm"
     }
   },
   "upsert_group_modal": {

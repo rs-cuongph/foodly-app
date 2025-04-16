@@ -5,6 +5,7 @@ import {
   GroupDetailResponse,
   GroupListParams,
   GroupListResponse,
+  UpdateGroupParams,
 } from './type';
 
 import { siteConfig } from '@/config/site';
@@ -46,6 +47,27 @@ export const useCreateGroupMutation = () => {
     mutationFn: (data: CreateGroupParams) => createGroupApi(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['group-list'] });
+    },
+  });
+};
+
+export const updateGroupApi = async (data: UpdateGroupParams) => {
+  const { data: res } = await apiClient.put(
+    formatRoute(siteConfig.apps.foodly.apiRoutes.group.update, { id: data.id }),
+    data,
+  );
+
+  return res;
+};
+
+export const useUpdateGroupMutation = (id: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateGroupParams) => updateGroupApi(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['group', id] });
+      queryClient.invalidateQueries({ queryKey: ['order-list'] });
     },
   });
 };

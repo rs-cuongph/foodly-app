@@ -109,7 +109,7 @@ export default function GroupCardItem(props: GroupCardItemProps) {
   };
 
   return (
-    <div className="relative w-full rounded-3xl bg-white shadow-md max-w-[398px] h-fit">
+    <div className="relative w-full rounded-3xl bg-white shadow-md max-w-[398px] h-fit drop-shadow-md">
       {/* Image and Overlay Info */}
       <div className="relative mb-4 h-48 w-full overflow-hidden rounded-2xl">
         <Image
@@ -128,6 +128,14 @@ export default function GroupCardItem(props: GroupCardItemProps) {
             </span>
           </div>
         </div>
+        {timeCountDown > 0 ? (
+          <span className="flex absolute top-4 right-4 h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500" />
+          </span>
+        ) : (
+          <span className="flex absolute top-4 right-4 h-3 w-3 bg-gray-400 rounded-full" />
+        )}
       </div>
       <div className="absolute top-[176px] left-4 flex gap-4">
         <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 shadow-primary">
@@ -168,8 +176,10 @@ export default function GroupCardItem(props: GroupCardItemProps) {
         {/* Owner Group */}
         <div className="mb-4">
           <div className="flex items-center gap-2">
-            <GroupOwnerIcon className="h-6 w-6 text-primary" />
-            <span className="font-bold text-md">{createdBy}</span>
+            <GroupOwnerIcon className="min-h-6 min-w-6 text-primary" />
+            <span className="font-bold text-md text-ellipsis break-all line-clamp-1">
+              {createdBy}
+            </span>
           </div>
         </div>
 
