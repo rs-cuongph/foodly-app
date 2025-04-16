@@ -3,7 +3,7 @@ import {
   StringField,
   StringFieldOptional,
 } from '@decorators/validation/string.decorator';
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional, ValidateIf } from 'class-validator';
 
 export class EditMenuDTO {
   @StringFieldOptional({
@@ -15,9 +15,15 @@ export class EditMenuDTO {
     maxLength: 255,
     allowEmpty: false,
   })
+  @ValidateIf((object) => {
+    return !object._destroy;
+  })
   name: string;
 
   @ValidateMenuItemPrice()
+  @ValidateIf((object) => {
+    return !object._destroy;
+  })
   price: number;
 
   @IsBoolean()

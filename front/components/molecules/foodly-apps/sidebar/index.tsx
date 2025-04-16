@@ -121,6 +121,9 @@ export function Sidebar() {
 
   const handleSignOut = () => {
     signOut({ redirect: false });
+    Object.values(ModalType).forEach((modalType) => {
+      commonStore.setIsOpen(false, modalType);
+    });
     router.push(siteConfig.apps.foodly.routes.home);
   };
 

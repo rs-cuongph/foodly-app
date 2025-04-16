@@ -16,7 +16,7 @@ export type UpdateGroupSchemaType = {
   };
   share_scope: string;
   menu_items: {
-    id?: string | null;
+    _id?: string | null;
     name: string;
     price: number | string | null;
     _destroy?: boolean;

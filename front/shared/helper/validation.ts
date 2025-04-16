@@ -14,6 +14,7 @@ export const handleErrFromApi = <T extends FieldValues>(
 
     if (errors.length) {
       errors.forEach((error: any) => {
+        console.log(error);
         setError?.(error.path as Path<T>, { message: error.messages[0] });
       });
     }

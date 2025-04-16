@@ -251,7 +251,11 @@ export class GroupService {
       },
       include: {
         orders: query?.with_orders == 1,
-        menu_items: true,
+        menu_items: {
+          orderBy: {
+            created_at: 'asc',
+          },
+        },
         created_by: {
           select: {
             id: true,
@@ -443,6 +447,9 @@ export class GroupService {
               id: true,
               name: true,
               price: true,
+            },
+            orderBy: {
+              created_at: 'asc',
             },
           },
         },

@@ -61,7 +61,7 @@ export const useCommonStore = create<CommonStore>((set) => ({
     selectedForm: FormType.CREATE_GROUP,
   },
   // Actions
-  setIsOpen: (isOpen, modal, form) =>
+  setIsOpen: (isOpen, modal, form = undefined) =>
     set((state) => {
       if (modal === ModalType.AUTH) {
         return {

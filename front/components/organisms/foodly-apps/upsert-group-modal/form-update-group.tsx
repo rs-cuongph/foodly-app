@@ -1,5 +1,6 @@
 'use client';
 import { Form } from '@heroui/form';
+import { cn } from '@heroui/theme';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import {
@@ -132,18 +133,42 @@ const UpdateGroupForm = forwardRef<UpdateGroupFormRef, UpdateGroupFormProps>(
     const onRemoveMenuItem = (index: number) => {
       const item = menuItems[index];
 
-      if (item.id) {
-        setValue('menu_items_deleted', [
-          ...getValues('menu_items_deleted'),
-          item.id,
-        ]);
+      if (item._id) {
+        updateMenu(index, {
+          _destroy: true,
+          name: item.name,
+          price: item.price,
+          _id: item._id,
+        });
+      } else {
+        removeMenu(index);
       }
-
-      removeMenu(index);
     };
 
     // Handle submit form
     const onSubmit = async (data: UpdateGroupSchemaType) => {
+      let price = 0;
+      let menuItems = data.menu_items.map((menu) => ({
+        id: menu?._id ?? undefined,
+        name: menu.name,
+        price: Number(menu.price),
+        _destroy: menu?._destroy ?? false,
+      }));
+
+      if (data.is_same_price.includes('1')) {
+        price = Number(data.price);
+        menuItems = menuItems.map((menu) => ({
+          ...menu,
+          price: 0,
+        }));
+      } else {
+        price = 0;
+        menuItems = menuItems.map((menu) => ({
+          ...menu,
+          price: Number(menu.price || 0),
+        }));
+      }
+
       const params: UpdateGroupParams = {
         id: id!,
         name: data.name,
@@ -151,41 +176,12 @@ const UpdateGroupForm = forwardRef<UpdateGroupFormRef, UpdateGroupFormProps>(
         public_end_time: data.date_range.end,
         share_scope: data.share_scope,
         type: data.type,
-        price: Number(data.price),
+        price,
         is_save_template: false,
-        menu_items: [
-          ...data.menu_items.map((menu) => ({
-            id: menu?.id ?? undefined,
-            name: menu.name,
-            price: Number(menu.price),
-          })),
-          ...getValues('menu_items_deleted').map((id) => ({
-            id,
-            _destroy: true,
-          })),
-        ],
+        menu_items: menuItems,
         invite_code: localStorage.getItem(STORAGE_KEYS.GROUP_INVITE_CODE) ?? '',
       };
 
-      if (data.is_same_price.includes('1')) {
-        params.price = Number(data.price);
-        params.menu_items = params.menu_items
-          .filter((m) => !m?._destroy)
-          .map((menu) => ({
-            id: menu.id,
-            name: 'name' in menu ? menu.name : '',
-            price: 0,
-          }));
-      } else {
-        params.price = 0;
-        params.menu_items = data.menu_items
-          // Only include items that aren't marked for deletion and have a name
-          .filter((menu) => !menu?._destroy)
-          .map((menu) => ({
-            name: 'name' in menu ? menu.name : '',
-            price: Number(menu.price || 0),
-          }));
-      }
       try {
         setIsLoadingConfirm(true, ModalType.CREATE_GROUP);
         await updateGroup(params);
@@ -203,7 +199,13 @@ const UpdateGroupForm = forwardRef<UpdateGroupFormRef, UpdateGroupFormProps>(
         <div className="flex flex-col">
           <div className="flex flex-col">
             {menuItems.map((menu, index) => (
-              <div key={menu.id} className="flex flex-row gap-2 mb-2">
+              <div
+                key={menu.id}
+                className={cn(
+                  'flex flex-row gap-2 mb-2',
+                  menu?._destroy && 'hidden',
+                )}
+              >
                 <MyInputController
                   control={control}
                   errorMessage={errors.menu_items?.[index]?.name?.message}
@@ -280,7 +282,7 @@ const UpdateGroupForm = forwardRef<UpdateGroupFormRef, UpdateGroupFormProps>(
           end: groupInfoRes.public_end_time,
         },
         menu_items: groupInfoRes.menu_items.map((menu) => ({
-          id: menu.id,
+          _id: menu.id,
           name: menu.name,
           price: menu.price,
         })),

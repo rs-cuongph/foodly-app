@@ -24,7 +24,7 @@ type Action = {
 const OrderActionTable = (props: OrderActionTableProps) => {
   const { order } = props;
 
-  const { isGroupOwner, isOrderOwner } = useRole();
+  const { isGroupOwner, isOrderOwner, isGroupLocked } = useRole();
 
   const checkIncludes = (statuses: ORDER_STATUS_ENUM[], status: string) => {
     return statuses.some((s) => s == status);
@@ -60,23 +60,26 @@ const OrderActionTable = (props: OrderActionTableProps) => {
       color: 'danger',
       icon: <DeleteIcon className="h-6 w-6 text-red-500" />,
       isShow:
-        isGroupOwner() &&
-        checkIncludes(
-          [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
-          order.status,
-        ),
+        // check if group owner and order status is init or processing
+        (isGroupOwner() &&
+          checkIncludes(
+            [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
+            order.status,
+          )) ||
+        // check if order owner and group is not locked and order status is init or processing
+        (isOrderOwner(order.created_by_id) &&
+          !isGroupLocked() &&
+          checkIncludes(
+            [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
+            order.status,
+          )),
       onPress: () => {},
     },
     {
       key: 'copy',
       color: 'secondary',
       icon: <CopyIcon className="h-6 w-6 text-secondary-500" />,
-      isShow:
-        isOrderOwner(order.created_by_id) &&
-        checkIncludes(
-          [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
-          order.status,
-        ),
+      isShow: !isGroupLocked(),
       onPress: () => {},
     },
   ];
@@ -88,7 +91,7 @@ const OrderActionTable = (props: OrderActionTableProps) => {
   };
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row">
       {filteredActions(actions).map((action) => (
         <MyButton
           key={action.key}
@@ -103,7 +106,5 @@ const OrderActionTable = (props: OrderActionTableProps) => {
     </div>
   );
 };
-
-OrderActionTable.displayName = 'OrderActionTable';
 
 export default OrderActionTable;

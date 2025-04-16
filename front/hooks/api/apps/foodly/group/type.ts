@@ -104,17 +104,12 @@ export type GroupDetailResponse = {
   total_quantity: number;
 };
 
-type UpdateMenu =
-  | {
-      id?: string;
-      name: string;
-      price: number;
-      _destroy?: boolean;
-    }
-  | {
-      id: string;
-      _destroy: boolean;
-    };
+type UpdateMenu = {
+  id?: string;
+  name?: string;
+  price?: number;
+  _destroy?: boolean;
+};
 
 export type UpdateGroupParams = {
   id: string;
