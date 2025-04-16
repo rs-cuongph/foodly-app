@@ -556,6 +556,24 @@ export class OrderService {
       };
     }
 
+    const allOrder = await this.prismaService.client.order.findMany({
+      where: whereClause,
+      select: {
+        quantity: true,
+        amount: true,
+      },
+    });
+
+    const total_quantity = allOrder.reduce(
+      (prev, curr) => prev + curr.quantity,
+      0,
+    );
+
+    const total_amount = allOrder.reduce(
+      (prev, curr) => prev + Number(curr.amount),
+      0,
+    );
+
     const [orders, meta] = await this.prismaService.client.order
       .paginate({
         where: whereClause,
@@ -571,6 +589,8 @@ export class OrderService {
     return {
       orders,
       meta: camelToSnake(meta),
+      total_quantity,
+      total_amount,
     };
   }
 
