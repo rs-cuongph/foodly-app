@@ -41,7 +41,7 @@ export class CreateOrderDTO {
   group_id: string;
 
   @NumberField({
-    max: 10,
+    max: 20,
   })
   quanlity: number;
 

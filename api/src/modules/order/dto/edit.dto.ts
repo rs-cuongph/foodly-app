@@ -20,7 +20,7 @@ export class EditOrderDTO {
   note?: string;
 
   @NumberField({
-    max: 10,
+    max: 20,
   })
   quanlity: number;
 

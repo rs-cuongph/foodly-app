@@ -15,9 +15,9 @@
   "public_start_time": "thời gian công khai",
   "public_end_time": "thời gian kết thúc",
   "ids": "ids",
-  "organization_code": "mã tổ chức",
+  "organization_code": "tổ chức",
   "new_password": "mật khẩu mới",
   "confirm_new_password": "mật khẩu mới xác nhận",
   "token": "token",
-  "qr_text": "QR Code"
+  "qr_text": "qr code"
 }
