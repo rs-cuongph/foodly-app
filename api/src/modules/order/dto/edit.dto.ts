@@ -14,13 +14,13 @@ class Menu {
 }
 export class EditOrderDTO {
   @StringField({
-    maxLength: 255,
+    maxLength: 500,
     allowEmpty: true,
   })
   note?: string;
 
   @NumberField({
-    max: 10,
+    max: 20,
   })
   quanlity: number;
 
@@ -32,7 +32,7 @@ export class EditOrderDTO {
   menu: Menu[];
 
   @StringFieldOptional({
-    maxLength: 255,
+    maxLength: 500,
     allowEmpty: false,
   })
   invite_code?: string;
@@ -73,7 +73,7 @@ export class ConfirmPaidDTO {
 
 export class CancelOrderDTO {
   @StringField({
-    maxLength: 255,
+    maxLength: 500,
     allowEmpty: true,
   })
   reason: string;
