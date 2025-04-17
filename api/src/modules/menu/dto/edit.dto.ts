@@ -21,9 +21,6 @@ export class EditMenuDTO {
   name: string;
 
   @ValidateMenuItemPrice()
-  @ValidateIf((object) => {
-    return !object._destroy;
-  })
   price: number;
 
   @IsBoolean()

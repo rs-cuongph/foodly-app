@@ -112,6 +112,10 @@ export default function GroupDetail() {
     return <HomeShareIcon className="h-6 w-6 text-green-500" />;
   };
 
+  const openOrderModal = () => {
+    // setOpenOrderModal(true);
+  };
+
   useEffect(() => {
     if (groupInfoRes) {
       setGroupInfo(groupInfoRes);
@@ -254,7 +258,7 @@ export default function GroupDetail() {
                     <ChatIcon className="h-5 w-5 text-primary group-hover/chat:text-primary-foreground" />
                     {t('button.chat')}
                   </MyButton>
-                  <MyButton className="">
+                  <MyButton className="" onPress={openOrderModal}>
                     <ShoppingBagIcon className="h-5 w-5 text-white " />
                     {t('button.order')}
                   </MyButton>
