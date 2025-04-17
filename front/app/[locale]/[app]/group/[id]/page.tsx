@@ -157,11 +157,12 @@ export default function GroupDetail() {
   return (
     <>
       <div className="relative">
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
           <SkeletonWrapper
             classNames={{
-              base: 'relative rounded-xl min-w-[238px] min-h-[168px] h-auto',
-              content: 'min-w-[238px] min-h-[168px] relative',
+              base: 'relative rounded-xl h-auto md:min-w-[238px] md:min-h-[168px]',
+              content:
+                'relative pb-[55%] md:min-w-[238px] md:min-h-[168px] md:pb-[0%]', // 4:3 aspect ratio (width:height), 3/4 = 75%
             }}
             isLoaded={isLoaded}
           >
@@ -176,7 +177,7 @@ export default function GroupDetail() {
             classNames={{
               base: 'relative rounded-xl w-full',
               content:
-                'relative border border-gray-200 rounded-xl w-full bg-white px-4 pt-4 pb-4 min-h-[200px] h-full',
+                'relative border border-gray-200 rounded-xl w-full bg-white px-4 pt-4 pb-4 min-h-[200px] h-full overflow-auto justify-between',
             }}
             isLoaded={isLoaded}
           >
