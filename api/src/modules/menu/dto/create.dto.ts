@@ -1,4 +1,4 @@
-import { ValidateMenuItemPrice } from '@decorators/validation/group-price.decorator';
+import { NumberField } from '@decorators/validation/number.decorator';
 import { StringField } from '@decorators/validation/string.decorator';
 
 export class CreateMenuDTO {
@@ -8,6 +8,9 @@ export class CreateMenuDTO {
   })
   name: string;
 
-  @ValidateMenuItemPrice()
+  @NumberField({
+    min: 0,
+    max: 10000000,
+  })
   price: number;
 }
