@@ -24,6 +24,9 @@ export class EditMenuDTO {
     min: 0,
     max: 10000000,
   })
+  @ValidateIf((object) => {
+    return !object._destroy;
+  })
   price: number;
 
   @IsBoolean()
