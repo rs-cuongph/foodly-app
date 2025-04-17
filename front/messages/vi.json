@@ -26,7 +26,8 @@
       "sign_in": "Đăng nhập",
       "sign_up": "Đăng ký",
       "confirm_delete": "Xác nhận xóa",
-      "confirm_lock": "Xác nhận khóa"
+      "confirm_lock": "Xác nhận khóa",
+      "update_group": "Chỉnh sửa nhóm"
     },
     "placeholder": {
       "select": "Lựa chọn"
@@ -39,6 +40,21 @@
     "modal_description": {
       "confirm_delete": "Bạn có chắc là bạn muốn xóa nhóm này?",
       "confirm_lock": "Bạn có chắc là bạn muốn khóa nhóm này?"
+    },
+    "order_table": {
+      "total": "{Total} đơn đặt hàng ({số lượng})"
+    },
+    "status": {
+      "label": "Trạng thái",
+      "order": {
+        "cancelled": "Bị hủy bỏ",
+        "completed": "Hoàn thành",
+        "init": "Khởi tạo",
+        "processing": "Xử lý"
+      }
+    },
+    "table_column": {
+      "label": "Cột"
     }
   },
   "home": {
@@ -179,6 +195,23 @@
   "toast": {
     "share": {
       "success": "Sao chép vào bảng tạm"
+    }
+  },
+  "table": {
+    "columns": {
+      "action": "Hoạt động",
+      "created_at": "Được tạo ra tại",
+      "menu_name": "Tên menu",
+      "no": "STT",
+      "note": "Ghi chú",
+      "payment_method": "Phương thức thanh toán",
+      "price": "Giá",
+      "quantity": "Số lượng",
+      "status": "Trạng thái",
+      "total": "Tổng số tiền",
+      "user": {
+        "display_name": "Tên"
+      }
     }
   }
 }

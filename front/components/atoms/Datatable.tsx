@@ -10,6 +10,7 @@ import {
 import { isNil } from 'lodash';
 import { useTranslations } from 'next-intl';
 import { forwardRef, ReactNode } from 'react';
+
 import { FoodLoading } from './FoodLoading';
 
 export type MyTableColumnProps = {
@@ -97,7 +98,11 @@ export const MyDatatable = forwardRef<HTMLElement, MyDatatableProps>(
       >
         <TableHeader>
           {filterColumn(columns).map((column) => (
-            <TableColumn key={column.key} {...column.props}>
+            <TableColumn
+              key={column.key}
+              className="capitalize"
+              {...column.props}
+            >
               {column.label}
             </TableColumn>
           ))}

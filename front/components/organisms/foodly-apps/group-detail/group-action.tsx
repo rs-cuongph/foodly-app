@@ -37,7 +37,7 @@ export default function MoreActionInGroup() {
       startContent: <EditDocumentIcon className={'h-5 w-5 text-blue-500'} />,
       text: t('button.edit'),
       description: 'Edit this group',
-      className: cn('font-medium text-medium text-black'),
+      className: cn('font-medium text-medium text-black capitalize'),
       showDivider: false,
       isShow: () => !isLocked && !!isGroupOwner(),
       onPress: (setPopoverState: (state: boolean) => void) => {
@@ -50,7 +50,7 @@ export default function MoreActionInGroup() {
       startContent: <ShareIcon className={'h-5 w-5 text-green-500'} />,
       text: t('button.share'),
       description: 'Share this group for other users',
-      className: cn('font-medium text-medium text-black'),
+      className: cn('font-medium text-medium text-black capitalize'),
       showDivider: false,
       isShow: true,
       onPress: (setPopoverState: (state: boolean) => void) => {
@@ -69,7 +69,7 @@ export default function MoreActionInGroup() {
       text: t('button.lock'),
       color: 'warning',
       description: "Lock this group, you can't unlock it later",
-      className: cn('font-medium text-medium text-warning'),
+      className: cn('font-medium text-medium text-warning capitalize'),
       showDivider: true,
       isShow: () => !isLocked && !!isGroupOwner(),
       onPress: (setPopoverState: (state: boolean) => void) => {
@@ -85,7 +85,7 @@ export default function MoreActionInGroup() {
       key: 'delete',
       startContent: <DeleteIcon className={'h-5 w-5 text-danger-500'} />,
       text: t('button.delete'),
-      className: cn('font-medium text-medium text-danger'),
+      className: cn('font-medium text-medium text-danger capitalize'),
       description: 'Permanently delete this group',
       showDivider: false,
       isShow: () => !isLocked && !!isGroupOwner(),
