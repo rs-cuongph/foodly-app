@@ -48,8 +48,8 @@ export class GroupController {
 
   @Public()
   @Get('/:id/check')
-  async checkGroup(@Param('id') id: string) {
-    return this.groupService.checkGroupIsPrivate(id);
+  async checkGroup(@Param('id') id: string, @Req() request: RequestWithUser) {
+    return this.groupService.checkGroupIsPrivate(id, request.user);
   }
 
   @Delete('/:id')

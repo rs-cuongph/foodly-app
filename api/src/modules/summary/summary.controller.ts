@@ -23,6 +23,7 @@ export class SummaryController {
     return this.summaryService.getOrderAmountSummary(
       query.mode,
       req.user.organization_id,
+      req.user.id,
     );
   }
 
@@ -35,6 +36,7 @@ export class SummaryController {
     return this.summaryService.getOrderCountSummary(
       query.mode,
       req.user.organization_id,
+      req.user.id,
     );
   }
 
@@ -47,6 +49,7 @@ export class SummaryController {
     return this.summaryService.getOrderStatusSummary(
       query.mode,
       req.user.organization_id,
+      req.user.id,
     );
   }
 }

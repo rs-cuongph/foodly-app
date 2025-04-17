@@ -119,12 +119,22 @@ const UpdateGroupForm = forwardRef<UpdateGroupFormRef, UpdateGroupFormProps>(
 
       if (isSamePrice.includes('1')) {
         menuItems.forEach((menu, index) => {
-          updateMenu(index, { name: menu.name, price: null });
+          updateMenu(index, {
+            _id: menu._id,
+            name: menu.name,
+            price: null,
+            _destroy: menu._destroy,
+          });
         });
         setValue('price', menuItems[0].price);
       } else {
         menuItems.forEach((menu, index) => {
-          updateMenu(index, { name: menu.name, price: price });
+          updateMenu(index, {
+            _id: menu._id,
+            name: menu.name,
+            price: price,
+            _destroy: menu._destroy,
+          });
         });
         setValue('price', 0);
       }

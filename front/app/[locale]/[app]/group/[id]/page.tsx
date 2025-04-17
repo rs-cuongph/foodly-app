@@ -93,6 +93,7 @@ export default function GroupDetail() {
     try {
       setInviteCodes((prev) => ({ ...prev, [id!.toString()]: invite_code }));
       setAllowLoadGroup(true);
+      setOpenInviteCodeModal(false);
     } catch (error) {
       throw error;
     }

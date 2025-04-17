@@ -61,7 +61,11 @@ export class SummaryService {
    * 5. Tính tổng số lượng order và tổng tiền
    * 6. Gộp kết quả với mảng thời gian để đảm bảo đủ dữ liệu
    */
-  async getOrderAmountSummary(mode: SummaryMode, organization_id?: string) {
+  async getOrderAmountSummary(
+    mode: SummaryMode,
+    organization_id: string,
+    user_id: string,
+  ): Promise<OrderAmountSummaryResponse[]> {
     const now = dayjs();
     let startDate: Date;
     let timeIntervals: Date[] = [];
@@ -108,6 +112,7 @@ export class SummaryService {
         WHERE created_at >= ${startDate}
         AND deleted_at IS NULL
         ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+        ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = "Order".group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       )
       SELECT
         grouped_date as date,
@@ -123,6 +128,7 @@ export class SummaryService {
       WHERE o.created_at >= ${startDate}
       AND o.deleted_at IS NULL
       ${organization_id ? Prisma.sql`AND o.organization_id = ${organization_id}` : Prisma.empty}
+      ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = o.group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       GROUP BY grouped_date
       ORDER BY date ASC
     `) as AmountResult[];
@@ -166,7 +172,8 @@ export class SummaryService {
    */
   async getOrderCountSummary(
     mode: SummaryMode,
-    organization_id?: string,
+    organization_id: string,
+    user_id: string,
   ): Promise<OrderCountSummaryResponse[]> {
     const now = dayjs();
     let startDate: Date;
@@ -218,6 +225,7 @@ export class SummaryService {
         WHERE created_at >= ${startDate}
         AND deleted_at IS NULL
         ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+        ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = "Order".group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       )
       SELECT
         grouped_date as date,
@@ -232,6 +240,7 @@ export class SummaryService {
       WHERE o.created_at >= ${startDate}
       AND o.deleted_at IS NULL
       ${organization_id ? Prisma.sql`AND o.organization_id = ${organization_id}` : Prisma.empty}
+      ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = o.group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       GROUP BY grouped_date
       ORDER BY date ASC
     `) as PeriodResult[];
@@ -249,6 +258,7 @@ export class SummaryService {
         AND created_at < ${startDate}
         AND deleted_at IS NULL
         ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+        ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = "Order".group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       )
       SELECT
         grouped_date as date,
@@ -264,6 +274,7 @@ export class SummaryService {
       AND o.created_at < ${startDate}
       AND o.deleted_at IS NULL
       ${organization_id ? Prisma.sql`AND o.organization_id = ${organization_id}` : Prisma.empty}
+      ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = o.group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       GROUP BY grouped_date
       ORDER BY date ASC
     `) as PeriodResult[];
@@ -328,7 +339,8 @@ export class SummaryService {
    */
   async getOrderStatusSummary(
     mode: SummaryMode,
-    organization_id?: string,
+    organization_id: string,
+    user_id: string,
   ): Promise<OrderStatusSummaryResponse[]> {
     const now = dayjs();
     let startDate: Date;
@@ -353,6 +365,7 @@ export class SummaryService {
         WHERE created_at >= ${startDate}
         AND deleted_at IS NULL
         ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+        ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = "Order".group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
       ),
       status_counts AS (
         SELECT
@@ -362,6 +375,7 @@ export class SummaryService {
         WHERE created_at >= ${startDate}
         AND deleted_at IS NULL
         ${organization_id ? Prisma.sql`AND organization_id = ${organization_id}` : Prisma.empty}
+        ${user_id ? Prisma.sql`AND EXISTS (SELECT 1 FROM "Group" g WHERE g.id = "Order".group_id AND g.created_by_id = ${user_id})` : Prisma.empty}
         GROUP BY status
       )
       SELECT

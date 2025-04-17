@@ -545,7 +545,7 @@ export class GroupService {
     }
   }
 
-  async checkGroupIsPrivate(id: string) {
+  async checkGroupIsPrivate(id: string, user: RequestWithUser['user'] | null) {
     const group = await this.prismaService.client.group.findFirst({
       where: {
         id,
@@ -565,10 +565,18 @@ export class GroupService {
       };
     }
 
-    if (group.status === GroupStatus.LOCKED) {
+    if (user && group.created_by_id === user.id) {
+      return {
+        canAccess: true,
+        isOwner: true,
+      };
+    }
+
+    if (group.status === GroupStatus.LOCKED && user) {
       const hasOrder = await this.prismaService.client.order.findFirst({
         where: {
           group_id: id,
+          created_by_id: user.id,
         },
       });
 
