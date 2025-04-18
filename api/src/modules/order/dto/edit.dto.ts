@@ -22,7 +22,7 @@ export class EditOrderDTO {
   @NumberField({
     max: 20,
   })
-  quanlity: number;
+  quantity: number;
 
   @ArrayField({
     type: () => Menu,

@@ -141,11 +141,11 @@ export class OrderService {
       const isSamePrice = Number(group.price) > 0;
       if (isSamePrice) {
         price = Number(group.price);
-        amount = body.quanlity * price;
+        amount = body.quantity * price;
       } else {
         amount =
           menu.reduce((prev, curr) => prev + Number(curr.price), 0) *
-          body.quanlity;
+          body.quantity;
       }
 
       const newTransaction = await tx.transaction.create({
@@ -156,7 +156,7 @@ export class OrderService {
           total_amount: amount,
           metadata: {
             payment_setting: body.payment_setting[0],
-            quanlity: body.quanlity,
+            quantity: body.quantity,
             amount,
           },
           unique_code: this.generateUniqueCode(),
@@ -172,7 +172,7 @@ export class OrderService {
           updated_by_id: user.id,
           status: OrderStatus.INIT,
           payment_method: body.payment_setting[0].payment_method,
-          quantity: body.quanlity,
+          quantity: body.quantity,
           price,
           amount,
           note: body.note,
@@ -254,11 +254,11 @@ export class OrderService {
 
       if (isSamePrice) {
         price = Number(order.group.price);
-        amount = body.quanlity * price;
+        amount = body.quantity * price;
       } else {
         amount =
           menu.reduce((prev, curr) => prev + Number(curr.price), 0) *
-          body.quanlity;
+          body.quantity;
       }
 
       await tx.order.update({
@@ -268,7 +268,7 @@ export class OrderService {
         data: {
           price,
           amount,
-          quantity: body.quanlity,
+          quantity: body.quantity,
           menu: body.menu,
           updated_by_id: user.id,
           note: body.note,
@@ -283,7 +283,7 @@ export class OrderService {
         data: {
           metadata: {
             payment_setting: transaction.metadata['payment_setting'],
-            quanlity: body.quanlity,
+            quantity: body.quantity,
             amount,
           },
         },
@@ -792,7 +792,7 @@ export class OrderService {
                 price: i.price,
                 payment_method: i.payment_method,
               })),
-              quanlity: ordersNotPay.reduce(
+              quantity: ordersNotPay.reduce(
                 (prev, curr) => prev + Number(curr.quantity),
                 0,
               ),

@@ -8,12 +8,14 @@ export enum FormType {
   CREATE_GROUP = 'createGroup',
   CONFIRM = 'modalConfirm',
   UPDATE_GROUP = 'updateGroup',
+  UPSERT_ORDER = 'upsertOrder',
 }
 
 export enum ModalType {
   AUTH = 'modalAuth',
   CREATE_GROUP = 'modalUpsertGroup',
   CONFIRM = 'modalConfirm',
+  UPSERT_ORDER = 'modalUpsertOrder',
 }
 
 interface CommonStore {
@@ -33,6 +35,11 @@ interface CommonStore {
     isLoadingConfirm: boolean;
     selectedForm: FormType;
     kind: ConfirmModalKind;
+  };
+  modalUpsertOrder: {
+    isOpen: boolean;
+    isLoadingConfirm: boolean;
+    selectedForm: FormType;
   };
   // Actions
   setIsOpen: (isOpen: boolean, modal: ModalType, form?: FormType) => void;
@@ -60,6 +67,11 @@ export const useCommonStore = create<CommonStore>((set) => ({
     isLoadingConfirm: false,
     selectedForm: FormType.CREATE_GROUP,
   },
+  modalUpsertOrder: {
+    isOpen: false,
+    isLoadingConfirm: false,
+    selectedForm: FormType.UPSERT_ORDER,
+  },
   // Actions
   setIsOpen: (isOpen, modal, form = undefined) =>
     set((state) => {
@@ -77,6 +89,14 @@ export const useCommonStore = create<CommonStore>((set) => ({
             ...state.modalUpsertGroup,
             isOpen,
             selectedForm: form || state.modalUpsertGroup.selectedForm,
+          },
+        };
+      } else if (modal === ModalType.UPSERT_ORDER) {
+        return {
+          modalUpsertOrder: {
+            ...state.modalUpsertOrder,
+            isOpen,
+            selectedForm: form || state.modalUpsertOrder.selectedForm,
           },
         };
       }
@@ -99,6 +119,13 @@ export const useCommonStore = create<CommonStore>((set) => ({
             selectedForm: form,
           },
         };
+      } else if (modal === ModalType.UPSERT_ORDER) {
+        return {
+          modalUpsertOrder: {
+            ...state.modalUpsertOrder,
+            selectedForm: form,
+          },
+        };
       }
 
       return state;
@@ -117,6 +144,14 @@ export const useCommonStore = create<CommonStore>((set) => ({
         return {
           modalUpsertGroup: {
             ...state.modalUpsertGroup,
+            isOpen: true,
+            selectedForm: form,
+          },
+        };
+      } else if (modal === ModalType.UPSERT_ORDER) {
+        return {
+          modalUpsertOrder: {
+            ...state.modalUpsertOrder,
             isOpen: true,
             selectedForm: form,
           },
@@ -143,6 +178,14 @@ export const useCommonStore = create<CommonStore>((set) => ({
             selectedForm: FormType.CREATE_GROUP,
           },
         };
+      } else if (modal === ModalType.UPSERT_ORDER) {
+        return {
+          modalUpsertOrder: {
+            ...state.modalUpsertOrder,
+            isOpen: false,
+            selectedForm: FormType.UPSERT_ORDER,
+          },
+        };
       }
 
       return state;
@@ -160,6 +203,13 @@ export const useCommonStore = create<CommonStore>((set) => ({
         return {
           modalUpsertGroup: {
             ...state.modalUpsertGroup,
+            isLoadingConfirm,
+          },
+        };
+      } else if (modal === ModalType.UPSERT_ORDER) {
+        return {
+          modalUpsertOrder: {
+            ...state.modalUpsertOrder,
             isLoadingConfirm,
           },
         };

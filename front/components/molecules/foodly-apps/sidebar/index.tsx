@@ -302,7 +302,7 @@ export function Sidebar() {
           </div>
         </div>
       </div>
-      <div className="md:hidden bg-white rounded-full px-2 py-2 absolute bottom-4 w-[calc(100%-2rem)] mx-auto left-0 right-0">
+      <div className="md:hidden bg-white rounded-full px-2 py-2 absolute bottom-4 w-[calc(100%-2rem)] mx-auto left-0 right-0 drop-shadow-xl">
         <div className="flex gap-2 items-center justify-between">
           <div>
             {isLogin ? (

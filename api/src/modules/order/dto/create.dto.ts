@@ -43,7 +43,7 @@ export class CreateOrderDTO {
   @NumberField({
     max: 20,
   })
-  quanlity: number;
+  quantity: number;
 
   @ArrayField({
     type: () => PaymentSettingDTO,
