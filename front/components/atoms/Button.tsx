@@ -1,4 +1,5 @@
 import { Button, ButtonProps } from '@heroui/react';
+import clsx from 'clsx';
 import { omit } from 'lodash';
 import { forwardRef } from 'react';
 
@@ -22,6 +23,10 @@ export const MyButton = forwardRef<HTMLButtonElement, MyButtonProps>(
         size="md"
         {...omit(props, ['onClick', 'onPress'])}
         ref={ref}
+        className={clsx(props.className, {
+          'opacity-50': props.disabled,
+          'cursor-not-allowed': props.disabled,
+        })}
         {...event}
       />
     );

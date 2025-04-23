@@ -55,7 +55,11 @@
     "share": "Share",
     "delete": "Delete",
     "see_less": "see less",
-    "see_more": "see more"
+    "see_more": "see more",
+    "next": "Next",
+    "back": "Back",
+    "paid": "Pay",
+    "i_paid": "I Paid"
   },
   "sign_in_modal": {
     "organization_code": "Organization Code",
@@ -120,6 +124,12 @@
       "invite_code": "Invite Code"
     }
   },
+  "order_modal": {
+    "note": "Note",
+    "note_placeholder": "Enter your note",
+    "payment_method": "Payment Method",
+    "payment_method_placeholder": "Select your payment method"
+  },
   "home": {
     "filter": {
       "share_scope": "Share Scope",
@@ -173,7 +183,11 @@
       "menu_name": "Menu Name",
       "menu_price": "Menu Price",
       "price": "Price",
-      "invite_code": "Invite Code"
+      "invite_code": "Invite Code",
+      "note": "Note",
+      "account_name": "Account Name",
+      "account_number": "Account Number",
+      "payment_method": "Payment Method"
     }
   },
   "system_message": {

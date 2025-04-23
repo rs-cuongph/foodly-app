@@ -66,3 +66,17 @@ export type OrderListResponse = {
   total_quantity: number;
   total_amount: number;
 };
+
+export type CreateOrderParams = {
+  group_id: string;
+  quantity: number;
+  note: string;
+  payment_method: {
+    account_name: string;
+    account_number: string;
+    payment_method: string;
+  }[];
+  menu: {
+    id: string;
+  }[];
+};

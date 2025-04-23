@@ -236,7 +236,10 @@ export default function GroupDetail() {
                     >
                       <ul className="list-inside list-disc space-y-1 pl-4">
                         {groupInfo?.menu_items
-                          .slice(0, showMoreItems ? 5 : 3)
+                          .slice(
+                            0,
+                            showMoreItems ? groupInfo.menu_items.length : 3,
+                          )
                           .map((item, index) => (
                             <li
                               key={index}

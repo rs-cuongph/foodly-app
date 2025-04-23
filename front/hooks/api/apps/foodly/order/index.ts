@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { OrderListParams, OrderListResponse } from './type';
+import { CreateOrderParams, OrderListParams, OrderListResponse } from './type';
 
 import { siteConfig } from '@/config/site';
 import { apiClient } from '@/plugins/axios';
@@ -32,6 +32,10 @@ export const useGetOrderListQuery = (
     enabled,
     placeholderData: keepPreviousData,
   });
+};
+
+export const createOrderApi = (data: CreateOrderParams) => {
+  return apiClient.post(siteConfig.apps.foodly.apiRoutes.order.create, data);
 };
 
 export const markPaidApi = (orderId: number) => {
@@ -139,6 +143,17 @@ export const useConfirmPaidAllMutation = () => {
       includeIds: string[];
       excludeIds: string[];
     }) => confirmPaidAllApi(includeIds, excludeIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['order-list'] });
+    },
+  });
+};
+
+export const useCreateOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateOrderParams) => createOrderApi(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order-list'] });
     },

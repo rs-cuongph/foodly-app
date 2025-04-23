@@ -8,7 +8,9 @@ export enum FormType {
   CREATE_GROUP = 'createGroup',
   CONFIRM = 'modalConfirm',
   UPDATE_GROUP = 'updateGroup',
-  UPSERT_ORDER = 'upsertOrder',
+  SETTING_ORDER = 'settingOrder',
+  SETTING_PAYMENT = 'settingPayment',
+  QR_CODE = 'qrCode',
 }
 
 export enum ModalType {
@@ -70,7 +72,7 @@ export const useCommonStore = create<CommonStore>((set) => ({
   modalUpsertOrder: {
     isOpen: false,
     isLoadingConfirm: false,
-    selectedForm: FormType.UPSERT_ORDER,
+    selectedForm: FormType.SETTING_ORDER,
   },
   // Actions
   setIsOpen: (isOpen, modal, form = undefined) =>
@@ -183,7 +185,7 @@ export const useCommonStore = create<CommonStore>((set) => ({
           modalUpsertOrder: {
             ...state.modalUpsertOrder,
             isOpen: false,
-            selectedForm: FormType.UPSERT_ORDER,
+            selectedForm: FormType.SETTING_ORDER,
           },
         };
       }
