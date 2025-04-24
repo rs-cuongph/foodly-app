@@ -27,7 +27,6 @@ const SettingOrderForm = forwardRef<SettingOrderFormRef, SettingOrderFormProps>(
     const formRef = useRef<HTMLFormElement>(null);
     const { groupInfo } = useGroupStore();
     const { errors } = formState;
-    const menu = watch('menu');
     const quantity = watch('quantity');
 
     const handlePlus = () => {
@@ -69,10 +68,11 @@ const SettingOrderForm = forwardRef<SettingOrderFormRef, SettingOrderFormProps>(
         <div className="w-full flex flex-col gap-4">
           <div>
             <p>
-              <span className="text-md ">Thực đơn:</span>{' '}
+              <span className="text-md ">{t('order_modal.menu')}:</span>{' '}
               {isSamePrice && (
                 <span className="text-md text-danger-400">
-                  (Đồng giá {commaFormat(Number(groupInfo?.price))})
+                  ({t('order_modal.same_price')}{' '}
+                  {commaFormat(Number(groupInfo?.price))})
                 </span>
               )}
             </p>
@@ -90,7 +90,7 @@ const SettingOrderForm = forwardRef<SettingOrderFormRef, SettingOrderFormProps>(
           </div>
           <div>
             <p>
-              <span className="text-md ">Số lượng:</span>{' '}
+              <span className="text-md ">{t('order_modal.quantity')}:</span>{' '}
             </p>
             <div className="ml-4 mt-4">
               <div className="flex flex-row items-center border border-primary rounded-xl w-fit px-2 py-1">

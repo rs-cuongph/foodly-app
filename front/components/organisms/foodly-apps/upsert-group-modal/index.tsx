@@ -55,6 +55,8 @@ export default function UpsertGroupModal() {
 
   return (
     <Modal
+      backdrop="blur"
+      isDismissable={false}
       isOpen={modalUpsertGroup.isOpen}
       size="2xl"
       onClose={() => closeModal(ModalType.CREATE_GROUP)}

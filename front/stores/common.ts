@@ -35,6 +35,7 @@ interface CommonStore {
   modalConfirm: {
     isOpen: boolean;
     isLoadingConfirm: boolean;
+    data: any | null;
     selectedForm: FormType;
     kind: ConfirmModalKind;
   };
@@ -66,6 +67,7 @@ export const useCommonStore = create<CommonStore>((set) => ({
   modalConfirm: {
     kind: 'delete',
     isOpen: false,
+    data: null,
     isLoadingConfirm: false,
     selectedForm: FormType.CREATE_GROUP,
   },

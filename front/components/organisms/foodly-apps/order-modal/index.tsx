@@ -21,6 +21,7 @@ import { FormProvider } from 'react-hook-form';
 
 import SettingOrderForm, { SettingOrderFormProps } from './setting-order-form';
 import SettingPaymentForm from './setting-payment-form';
+import SettingQR from './setting-qr';
 import { OrderModalStep } from './step';
 import useSettingOrderForm from './yup-form/setting-order.yup';
 
@@ -30,13 +31,14 @@ import {
   useMarkPaidMutation,
 } from '@/hooks/api/apps/foodly/order';
 import { useSystemToast } from '@/hooks/toast';
+import { handleErrFromApi } from '@/shared/helper/validation';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 import { useGroupStore } from '@/stores/group';
 
 interface FormConfig {
   title: string;
   component: ForwardRefExoticComponent<
-    SettingOrderFormProps & RefAttributes<any>
+    SettingOrderFormProps & RefAttributes<any> & { qrCode: string | null }
   >;
   showInNav?: boolean;
 }
@@ -51,26 +53,38 @@ export default function OrderModal() {
   const t = useTranslations();
   const formRef = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
-  const { modalUpsertOrder, closeModal, setIsOpen, setSelectedForm } =
-    useCommonStore();
+  const {
+    modalUpsertOrder,
+    closeModal,
+    setIsOpen,
+    setSelectedForm,
+    setIsLoadingConfirm,
+  } = useCommonStore();
   const { groupInfo } = useGroupStore();
   const { showError, showSuccess } = useSystemToast();
   const { mutateAsync: markPaid } = useMarkPaidMutation();
   const { mutateAsync: createOrder } = useCreateOrderMutation();
   const methods = useSettingOrderForm();
-  const { control, getValues, setValue, formState, watch } = methods;
+  const { getValues, watch, setError, reset } = methods;
   const [buttonCancelText, setButtonCancelText] = useState(t('button.close'));
   const [buttonConfirmText, setButtonConfirmText] = useState(t('button.next'));
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const formRegistry: Record<string, FormConfig> = {
     [FormType.SETTING_ORDER]: {
-      title: t('common.modal_title.sign_in'),
+      title: t('common.modal_title.create_order'),
       component: SettingOrderForm,
       showInNav: true,
     },
     [FormType.SETTING_PAYMENT]: {
-      title: t('common.modal_title.sign_up'),
+      title: t('common.modal_title.create_order'),
       component: SettingPaymentForm,
+      showInNav: true,
+    },
+    [FormType.QR_CODE]: {
+      title: t('common.modal_title.create_order'),
+      component: SettingQR,
       showInNav: true,
     },
   };
@@ -123,22 +137,52 @@ export default function OrderModal() {
 
     if (modalUpsertOrder.selectedForm === FormType.SETTING_PAYMENT) {
       if (!groupInfo) return;
-      await createOrder({
-        group_id: groupInfo.id,
-        menu: watchMenu,
-        quantity: getValues('quantity') || 1,
-        note: getValues('note'),
-        payment_method: watchPaymentSetting,
-      });
 
-      setSelectedForm(FormType.QR_CODE, ModalType.UPSERT_ORDER);
-      setButtonCancelText(t('button.close'));
-      setButtonConfirmText(t('button.i_paid'));
-      setStep(3);
+      try {
+        setIsLoadingConfirm(true, ModalType.UPSERT_ORDER);
+        const response = await createOrder({
+          group_id: groupInfo.id,
+          menu: getValues('menu').map((item) => ({ id: item })),
+          quantity: getValues('quantity') || 1,
+          note: getValues('note'),
+          payment_setting: [JSON.parse(getValues('payment_setting'))],
+        });
+
+        showSuccess(t('system_message.success.create_order'));
+        setOrderId(response.data.id);
+        setQrCode(response.data.transaction.unique_code);
+        setSelectedForm(FormType.QR_CODE, ModalType.UPSERT_ORDER);
+        setButtonCancelText(t('button.close'));
+        setButtonConfirmText(t('button.i_paid'));
+        setStep(3);
+      } catch (error) {
+        handleErrFromApi(error, setError, showError);
+      } finally {
+        setIsLoadingConfirm(false, ModalType.UPSERT_ORDER);
+      }
 
       return;
     }
+
+    if (modalUpsertOrder.selectedForm === FormType.QR_CODE) {
+      setIsLoadingConfirm(true, ModalType.UPSERT_ORDER);
+      try {
+        if (!orderId) return;
+
+        await markPaid(orderId);
+      } catch (error) {
+        handleErrFromApi(error, setError, showError);
+      } finally {
+        closeModal(ModalType.UPSERT_ORDER);
+      }
+    }
   };
+
+  useEffect(() => {
+    if (modalUpsertOrder.isOpen) {
+      reset();
+    }
+  }, [modalUpsertOrder.isOpen]);
 
   useEffect(() => {
     const modal = searchParams.get('modal') as FormType;
@@ -149,11 +193,15 @@ export default function OrderModal() {
     ) {
       setIsOpen(true, ModalType.UPSERT_ORDER, modal);
     }
+
+    return () => {};
   }, []);
 
   return (
     <Modal
-      isOpen={true}
+      backdrop="blur"
+      isDismissable={false}
+      isOpen={modalUpsertOrder.isOpen}
       size="3xl"
       onClose={() => closeModal(ModalType.UPSERT_ORDER)}
     >
@@ -174,7 +222,7 @@ export default function OrderModal() {
                 initial="initial"
                 variants={box}
               >
-                <CurrentForm ref={formRef} methods={methods} />
+                <CurrentForm ref={formRef} methods={methods} qrCode={qrCode} />
               </motion.div>
             </AnimatePresence>
           </FormProvider>

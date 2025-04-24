@@ -17,7 +17,11 @@
     "lock": "Khóa",
     "see_less": "Xem ít hơn",
     "see_more": "Xem thêm",
-    "share": "Chia sẻ"
+    "share": "Chia sẻ",
+    "back": "Mặt sau",
+    "i_paid": "Tôi đã trả tiền",
+    "next": "Kế tiếp",
+    "paid": "Chi trả"
   },
   "common": {
     "empty": "Không có dữ liệu có sẵn.",
@@ -27,7 +31,9 @@
       "sign_up": "Đăng ký",
       "confirm_delete": "Xác nhận xóa",
       "confirm_lock": "Xác nhận khóa",
-      "update_group": "Chỉnh sửa nhóm"
+      "update_group": "Chỉnh sửa nhóm",
+      "create_order": "Tạo đơn hàng",
+      "confirm_paid": "Xác nhận thanh toán"
     },
     "placeholder": {
       "select": "Lựa chọn"
@@ -39,7 +45,8 @@
     },
     "modal_description": {
       "confirm_delete": "Bạn có chắc là bạn muốn xóa nhóm này?",
-      "confirm_lock": "Bạn có chắc là bạn muốn khóa nhóm này?"
+      "confirm_lock": "Bạn có chắc là bạn muốn khóa nhóm này?",
+      "confirm_paid": "Bạn có chắc là bạn muốn xác nhận thanh toán này?"
     },
     "order_table": {
       "total": "{Total} đơn đặt hàng ({số lượng})"
@@ -124,7 +131,9 @@
       "delete_group": "Xóa thành công nhóm",
       "invite_code_success": "Tham gia thành công nhóm",
       "lock_group": "Khóa thành công của nhóm",
-      "update_group_success": "Cập nhật thành công nhóm"
+      "update_group_success": "Cập nhật thành công nhóm",
+      "create_order": "Tạo đơn hàng thành công",
+      "confirm_paid": "Xác nhận thanh toán thành công"
     }
   },
   "upsert_group_modal": {
@@ -167,7 +176,11 @@
       "share_scope": "Phạm vi chia sẻ",
       "start_date": "Phạm vi ngày công khai",
       "type": "Kiểu",
-      "invite_code": "Mời mã"
+      "invite_code": "Mời mã",
+      "account_name": "Tên tài khoản",
+      "account_number": "Số tài khoản",
+      "note": "Ghi chú",
+      "payment_method": "Phương thức thanh toán"
     },
     "max": "{field} cần nhỏ hơn hoặc bằng {max} ký tự",
     "max_num": "{field} cần phải nhỏ hơn hoặc bằng {max}",
@@ -213,5 +226,22 @@
         "display_name": "Tên"
       }
     }
+  },
+  "order_modal": {
+    "note": "Ghi chú",
+    "note_placeholder": "Nhập ghi chú của bạn",
+    "payment_method": "Phương thức thanh toán",
+    "payment_method_placeholder": "Chọn phương thức thanh toán của bạn",
+    "step": {
+      "note": "Ghi chú",
+      "payment": "Sự chi trả",
+      "select_dishes": "Chọn món ăn"
+    },
+    "menu": "Thực đơn",
+    "quantity": "Số lượng",
+    "same_price": "Cùng giá",
+    "scan_with_bank_app": "Sử dụng app ngân hàng để quét mã",
+    "product_info": "Thông Tin",
+    "qr_code_not_available": "Mã QR không khả dụng"
   }
 }

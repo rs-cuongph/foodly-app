@@ -65,10 +65,10 @@ export class ConfirmPaidAllDTO {
 }
 
 export class ConfirmPaidDTO {
-  @StringField({
-    maxLength: 255,
-  })
-  qr_code: string;
+  // @StringField({
+  //   maxLength: 255,
+  // })
+  // qr_code: string;
 }
 
 export class CancelOrderDTO {

@@ -17,13 +17,19 @@ import {
   useDeleteGroupMutation,
   useLockGroupMutation,
 } from '@/hooks/api/apps/foodly/group';
+import { useConfirmPaidMutation } from '@/hooks/api/apps/foodly/order';
 import { useSystemToast } from '@/hooks/toast';
 import { useRouter } from '@/i18n/navigation';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { useCommonStore } from '@/stores/common';
 import { useGroupStore } from '@/stores/group';
 
-export type ConfirmModalKind = 'delete' | 'lock' | 'update';
+export type ConfirmModalKind =
+  | 'delete'
+  | 'lock'
+  | 'update'
+  | 'confirm_paid'
+  | 'cancel_order';
 
 export interface ConfirmModalConfig {
   title: string;
@@ -50,6 +56,8 @@ export default function ConfirmModal() {
     useLockGroupMutation();
   const { mutateAsync: deleteGroup, isPending: isPendingDelete } =
     useDeleteGroupMutation();
+  const { mutateAsync: confirmPaid, isPending: isPendingConfirmPaid } =
+    useConfirmPaidMutation();
   const { showSuccess, showError } = useSystemToast();
   const { groupInfo } = useGroupStore();
   const { modalConfirm, setModalConfirm } = useCommonStore();
@@ -114,6 +122,30 @@ export default function ConfirmModal() {
             }
           },
         };
+      case 'confirm_paid':
+        return {
+          title: t('common.modal_title.confirm_paid'),
+          description: t('common.modal_description.confirm_paid'),
+          color: 'primary',
+          variant: 'solid',
+          alertStatus: 'primary',
+          confirmText: t('button.confirm'),
+          cancelText: t('button.close'),
+          onCancel: () => setModalConfirm({ isOpen: false }),
+          onConfirm: async () => {
+            if (!modalConfirm.data?.orderId) return;
+            try {
+              await confirmPaid(modalConfirm.data.orderId);
+              showSuccess(t('system_message.success.confirm_paid'));
+            } catch (error) {
+              handleErrFromApi(error, undefined, showError, {
+                title: t('common.modal_title.confirm_paid'),
+              });
+            } finally {
+              setModalConfirm({ isOpen: false });
+            }
+          },
+        };
       default:
         return undefined;
     }
@@ -124,6 +156,7 @@ export default function ConfirmModal() {
   return (
     <Modal
       backdrop="blur"
+      isDismissable={false}
       isOpen={isOpen}
       placement="center"
       size="md"
@@ -155,7 +188,7 @@ export default function ConfirmModal() {
           <MyButton
             className="min-w-24"
             color={modalConfig?.alertStatus}
-            isLoading={isPendingLock || isPendingDelete}
+            isLoading={isPendingLock || isPendingDelete || isPendingConfirmPaid}
             onPress={modalConfig?.onConfirm}
           >
             {modalConfig?.confirmText}

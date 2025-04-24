@@ -5,7 +5,12 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { CreateOrderParams, OrderListParams, OrderListResponse } from './type';
+import {
+  CreateOrderParams,
+  CreateOrderResponse,
+  OrderListParams,
+  OrderListResponse,
+} from './type';
 
 import { siteConfig } from '@/config/site';
 import { apiClient } from '@/plugins/axios';
@@ -35,29 +40,32 @@ export const useGetOrderListQuery = (
 };
 
 export const createOrderApi = (data: CreateOrderParams) => {
-  return apiClient.post(siteConfig.apps.foodly.apiRoutes.order.create, data);
+  return apiClient.post<CreateOrderResponse>(
+    siteConfig.apps.foodly.apiRoutes.order.create,
+    data,
+  );
 };
 
-export const markPaidApi = (orderId: number) => {
+export const markPaidApi = (orderId: string) => {
   return apiClient.patch(
     formatRoute(siteConfig.apps.foodly.apiRoutes.order.mark_paid, {
-      order_id: orderId,
+      id: orderId,
     }),
   );
 };
 
-export const cancelApi = (orderId: number) => {
+export const cancelApi = (orderId: string) => {
   return apiClient.delete(
     formatRoute(siteConfig.apps.foodly.apiRoutes.order.cancel, {
-      order_id: orderId,
+      id: orderId,
     }),
   );
 };
 
-export const confirmPaidApi = (orderId: number) => {
+export const confirmPaidApi = (orderId: string) => {
   return apiClient.patch(
     formatRoute(siteConfig.apps.foodly.apiRoutes.order.confirm_paid, {
-      order_id: orderId,
+      id: orderId,
     }),
   );
 };
@@ -86,7 +94,7 @@ export const useCancelMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: number) => cancelApi(orderId),
+    mutationFn: (orderId: string) => cancelApi(orderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order-list'] });
     },
@@ -97,7 +105,7 @@ export const useMarkPaidMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: number) => markPaidApi(orderId),
+    mutationFn: (orderId: string) => markPaidApi(orderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order-list'] });
     },
@@ -108,7 +116,7 @@ export const useConfirmPaidMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: number) => confirmPaidApi(orderId),
+    mutationFn: (orderId: string) => confirmPaidApi(orderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order-list'] });
     },

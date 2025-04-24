@@ -8,6 +8,7 @@ import {
 import { ORDER_STATUS_ENUM } from '@/config/constant';
 import { OrderListItem } from '@/hooks/api/apps/foodly/order/type';
 import { useRole } from '@/hooks/apps/foodly/role';
+import { useCommonStore } from '@/stores/common';
 
 type OrderActionTableProps = {
   order: OrderListItem;
@@ -23,7 +24,7 @@ type Action = {
 
 const OrderActionTable = (props: OrderActionTableProps) => {
   const { order } = props;
-
+  const { setModalConfirm } = useCommonStore();
   const { isGroupOwner, isOrderOwner, isGroupLocked } = useRole();
 
   const checkIncludes = (statuses: ORDER_STATUS_ENUM[], status: string) => {
@@ -32,7 +33,7 @@ const OrderActionTable = (props: OrderActionTableProps) => {
 
   const actions: Action[] = [
     {
-      key: 'confirm_paid',
+      key: 'mark_paid',
       color: 'primary',
       icon: <QRCodeIcon className="h-6 w-6 text-primary" />,
       isShow:
@@ -44,7 +45,7 @@ const OrderActionTable = (props: OrderActionTableProps) => {
       onPress: () => {},
     },
     {
-      key: 'mark_paid',
+      key: 'confirm_paid',
       color: 'success',
       icon: <CheckCircleIcon className="h-6 w-6 text-green-500" />,
       isShow:
@@ -53,7 +54,14 @@ const OrderActionTable = (props: OrderActionTableProps) => {
           [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
           order.status,
         ),
-      onPress: () => {},
+      onPress: () => {
+        console.log('order', order);
+        setModalConfirm({
+          isOpen: true,
+          kind: 'confirm_paid',
+          data: { orderId: order.id },
+        });
+      },
     },
     {
       key: 'cancel',
@@ -98,7 +106,7 @@ const OrderActionTable = (props: OrderActionTableProps) => {
           isIconOnly
           color={action.color}
           variant="light"
-          onClick={action.onPress}
+          onPress={action.onPress}
         >
           {action.icon}
         </MyButton>

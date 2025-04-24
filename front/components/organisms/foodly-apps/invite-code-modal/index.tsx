@@ -68,7 +68,13 @@ export default function InviteCodeModal({
   }, []);
 
   return (
-    <Modal isOpen={isOpen} size="2xl" onClose={onClose}>
+    <Modal
+      backdrop="blur"
+      isDismissable={false}
+      isOpen={isOpen}
+      size="2xl"
+      onClose={onClose}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 text-center">
           <h3 className="text-lg font-semibold">

@@ -71,7 +71,7 @@ export type CreateOrderParams = {
   group_id: string;
   quantity: number;
   note: string;
-  payment_method: {
+  payment_setting: {
     account_name: string;
     account_number: string;
     payment_method: string;
@@ -79,4 +79,52 @@ export type CreateOrderParams = {
   menu: {
     id: string;
   }[];
+};
+
+export type CreateOrderResponse = {
+  id: string;
+  quantity: number;
+  status: string;
+  payment_method: string;
+  price: string;
+  amount: string;
+  menu: Array<{
+    id: string;
+    name: string;
+    price: number;
+    group_id: string;
+    created_at: string;
+    deleted_at: null | string;
+    updated_at: string;
+  }>;
+  group_id: string;
+  note: string;
+  created_by_id: string;
+  updated_by_id: string;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: null | string;
+  transaction_id: string;
+  transaction: {
+    id: string;
+    status: string;
+    type: string;
+    unique_code: string;
+    total_amount: string;
+    metadata: {
+      amount: number;
+      quantity: number;
+      payment_setting: {
+        account_name: string;
+        account_number: string;
+        payment_method: string;
+      };
+    };
+    reason_cancel: null | string;
+    created_at: string;
+    updated_at: string;
+    created_by_id: null | string;
+    organization_id: string;
+  };
 };

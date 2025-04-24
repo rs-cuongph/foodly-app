@@ -78,7 +78,11 @@ export default function SignInUpModal() {
   }, []);
 
   return (
-    <Modal isOpen={modalAuth.isOpen} onClose={() => closeModal(ModalType.AUTH)}>
+    <Modal
+      isDismissable={false}
+      isOpen={modalAuth.isOpen}
+      onClose={() => closeModal(ModalType.AUTH)}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 text-center">
           <h3 className="text-lg font-semibold">

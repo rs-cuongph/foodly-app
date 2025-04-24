@@ -6,14 +6,10 @@ import * as yup from 'yup';
 import { createI18nYupSchema } from '@/shared/yup-validate/i18n-validate-helper';
 
 export type SettingOrderSchemaType = {
-  menu: { id: string }[];
+  menu: string[];
   quantity: number | null;
   note: string;
-  payment_setting: {
-    account_name: string;
-    account_number: string;
-    payment_method: string;
-  }[];
+  payment_setting: string;
 };
 
 export const useSettingOrderSchema = () => {
@@ -22,20 +18,10 @@ export const useSettingOrderSchema = () => {
 
   // Create a schema that exactly matches SignInSchemaType
   const schema = yupInstance.object().shape({
-    menu: yupInstance.array().of(
-      yupInstance.object().shape({
-        id: yupInstance.string().label('menu_id').required(),
-      }),
-    ),
+    menu: yupInstance.array().nullable(),
     quantity: yupInstance.number().required().min(1).max(20),
     note: yupInstance.string().label('note').required().max(500),
-    payment_setting: yupInstance.array().of(
-      yupInstance.object().shape({
-        account_name: yupInstance.string().label('account_name').required(),
-        account_number: yupInstance.string().label('account_number').required(),
-        payment_method: yupInstance.string().label('payment_method').required(),
-      }),
-    ),
+    payment_setting: yupInstance.string().nullable(),
   });
 
   return schema as yup.ObjectSchema<SettingOrderSchemaType>;
@@ -49,7 +35,7 @@ const useSettingOrderForm = () => {
       menu: [],
       quantity: 1,
       note: '',
-      payment_setting: [],
+      payment_setting: '',
     },
   });
 

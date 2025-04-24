@@ -72,7 +72,7 @@ const SettingPaymentForm = forwardRef<
             <MySelectController
               className="w-[250px]"
               control={control}
-              name="payment_method"
+              name="payment_setting"
               options={paymentMethods}
               placeholder={t('order_modal.payment_method_placeholder')}
             />

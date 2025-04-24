@@ -31,14 +31,17 @@ import {
 } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { checkGroupApi, useGetGroupQuery } from '@/hooks/api/apps/foodly/group';
+import { useWindowSize } from '@/hooks/window-size';
 import { useRouter } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { commaFormat } from '@/shared/helper/format';
+import { FormType, ModalType, useCommonStore } from '@/stores/common';
 import { useGroupStore } from '@/stores/group';
 
 export default function GroupDetail() {
   const router = useRouter();
   const t = useTranslations();
+  const { isMobile } = useWindowSize();
   const { id } = useParams<{ id: string | undefined }>();
   const [inviteCodes, setInviteCodes] = useSessionStorage<
     Record<string, string>
@@ -50,6 +53,7 @@ export default function GroupDetail() {
     { invite_code: inviteCodes[id ?? ''] },
     allowLoadGroup,
   );
+  const { setIsOpen, setSelectedForm } = useCommonStore();
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [openInviteCodeModal, setOpenInviteCodeModal] = useState(false);
@@ -115,7 +119,7 @@ export default function GroupDetail() {
   };
 
   const openOrderModal = () => {
-    // setOpenOrderModal(true);
+    setIsOpen(true, ModalType.UPSERT_ORDER, FormType.SETTING_ORDER);
   };
 
   useEffect(() => {
@@ -160,7 +164,9 @@ export default function GroupDetail() {
       <ScrollShadow
         hideScrollBar
         className="w-full"
-        style={{ height: 'calc(100vh - 230px)' }}
+        style={{
+          height: isMobile ? 'calc(100vh - 230px)' : 'calc(100vh - 50px)',
+        }}
       >
         <div className="relative">
           <div className="flex flex-col md:flex-row gap-4">

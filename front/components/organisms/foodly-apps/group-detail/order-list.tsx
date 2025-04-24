@@ -48,8 +48,8 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
   const [searchParams, , setSpecificValue] = useStateQueryParams({
     group_id: groupId,
     page: 1,
-    size: 10,
-    sort: 'created_at:desc',
+    size: 50,
+    sort: 'created_at:asc',
     keyword: '',
     with_created_by: 1,
     with_group: 1,

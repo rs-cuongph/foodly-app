@@ -1,10 +1,13 @@
 import { cn } from '@heroui/theme';
+import { useTranslations } from 'next-intl';
 
 type OrderModalStepProps = {
   step: number;
 };
 
 export const OrderModalStep = ({ step: currentStep }: OrderModalStepProps) => {
+  const t = useTranslations();
+
   const getClassNameForText = (step: number) => {
     if (currentStep >= step) {
       return 'text-primary-500';
@@ -34,19 +37,19 @@ export const OrderModalStep = ({ step: currentStep }: OrderModalStepProps) => {
     <div className="bg-primary-50 border border-primary-100 rounded-full py-4 px-6 mb-6 flex-row w-full">
       <div className="flex items-center justify-between flex-row">
         <span className={cn('text-medium', getClassNameForText(1))}>
-          Chọn Món
+          {t('order_modal.step.select_dishes')}
         </span>
         <div className="w-[150px] h-1 bg-white rounded-lg relative overflow-hidden">
           {renderDivider(1)}
         </div>
         <span className={cn('text-medium', getClassNameForText(2))}>
-          Ghi Chú
+          {t('order_modal.step.note')}
         </span>
         <div className="w-[150px] h-1 bg-white rounded-lg relative overflow-hidden">
           {renderDivider(2)}
         </div>
         <span className={cn('text-medium', getClassNameForText(3))}>
-          Thanh Toán
+          {t('order_modal.step.payment')}
         </span>
       </div>
     </div>

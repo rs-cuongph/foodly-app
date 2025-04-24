@@ -60,6 +60,7 @@ type MyDatatableProps = {
     | 'emptyWrapper'
     | 'loadingWrapper'
   >;
+  maxTableHeight?: number;
 };
 
 export const MyDatatable = forwardRef<HTMLElement, MyDatatableProps>(
@@ -73,6 +74,7 @@ export const MyDatatable = forwardRef<HTMLElement, MyDatatableProps>(
       className,
       classNames,
       defaultColumnVisibility,
+      maxTableHeight,
     } = props;
     const t = useTranslations();
 
@@ -92,9 +94,11 @@ export const MyDatatable = forwardRef<HTMLElement, MyDatatableProps>(
       <Table
         ref={ref}
         isHeaderSticky
+        isVirtualized
         aria-label={title}
         className={className}
         classNames={classNames}
+        maxTableHeight={maxTableHeight || 600}
       >
         <TableHeader>
           {filterColumn(columns).map((column) => (
