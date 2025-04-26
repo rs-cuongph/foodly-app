@@ -2,8 +2,8 @@ import { create } from 'zustand';
 
 import { useGroupStore } from './group';
 
-import { OrderListItem } from '@/hooks/api/apps/foodly/order/type';
 import { UserInfoResponse } from '@/hooks/api/auth/type';
+import { OrderListItem } from '@/hooks/api/order/type';
 
 type User = UserInfoResponse;
 interface AuthStore {

@@ -6,9 +6,9 @@ import {
   QRCodeIcon,
 } from '@/components/atoms/icons';
 import { ORDER_STATUS_ENUM } from '@/config/constant';
-import { OrderListItem } from '@/hooks/api/apps/foodly/order/type';
+import { OrderListItem } from '@/hooks/api/order/type';
 import { useRole } from '@/hooks/apps/foodly/role';
-import { useCommonStore } from '@/stores/common';
+import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 type OrderActionTableProps = {
   order: OrderListItem;
@@ -24,7 +24,8 @@ type Action = {
 
 const OrderActionTable = (props: OrderActionTableProps) => {
   const { order } = props;
-  const { setModalConfirm } = useCommonStore();
+  const { setIsOpen, setModalConfirm, setDataModalUpsertOrder } =
+    useCommonStore();
   const { isGroupOwner, isOrderOwner, isGroupLocked } = useRole();
 
   const checkIncludes = (statuses: ORDER_STATUS_ENUM[], status: string) => {
@@ -42,7 +43,17 @@ const OrderActionTable = (props: OrderActionTableProps) => {
           [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
           order.status,
         ),
-      onPress: () => {},
+      onPress: () => {
+        setModalConfirm({
+          isOpen: true,
+          kind: 'qr_code',
+          data: {
+            orderId: order.id,
+            qrCode: order.transaction.unique_code,
+            orderStatus: order.status,
+          },
+        });
+      },
     },
     {
       key: 'confirm_paid',
@@ -55,7 +66,6 @@ const OrderActionTable = (props: OrderActionTableProps) => {
           order.status,
         ),
       onPress: () => {
-        console.log('order', order);
         setModalConfirm({
           isOpen: true,
           kind: 'confirm_paid',
@@ -81,14 +91,27 @@ const OrderActionTable = (props: OrderActionTableProps) => {
             [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
             order.status,
           )),
-      onPress: () => {},
+      onPress: () => {
+        setModalConfirm({
+          isOpen: true,
+          kind: 'cancel_order',
+          data: { orderId: order.id },
+        });
+      },
     },
     {
       key: 'copy',
       color: 'secondary',
       icon: <CopyIcon className="h-6 w-6 text-secondary-500" />,
       isShow: !isGroupLocked(),
-      onPress: () => {},
+      onPress: () => {
+        setDataModalUpsertOrder({
+          menuItems: order.menu,
+          quantity: order.quantity,
+          note: order.note,
+        });
+        setIsOpen(true, ModalType.UPSERT_ORDER, FormType.SETTING_ORDER);
+      },
     },
   ];
 

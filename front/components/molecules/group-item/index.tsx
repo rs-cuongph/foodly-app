@@ -98,9 +98,7 @@ export default function GroupCardItem(props: GroupCardItemProps) {
   };
 
   const goToDetailGroup = () => {
-    router.push(
-      siteConfig.apps.foodly.routes.group.detail.replace(':id', groupId),
-    );
+    router.push(siteConfig.apps.routes.group.detail.replace(':id', groupId));
   };
 
   const openOrderModal = () => {

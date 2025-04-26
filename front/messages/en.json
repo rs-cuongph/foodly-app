@@ -13,12 +13,16 @@
       "confirm_lock": "Confirm Lock",
       "update_group": "Edit Group",
       "create_order": "Create Order",
-      "confirm_paid": "Confirm Payment"
+      "confirm_paid": "Confirm Payment",
+      "cancel_order": "Cancel Order",
+      "qr_code": "QR Payment Code",
+      "mark_paid": "Mark as Paid"
     },
     "modal_description": {
       "confirm_delete": "Are you sure you want to delete this group?",
       "confirm_lock": "Are you sure you want to lock this group?",
-      "confirm_paid": "Are you sure you want to confirm this payment?"
+      "confirm_paid": "Are you sure you want to confirm this payment?",
+      "cancel_order": "Are you sure you want to cancel this order?"
     },
     "placeholder": {
       "select": "Select"
@@ -144,6 +148,12 @@
     "product_info": "Information",
     "qr_code_not_available": "QR code not available"
   },
+  "confirm_modal": {
+    "cancel_order": {
+      "reason": "Reason for cancellation",
+      "reason_placeholder": "Enter your reason"
+    }
+  },
   "home": {
     "filter": {
       "share_scope": "Share Scope",
@@ -219,7 +229,9 @@
       "delete_group": "Delete Group Success",
       "update_group_success": "Update Group Success",
       "create_order": "Order Created Successfully",
-      "confirm_paid": "Payment Confirmed Successfully"
+      "confirm_paid": "Payment Confirmed Successfully",
+      "cancel_order": "Order Cancelled Successfully",
+      "mark_paid": "Payment Marked as Paid Successfully"
     }
   },
   "toast": {

@@ -26,10 +26,7 @@ import { OrderModalStep } from './step';
 import useSettingOrderForm from './yup-form/setting-order.yup';
 
 import { MyButton } from '@/components/atoms/Button';
-import {
-  useCreateOrderMutation,
-  useMarkPaidMutation,
-} from '@/hooks/api/apps/foodly/order';
+import { useCreateOrderMutation, useMarkPaidMutation } from '@/hooks/api/order';
 import { useSystemToast } from '@/hooks/toast';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
@@ -59,6 +56,7 @@ export default function OrderModal() {
     setIsOpen,
     setSelectedForm,
     setIsLoadingConfirm,
+    setDataModalUpsertOrder,
   } = useCommonStore();
   const { groupInfo } = useGroupStore();
   const { showError, showSuccess } = useSystemToast();
@@ -91,10 +89,11 @@ export default function OrderModal() {
 
   const watchMenu = watch('menu');
   const watchPaymentSetting = watch('payment_setting');
+  const watchQuantity = watch('quantity');
 
   const isDisabled = useMemo(() => {
     if (modalUpsertOrder.selectedForm === FormType.SETTING_ORDER) {
-      return watchMenu.length === 0 || getValues('quantity') === 0;
+      return watchMenu.length === 0 || watchQuantity === 0;
     }
 
     if (modalUpsertOrder.selectedForm === FormType.SETTING_PAYMENT) {
@@ -102,13 +101,18 @@ export default function OrderModal() {
     }
 
     return false;
-  }, [watchMenu, getValues]);
+  }, [
+    watchMenu,
+    watchQuantity,
+    watchPaymentSetting,
+    modalUpsertOrder.selectedForm,
+  ]);
 
   const CurrentForm = formRegistry[modalUpsertOrder.selectedForm].component;
 
   const handleCancel = () => {
     if (modalUpsertOrder.selectedForm === FormType.SETTING_ORDER) {
-      closeModal(ModalType.UPSERT_ORDER);
+      handleCloseModal();
 
       return;
     }
@@ -178,9 +182,28 @@ export default function OrderModal() {
     }
   };
 
+  const handleCloseModal = () => {
+    reset({
+      menu: [],
+      quantity: 1,
+      note: '',
+      payment_setting: '',
+    });
+    setDataModalUpsertOrder(null);
+    closeModal(ModalType.UPSERT_ORDER);
+  };
+
   useEffect(() => {
-    if (modalUpsertOrder.isOpen) {
-      reset();
+    const { data, isOpen } = modalUpsertOrder;
+
+    if (isOpen) {
+      if (data) {
+        reset({
+          menu: data.menuItems.map((item: any) => item.id),
+          quantity: data.quantity,
+          note: data.note,
+        });
+      }
     }
   }, [modalUpsertOrder.isOpen]);
 
@@ -194,7 +217,9 @@ export default function OrderModal() {
       setIsOpen(true, ModalType.UPSERT_ORDER, modal);
     }
 
-    return () => {};
+    return () => {
+      setDataModalUpsertOrder(null);
+    };
   }, []);
 
   return (
@@ -203,7 +228,7 @@ export default function OrderModal() {
       isDismissable={false}
       isOpen={modalUpsertOrder.isOpen}
       size="3xl"
-      onClose={() => closeModal(ModalType.UPSERT_ORDER)}
+      onClose={handleCloseModal}
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 text-center">

@@ -18,7 +18,7 @@ export const signIn = async (
   userData: SignInPayload,
 ): Promise<SignInResponse> => {
   const { data } = await apiClient.post<SignInResponse>(
-    siteConfig.apiRoutes.login,
+    siteConfig.apps.apiRoutes.login,
     userData,
   );
 
@@ -27,7 +27,7 @@ export const signIn = async (
 
 const signUp = async (userData: SignUpPayload): Promise<SignUpResponse> => {
   const { data } = await apiClient.post<SignUpResponse>(
-    siteConfig.apiRoutes.register,
+    siteConfig.apps.apiRoutes.register,
     userData,
   );
 
@@ -36,7 +36,7 @@ const signUp = async (userData: SignUpPayload): Promise<SignUpResponse> => {
 
 const getUserInfo = async (): Promise<UserInfoResponse> => {
   const { data } = await apiClient.get<UserInfoResponse>(
-    siteConfig.apiRoutes.my_info,
+    siteConfig.apps.apiRoutes.my_info,
   );
 
   return data;
@@ -66,7 +66,7 @@ export const useGetUserInfoQuery = (
 
 export const getWebAuthnChallenge = async () => {
   const { data } = await apiClient.post<string>(
-    siteConfig.apiRoutes.webauthn.generate_challenge,
+    siteConfig.apps.apiRoutes.webauthn.generate_challenge,
   );
 
   return data;
@@ -77,7 +77,7 @@ export const verifyWebAuthnRegistration = async ({
   response,
 }: WebAuthnVerifyRegistrationDTO) => {
   const { data } = await apiClient.post<RegistrationInfo>(
-    siteConfig.apiRoutes.webauthn.verify_registration,
+    siteConfig.apps.apiRoutes.webauthn.verify_registration,
     {
       challenge,
       registration: response,
@@ -92,7 +92,7 @@ export const verifyWebAuthnAuthentication = async ({
   response,
 }: WebAuthnVerifyAuthenticationDTO) => {
   const { data } = await apiClient.post<SignInResponse>(
-    siteConfig.apiRoutes.webauthn.verify_authentication,
+    siteConfig.apps.apiRoutes.webauthn.verify_authentication,
     {
       challenge,
       authentication: response,

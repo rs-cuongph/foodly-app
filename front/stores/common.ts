@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { ConfirmModalKind } from '@/components/organisms/foodly-apps/confirm-modal';
+import { ConfirmModalKind } from '@/components/organisms/confirm-modal';
 
 export enum FormType {
   SIGN_IN = 'signIn',
@@ -40,6 +40,7 @@ interface CommonStore {
     kind: ConfirmModalKind;
   };
   modalUpsertOrder: {
+    data: any | null;
     isOpen: boolean;
     isLoadingConfirm: boolean;
     selectedForm: FormType;
@@ -51,6 +52,7 @@ interface CommonStore {
   closeModal: (modal: ModalType) => void;
   setIsLoadingConfirm: (isLoadingConfirm: boolean, modal: ModalType) => void;
   setModalConfirm: (modalConfirm: Partial<CommonStore['modalConfirm']>) => void;
+  setDataModalUpsertOrder: (data: any) => void;
 }
 
 export const useCommonStore = create<CommonStore>((set) => ({
@@ -75,6 +77,7 @@ export const useCommonStore = create<CommonStore>((set) => ({
     isOpen: false,
     isLoadingConfirm: false,
     selectedForm: FormType.SETTING_ORDER,
+    data: null,
   },
   // Actions
   setIsOpen: (isOpen, modal, form = undefined) =>
@@ -226,6 +229,13 @@ export const useCommonStore = create<CommonStore>((set) => ({
       modalConfirm: {
         ...state.modalConfirm,
         ...modalConfirm,
+      },
+    })),
+  setDataModalUpsertOrder: (data: any) =>
+    set((state) => ({
+      modalUpsertOrder: {
+        ...state.modalUpsertOrder,
+        data,
       },
     })),
 }));

@@ -14,13 +14,12 @@ export default async function middleware(request: NextRequest) {
   // Get the pathname from the request
   const pathname = request.nextUrl.pathname;
   const lang = pathname.split('/')[1] || 'en';
-  const app = pathname.split('/')[2] || 'foodly';
 
   // If the pathname is the root path, redirect to the default URL
   if (pathname === '/en' || pathname === '/vi' || pathname === '/') {
     // You can change this to your desired default path
     // For example: '/en/dashboard' or '/en/home'
-    return NextResponse.redirect(new URL(`/${lang}/${app}`, request.url));
+    return NextResponse.redirect(new URL(`/${lang}/`, request.url));
   }
 
   return chainMiddlewares([authMiddleware, i18nMiddleware])(request);

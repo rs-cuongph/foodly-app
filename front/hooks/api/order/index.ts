@@ -18,7 +18,7 @@ import { formatRoute } from '@/shared/helper/format';
 
 const getOrderListByGroupId = async (params: OrderListParams) => {
   const { data } = await apiClient.get<OrderListResponse>(
-    siteConfig.apps.foodly.apiRoutes.order.list,
+    siteConfig.apps.apiRoutes.order.list,
     {
       params,
     },
@@ -41,37 +41,40 @@ export const useGetOrderListQuery = (
 
 export const createOrderApi = (data: CreateOrderParams) => {
   return apiClient.post<CreateOrderResponse>(
-    siteConfig.apps.foodly.apiRoutes.order.create,
+    siteConfig.apps.apiRoutes.order.create,
     data,
   );
 };
 
 export const markPaidApi = (orderId: string) => {
   return apiClient.patch(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.order.mark_paid, {
+    formatRoute(siteConfig.apps.apiRoutes.order.mark_paid, {
       id: orderId,
     }),
   );
 };
 
-export const cancelApi = (orderId: string) => {
-  return apiClient.delete(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.order.cancel, {
+export const cancelApi = (orderId: string, reason: string) => {
+  return apiClient.put(
+    formatRoute(siteConfig.apps.apiRoutes.order.cancel, {
       id: orderId,
     }),
+    {
+      reason,
+    },
   );
 };
 
 export const confirmPaidApi = (orderId: string) => {
   return apiClient.patch(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.order.confirm_paid, {
+    formatRoute(siteConfig.apps.apiRoutes.order.confirm_paid, {
       id: orderId,
     }),
   );
 };
 
 export const markPaidAllApi = (includeIds: string[], excludeIds: string[]) => {
-  return apiClient.patch(siteConfig.apps.foodly.apiRoutes.order.mark_paid_all, {
+  return apiClient.patch(siteConfig.apps.apiRoutes.order.mark_paid_all, {
     include_ids: includeIds,
     exclude_ids: excludeIds,
   });
@@ -81,13 +84,10 @@ export const confirmPaidAllApi = (
   includeIds: string[],
   excludeIds: string[],
 ) => {
-  return apiClient.patch(
-    siteConfig.apps.foodly.apiRoutes.order.confirm_paid_all,
-    {
-      include_ids: includeIds,
-      exclude_ids: excludeIds,
-    },
-  );
+  return apiClient.patch(siteConfig.apps.apiRoutes.order.confirm_paid_all, {
+    include_ids: includeIds,
+    exclude_ids: excludeIds,
+  });
 };
 
 export const useCancelMutation = () => {
@@ -162,6 +162,18 @@ export const useCreateOrderMutation = () => {
 
   return useMutation({
     mutationFn: (data: CreateOrderParams) => createOrderApi(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['order-list'] });
+    },
+  });
+};
+
+export const useCancelOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { orderId: string; reason: string }) =>
+      cancelApi(data.orderId, data.reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order-list'] });
     },

@@ -11,7 +11,7 @@ import {
 } from '@/components/atoms/icons';
 import GroupActionBtn, {
   ListboxItem,
-} from '@/components/molecules/foodly-apps/group-action-button';
+} from '@/components/molecules/group-action-button';
 import { GROUP_STATUS_ENUM } from '@/config/constant';
 import { useSystemToast } from '@/hooks/toast';
 import { useAuthStore } from '@/stores/auth';

@@ -33,11 +33,8 @@ import {
   SHARE_SCOPE_ENUM,
   STORAGE_KEYS,
 } from '@/config/constant';
-import {
-  useGetGroupQuery,
-  useUpdateGroupMutation,
-} from '@/hooks/api/apps/foodly/group';
-import { UpdateGroupParams } from '@/hooks/api/apps/foodly/group/type';
+import { useGetGroupQuery, useUpdateGroupMutation } from '@/hooks/api/group';
+import { UpdateGroupParams } from '@/hooks/api/group/type';
 import { useSystemToast } from '@/hooks/toast';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { ModalType, useCommonStore } from '@/stores/common';

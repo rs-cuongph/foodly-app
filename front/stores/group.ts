@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { GROUP_STATUS_ENUM } from '@/config/constant';
-import { GroupDetailResponse } from '@/hooks/api/apps/foodly/group/type';
+import { GroupDetailResponse } from '@/hooks/api/group/type';
 
 interface GroupStore {
   // orderSelected: any | null;

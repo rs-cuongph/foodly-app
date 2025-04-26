@@ -14,7 +14,7 @@ import { formatRoute } from '@/shared/helper/format';
 
 const getGroupListApi = async (params: GroupListParams) => {
   const { data } = await apiClient.get<GroupListResponse>(
-    siteConfig.apps.foodly.apiRoutes.group.list,
+    siteConfig.apps.apiRoutes.group.list,
     {
       params,
     },
@@ -25,7 +25,7 @@ const getGroupListApi = async (params: GroupListParams) => {
 
 const createGroupApi = async (data: CreateGroupParams) => {
   const { data: res } = await apiClient.post(
-    siteConfig.apps.foodly.apiRoutes.group.create,
+    siteConfig.apps.apiRoutes.group.create,
     data,
   );
 
@@ -53,7 +53,7 @@ export const useCreateGroupMutation = () => {
 
 export const updateGroupApi = async (data: UpdateGroupParams) => {
   const { data: res } = await apiClient.put(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.group.update, { id: data.id }),
+    formatRoute(siteConfig.apps.apiRoutes.group.update, { id: data.id }),
     data,
   );
 
@@ -75,7 +75,7 @@ export const useUpdateGroupMutation = (id: string) => {
 export const checkGroupApi = async (id: string) => {
   const { data } = await apiClient.get<{
     canAccess: boolean;
-  }>(formatRoute(siteConfig.apps.foodly.apiRoutes.group.check, { id }));
+  }>(formatRoute(siteConfig.apps.apiRoutes.group.check, { id }));
 
   return data;
 };
@@ -85,7 +85,7 @@ export const getGroupApi = async (
   params: { invite_code: string },
 ) => {
   const { data } = await apiClient.get<GroupDetailResponse>(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.group.detail, { id }),
+    formatRoute(siteConfig.apps.apiRoutes.group.detail, { id }),
     {
       params,
     },
@@ -108,7 +108,7 @@ export const useGetGroupQuery = (
 
 export const lockGroupApi = async (id: string, invite_code: string | null) => {
   const { data } = await apiClient.put(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.group.lock, { id }),
+    formatRoute(siteConfig.apps.apiRoutes.group.lock, { id }),
     {},
     {
       params: { invite_code },
@@ -123,7 +123,7 @@ export const deleteGroupApi = async (
   invite_code: string | null,
 ) => {
   const { data } = await apiClient.delete(
-    formatRoute(siteConfig.apps.foodly.apiRoutes.group.delete, { id }),
+    formatRoute(siteConfig.apps.apiRoutes.group.delete, { id }),
     {
       params: { invite_code: invite_code },
     },

@@ -21,8 +21,8 @@ import {
   SquarePlusIcon,
 } from '@/components/atoms/icons';
 import { GROUP_TYPE_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
-import { useCreateGroupMutation } from '@/hooks/api/apps/foodly/group';
-import { CreateGroupParams } from '@/hooks/api/apps/foodly/group/type';
+import { useCreateGroupMutation } from '@/hooks/api/group';
+import { CreateGroupParams } from '@/hooks/api/group/type';
 import { useSystemToast } from '@/hooks/toast';
 import { DateHelper } from '@/shared/helper/date';
 import { handleErrFromApi } from '@/shared/helper/validation';

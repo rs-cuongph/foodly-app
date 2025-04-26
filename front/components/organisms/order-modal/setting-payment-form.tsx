@@ -23,10 +23,9 @@ const SettingPaymentForm = forwardRef<
 >((props, ref) => {
   const t = useTranslations();
   const { methods } = props;
-  const { control, getValues, setValue, formState, watch } = methods;
+  const { control } = methods;
   const formRef = useRef<HTMLFormElement>(null);
   const { groupInfo } = useGroupStore();
-  const { errors } = formState;
 
   const paymentMethods = useMemo(() => {
     return (

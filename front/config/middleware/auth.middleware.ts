@@ -12,8 +12,8 @@ const cookieName = process.env.NEXTAUTH_URL?.startsWith('https://')
 const isPublicRoute = (pathname: string, lang: string): boolean => {
   // Add all your public routes here
   const publicPaths = [
-    '/foodly', // Home page is public
-    '/foodly/home', // Home page is public
+    '/', // Home page is public
+    '/home', // Home page is public
   ].map((path) => `/${lang}${path}`);
 
   // Check if the path is in the public routes list
@@ -31,7 +31,7 @@ const getUserInfo = async (accessToken: string) => {
 
   try {
     // Fix: apiClient.get instead of post, and headers should be separate parameter
-    const response = await apiClient.get(siteConfig.apiRoutes.my_info, {
+    const response = await apiClient.get(siteConfig.apps.apiRoutes.my_info, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -56,8 +56,7 @@ export const authMiddleware = async (request: NextRequest) => {
   const accessToken = session?.access_token as string;
   const pathname = request.nextUrl.pathname;
   const lang = pathname.split('/')[1];
-  const app = pathname.split('/')[2];
-  const nextPath = `/${lang}${siteConfig.apps[app as keyof typeof siteConfig.apps].routes.home}`;
+  const nextPath = `/${lang}${siteConfig.apps.routes.home}`;
 
   // Skip auth check for public routes
   if (isPublicRoute(pathname, lang)) {

@@ -37,11 +37,14 @@ export const authOptions: NextAuthOptions = {
       credentials: AUTHENTICATION_METHODS.EMAIL.credentials,
       async authorize(credentials) {
         try {
-          const response = await apiClient.post(siteConfig.apiRoutes.login, {
-            email: credentials?.email,
-            password: credentials?.password,
-            organization_code: credentials?.organization_code,
-          });
+          const response = await apiClient.post(
+            siteConfig.apps.apiRoutes.login,
+            {
+              email: credentials?.email,
+              password: credentials?.password,
+              organization_code: credentials?.organization_code,
+            },
+          );
 
           if (!response || !response.data) {
             throw new Error('Invalid credentials');

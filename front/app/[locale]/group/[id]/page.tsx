@@ -20,17 +20,17 @@ import {
   ShoppingBagIcon,
   TimerIcon,
 } from '@/components/atoms/icons';
-import SkeletonWrapper from '@/components/molecules/foodly-apps/skeleton-wrapper';
-import MoreActionInGroup from '@/components/organisms/foodly-apps/group-detail/group-action';
-import OrderListTable from '@/components/organisms/foodly-apps/group-detail/order-list';
-import InviteCodeModal from '@/components/organisms/foodly-apps/invite-code-modal';
+import SkeletonWrapper from '@/components/molecules/skeleton-wrapper';
+import MoreActionInGroup from '@/components/organisms/group-detail/group-action';
+import OrderListTable from '@/components/organisms/group-detail/order-list';
+import InviteCodeModal from '@/components/organisms/invite-code-modal';
 import {
   GROUP_STATUS_ENUM,
   SHARE_SCOPE_ENUM,
   STORAGE_KEYS,
 } from '@/config/constant';
 import { siteConfig } from '@/config/site';
-import { checkGroupApi, useGetGroupQuery } from '@/hooks/api/apps/foodly/group';
+import { checkGroupApi, useGetGroupQuery } from '@/hooks/api/group';
 import { useWindowSize } from '@/hooks/window-size';
 import { useRouter } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
@@ -53,7 +53,7 @@ export default function GroupDetail() {
     { invite_code: inviteCodes[id ?? ''] },
     allowLoadGroup,
   );
-  const { setIsOpen, setSelectedForm } = useCommonStore();
+  const { setIsOpen } = useCommonStore();
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [openInviteCodeModal, setOpenInviteCodeModal] = useState(false);
@@ -91,7 +91,7 @@ export default function GroupDetail() {
 
   const handleCloseInviteCodeModal = () => {
     setOpenInviteCodeModal(false);
-    router.push(siteConfig.apps.foodly.routes.home);
+    router.push(siteConfig.apps.routes.home);
   };
 
   const getGroupInfo = async (invite_code: string) => {
@@ -165,7 +165,7 @@ export default function GroupDetail() {
         hideScrollBar
         className="w-full"
         style={{
-          height: isMobile ? 'calc(100vh - 230px)' : 'calc(100vh - 50px)',
+          height: isMobile ? 'calc(100vh - 230px)' : 'calc(100vh - 150px)',
         }}
       >
         <div className="relative">

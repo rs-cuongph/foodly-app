@@ -4,9 +4,9 @@ import { ScrollShadow } from '@heroui/react';
 import { useTranslations } from 'next-intl';
 
 import { FoodLoading } from '@/components/atoms/FoodLoading';
-import GroupCardItem from '@/components/molecules/foodly-apps/group-item';
-import { useGetGroupListQuery } from '@/hooks/api/apps/foodly/group';
-import { GroupListParams } from '@/hooks/api/apps/foodly/group/type';
+import GroupCardItem from '@/components/molecules/group-item';
+import { useGetGroupListQuery } from '@/hooks/api/group';
+import { GroupListParams } from '@/hooks/api/group/type';
 import { useWindowSize } from '@/hooks/window-size';
 
 type GroupCardListProps = {

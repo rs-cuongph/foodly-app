@@ -22,6 +22,7 @@ import {
   MyGroupIcon,
   SettingIcon,
 } from '@/components/atoms/icons';
+import { STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { useGetUserInfoQuery } from '@/hooks/api/auth';
 import { useSystemToast } from '@/hooks/toast';
@@ -56,37 +57,37 @@ export function Sidebar() {
     {
       name: t('button.home'),
       icon: <HomeIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/foodly+',
+      pathRegex: '/[a-z]{2}',
       requiredAuth: false,
       onClick: () => {
-        router.push(siteConfig.apps.foodly.routes.home);
+        router.push(siteConfig.apps.routes.home);
       },
     },
     {
       name: t('button.payment_history'),
       icon: <DocumentIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/foodly/history-order',
+      pathRegex: '/[a-z]{2}/history-order',
       requiredAuth: true,
       onClick: () => {
-        router.push(siteConfig.apps.foodly.routes.history);
+        router.push(siteConfig.apps.routes.history);
       },
     },
     {
       name: t('button.my_group'),
       icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/foodly/my-group',
+      pathRegex: '/[a-z]{2}/my-group',
       requiredAuth: true,
       onClick: () => {
-        router.push(siteConfig.apps.foodly.routes.my_group);
+        router.push(siteConfig.apps.routes.my_group);
       },
     },
     {
       name: t('button.my_page'),
       icon: <SettingIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/foodly/my-page',
+      pathRegex: '/[a-z]{2}/my-page',
       requiredAuth: true,
       onClick: () => {
-        router.push(siteConfig.apps.foodly.routes.my_page);
+        router.push(siteConfig.apps.routes.my_page);
       },
     },
   ];
@@ -120,11 +121,12 @@ export function Sidebar() {
   };
 
   const handleSignOut = () => {
+    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
     signOut({ redirect: false });
     Object.values(ModalType).forEach((modalType) => {
       commonStore.setIsOpen(false, modalType);
     });
-    router.push(siteConfig.apps.foodly.routes.home);
+    router.push(siteConfig.apps.routes.home);
   };
 
   const handleRegisterWebAuthn = async () => {

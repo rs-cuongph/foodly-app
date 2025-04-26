@@ -33,7 +33,10 @@
       "confirm_lock": "Xác nhận khóa",
       "update_group": "Chỉnh sửa nhóm",
       "create_order": "Tạo đơn hàng",
-      "confirm_paid": "Xác nhận thanh toán"
+      "confirm_paid": "Xác nhận thanh toán",
+      "cancel_order": "Hủy đơn hàng",
+      "qr_code": "Mã QR thanh toán",
+      "mark_paid": "Đánh dấu đã thanh toán"
     },
     "placeholder": {
       "select": "Lựa chọn"
@@ -46,10 +49,11 @@
     "modal_description": {
       "confirm_delete": "Bạn có chắc là bạn muốn xóa nhóm này?",
       "confirm_lock": "Bạn có chắc là bạn muốn khóa nhóm này?",
-      "confirm_paid": "Bạn có chắc là bạn muốn xác nhận thanh toán này?"
+      "confirm_paid": "Bạn có chắc là bạn muốn xác nhận thanh toán này?",
+      "cancel_order": "Bạn có chắc là bạn muốn hủy đơn hàng này?"
     },
     "order_table": {
-      "total": "{Total} đơn đặt hàng ({số lượng})"
+      "total": "{total} đơn đặt hàng ({amount})"
     },
     "status": {
       "label": "Trạng thái",
@@ -133,7 +137,9 @@
       "lock_group": "Khóa thành công của nhóm",
       "update_group_success": "Cập nhật thành công nhóm",
       "create_order": "Tạo đơn hàng thành công",
-      "confirm_paid": "Xác nhận thanh toán thành công"
+      "confirm_paid": "Xác nhận thanh toán thành công",
+      "cancel_order": "Hủy đơn hàng thành công",
+      "mark_paid": "Đánh dấu thanh toán thành công"
     }
   },
   "upsert_group_modal": {
@@ -243,5 +249,11 @@
     "scan_with_bank_app": "Sử dụng app ngân hàng để quét mã",
     "product_info": "Thông Tin",
     "qr_code_not_available": "Mã QR không khả dụng"
+  },
+  "confirm_modal": {
+    "cancel_order": {
+      "reason": "Lý do hủy bỏ",
+      "reason_placeholder": "Nhập lý do của bạn"
+    }
   }
 }
