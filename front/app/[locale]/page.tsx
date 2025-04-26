@@ -2,6 +2,7 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
@@ -16,6 +17,7 @@ import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 export default function Home() {
+  const { locale } = useParams();
   const t = useTranslations();
   const commonStore = useCommonStore();
   const authStore = useAuthStore();

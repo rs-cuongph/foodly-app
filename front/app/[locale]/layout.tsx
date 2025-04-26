@@ -29,6 +29,10 @@ export const metadata: Metadata = {
   },
 };
 
+// Static settings to tell Next.js to cache this component and prevent re-renders
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,

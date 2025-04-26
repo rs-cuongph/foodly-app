@@ -11,7 +11,7 @@ import {
 import clsx from 'clsx';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
@@ -34,10 +34,15 @@ import { FormType, ModalType, useCommonStore } from '@/stores/common';
 function SidebarComponent() {
   const router = useRouter();
   const pathName = usePathname();
+  const { locale } = useParams();
   const t = useTranslations();
   const commonStore = useCommonStore();
   const { data: session, status } = useSession();
-  const { setUserInfo, setIsLoggedIn } = useAuthStore();
+  const {
+    setUserInfo,
+    setIsLoggedIn,
+    userInfo: storeUserInfo,
+  } = useAuthStore();
   const { showSuccess } = useSystemToast();
   const {
     createRegistration,
@@ -47,13 +52,18 @@ function SidebarComponent() {
     verifyAuthentication,
   } = useWebAuthClient();
 
-  const { data: userInfo } = useGetUserInfoQuery(
+  const pathNameWithoutLocale = pathName.replace(`/${locale}`, '');
+
+  const { data: userInfoFromQuery } = useGetUserInfoQuery(
     session?.user?.id || '',
     session?.user?.access_token || '',
-    pathName,
+    pathNameWithoutLocale,
   );
 
-  const memoUserInfo = useMemo(() => userInfo, [userInfo]);
+  // Prioritize store user info to prevent undefined during navigation
+  const currentUserInfo = useMemo(() => {
+    return userInfoFromQuery || storeUserInfo;
+  }, [userInfoFromQuery, storeUserInfo]);
 
   const menuItems = useMemo(
     () => [
@@ -98,8 +108,8 @@ function SidebarComponent() {
   );
 
   const isLogin = useMemo(() => {
-    return Boolean(status === 'authenticated' && memoUserInfo);
-  }, [status, memoUserInfo]);
+    return Boolean(status === 'authenticated' && currentUserInfo);
+  }, [status, currentUserInfo]);
 
   const MenuItemFiltered = useMemo(() => {
     return menuItems.filter((item) => {
@@ -132,14 +142,14 @@ function SidebarComponent() {
   }, [commonStore, router]);
 
   const handleRegisterWebAuthn = useCallback(async () => {
-    if (!memoUserInfo) return;
+    if (!currentUserInfo) return;
     try {
       const challenge = await getChallenge();
 
       const registration = await createRegistration({
         user: {
-          id: memoUserInfo.id,
-          name: memoUserInfo.email,
+          id: currentUserInfo.id,
+          name: currentUserInfo.email,
         },
         challenge,
       });
@@ -150,7 +160,7 @@ function SidebarComponent() {
       console.log(error);
     }
   }, [
-    memoUserInfo,
+    currentUserInfo,
     getChallenge,
     createRegistration,
     verifyRegistration,
@@ -174,16 +184,16 @@ function SidebarComponent() {
     }
   }, [getChallenge, createAuthentication, verifyAuthentication, showSuccess]);
 
+  // Only update store when we have valid userInfo from query
   useEffect(() => {
-    console.log('memoUserInfo', memoUserInfo);
-    if (memoUserInfo) {
-      setUserInfo(memoUserInfo);
+    if (userInfoFromQuery) {
+      setUserInfo(userInfoFromQuery);
     }
-  }, [memoUserInfo]);
+  }, [userInfoFromQuery, setUserInfo]);
 
   useEffect(() => {
     setIsLoggedIn(isLogin);
-  }, [isLogin]);
+  }, [isLogin, setIsLoggedIn]);
 
   useEffect(() => {
     // add event listener
@@ -223,13 +233,13 @@ function SidebarComponent() {
                     <Popover placement="bottom" showArrow={true}>
                       <PopoverTrigger>
                         <span className="cursor-help">
-                          {memoUserInfo?.email}
+                          {currentUserInfo?.email}
                         </span>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="px-1 py-2">
                           <div className="text-small font-bold">
-                            {memoUserInfo?.email}
+                            {currentUserInfo?.email}
                           </div>
                         </div>
                       </PopoverContent>
@@ -239,13 +249,13 @@ function SidebarComponent() {
                     <Popover placement="bottom" showArrow={true}>
                       <PopoverTrigger>
                         <span className="cursor-help">
-                          {memoUserInfo?.display_name}
+                          {currentUserInfo?.display_name}
                         </span>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="px-1 py-2">
                           <div className="text-small font-bold">
-                            {memoUserInfo?.display_name}
+                            {currentUserInfo?.display_name}
                           </div>
                         </div>
                       </PopoverContent>
@@ -319,10 +329,10 @@ function SidebarComponent() {
                 <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
                 <div className="hidden sm:flex flex-col gap-0">
                   <span className="text-sm text-ellipsis line-clamp-1 max-w-[100px] sm:max-w-[200px]">
-                    {memoUserInfo?.display_name}
+                    {currentUserInfo?.display_name}
                   </span>
                   <span className="text-tiny text-ellipsis line-clamp-1 text-foreground-400 max-w-[100px] sm:max-w-[200px]">
-                    {memoUserInfo?.email}
+                    {currentUserInfo?.email}
                   </span>
                 </div>
               </div>

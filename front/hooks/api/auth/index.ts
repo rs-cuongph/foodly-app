@@ -54,15 +54,19 @@ export const useGetUserInfoQuery = (
   accessToken: string,
   pathName?: string,
 ) => {
-  localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken || '');
+  if (accessToken) {
+    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, accessToken || '');
+  }
 
   return useQuery({
     queryKey: ['get-user-info', id, pathName],
     queryFn: getUserInfo,
-
-    enabled: !!id,
-    // staleTime: 5 * 60 * 1000, // 5 minutes
-    // gcTime: 10 * 60 * 1000, // 10 minutes
+    enabled: !!id && !!accessToken,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };
 
