@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
 import {
@@ -31,7 +31,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
-export function Sidebar() {
+function SidebarComponent() {
   const router = useRouter();
   const pathName = usePathname();
   const t = useTranslations();
@@ -53,91 +53,93 @@ export function Sidebar() {
     pathName,
   );
 
-  const menuItems = [
-    {
-      name: t('button.home'),
-      icon: <HomeIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}',
-      requiredAuth: false,
-      onClick: () => {
-        router.push(siteConfig.apps.routes.home);
+  const memoUserInfo = useMemo(() => userInfo, [userInfo]);
+
+  const menuItems = useMemo(
+    () => [
+      {
+        name: t('button.home'),
+        icon: <HomeIcon className="w-7 h-7 text-primary" />,
+        pathRegex: '/[a-z]{2}/?$',
+        requiredAuth: false,
+        onClick: () => {
+          router.push(siteConfig.apps.routes.home);
+        },
       },
-    },
-    {
-      name: t('button.payment_history'),
-      icon: <DocumentIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/history-order',
-      requiredAuth: true,
-      onClick: () => {
-        router.push(siteConfig.apps.routes.history);
+      {
+        name: t('button.payment_history'),
+        icon: <DocumentIcon className="w-7 h-7 text-primary" />,
+        pathRegex: '/[a-z]{2}/my-order',
+        requiredAuth: true,
+        onClick: () => {
+          router.push(siteConfig.apps.routes.history);
+        },
       },
-    },
-    {
-      name: t('button.my_group'),
-      icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/my-group',
-      requiredAuth: true,
-      onClick: () => {
-        router.push(siteConfig.apps.routes.my_group);
+      {
+        name: t('button.my_group'),
+        icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
+        pathRegex: '/[a-z]{2}/my-group',
+        requiredAuth: true,
+        onClick: () => {
+          router.push(siteConfig.apps.routes.my_group);
+        },
       },
-    },
-    {
-      name: t('button.my_page'),
-      icon: <SettingIcon className="w-7 h-7 text-primary" />,
-      pathRegex: '/[a-z]{2}/my-page',
-      requiredAuth: true,
-      onClick: () => {
-        router.push(siteConfig.apps.routes.my_page);
+      {
+        name: t('button.my_page'),
+        icon: <SettingIcon className="w-7 h-7 text-primary" />,
+        pathRegex: '/[a-z]{2}/my-page',
+        requiredAuth: true,
+        onClick: () => {
+          router.push(siteConfig.apps.routes.my_page);
+        },
       },
-    },
-  ];
+    ],
+    [t, router],
+  );
 
   const isLogin = useMemo(() => {
-    const isLoggedIn = Boolean(status === 'authenticated' && userInfo);
-
-    return isLoggedIn;
-  }, [status, userInfo]);
+    return Boolean(status === 'authenticated' && memoUserInfo);
+  }, [status, memoUserInfo]);
 
   const MenuItemFiltered = useMemo(() => {
     return menuItems.filter((item) => {
       if (isLogin) return true;
 
-      return (item.requiredAuth = false);
+      return !item.requiredAuth;
     });
   }, [isLogin, menuItems]);
 
-  const checkIsActive = (pathRegex: string) => {
-    const regex = new RegExp(pathRegex, 'i');
+  const checkIsActive = useCallback(
+    (pathRegex: string) => {
+      const regex = new RegExp(pathRegex, 'i');
 
-    if (regex.test(pathName)) {
-      return true;
-    }
+      return regex.test(pathName);
+    },
+    [pathName],
+  );
 
-    return false;
-  };
-
-  const openSignInModal = () => {
+  const openSignInModal = useCallback(() => {
     commonStore.setIsOpen(true, ModalType.AUTH, FormType.SIGN_IN);
-  };
+  }, [commonStore]);
 
-  const handleSignOut = () => {
+  const handleSignOut = useCallback(() => {
     localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
     signOut({ redirect: false });
     Object.values(ModalType).forEach((modalType) => {
       commonStore.setIsOpen(false, modalType);
     });
     router.push(siteConfig.apps.routes.home);
-  };
+  }, [commonStore, router]);
 
-  const handleRegisterWebAuthn = async () => {
-    if (!userInfo) return;
+  const handleRegisterWebAuthn = useCallback(async () => {
+    if (!memoUserInfo) return;
     try {
       const challenge = await getChallenge();
 
       const registration = await createRegistration({
         user: {
-          id: userInfo.id,
-          name: userInfo.email,
+          id: memoUserInfo.id,
+          name: memoUserInfo.email,
         },
         challenge,
       });
@@ -146,12 +148,16 @@ export function Sidebar() {
       showSuccess('Register WebAuthn success');
     } catch (error) {
       console.log(error);
-    } finally {
-      //
     }
-  };
+  }, [
+    memoUserInfo,
+    getChallenge,
+    createRegistration,
+    verifyRegistration,
+    showSuccess,
+  ]);
 
-  const handleSignInWebAuthn = async () => {
+  const handleSignInWebAuthn = useCallback(async () => {
     try {
       const challenge = await getChallenge();
 
@@ -165,16 +171,15 @@ export function Sidebar() {
       showSuccess('Sign in WebAuthn success');
     } catch (error) {
       console.log(error);
-    } finally {
-      //
     }
-  };
+  }, [getChallenge, createAuthentication, verifyAuthentication, showSuccess]);
 
   useEffect(() => {
-    if (userInfo) {
-      setUserInfo(userInfo);
+    console.log('memoUserInfo', memoUserInfo);
+    if (memoUserInfo) {
+      setUserInfo(memoUserInfo);
     }
-  }, [setUserInfo, userInfo]);
+  }, [memoUserInfo]);
 
   useEffect(() => {
     setIsLoggedIn(isLogin);
@@ -188,7 +193,7 @@ export function Sidebar() {
       // remove event listener
       window.removeEventListener('forceLogin', handleSignOut);
     };
-  }, []);
+  }, [handleSignOut]);
 
   return (
     <>
@@ -217,12 +222,14 @@ export function Sidebar() {
                   description={
                     <Popover placement="bottom" showArrow={true}>
                       <PopoverTrigger>
-                        <span className="cursor-help">{userInfo?.email}</span>
+                        <span className="cursor-help">
+                          {memoUserInfo?.email}
+                        </span>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="px-1 py-2">
                           <div className="text-small font-bold">
-                            {userInfo?.email}
+                            {memoUserInfo?.email}
                           </div>
                         </div>
                       </PopoverContent>
@@ -232,13 +239,13 @@ export function Sidebar() {
                     <Popover placement="bottom" showArrow={true}>
                       <PopoverTrigger>
                         <span className="cursor-help">
-                          {userInfo?.display_name}
+                          {memoUserInfo?.display_name}
                         </span>
                       </PopoverTrigger>
                       <PopoverContent>
                         <div className="px-1 py-2">
                           <div className="text-small font-bold">
-                            {userInfo?.display_name}
+                            {memoUserInfo?.display_name}
                           </div>
                         </div>
                       </PopoverContent>
@@ -312,10 +319,10 @@ export function Sidebar() {
                 <Avatar src="https://i.pravatar.cc/150?u=a04258114e29026702d" />
                 <div className="hidden sm:flex flex-col gap-0">
                   <span className="text-sm text-ellipsis line-clamp-1 max-w-[100px] sm:max-w-[200px]">
-                    {userInfo?.display_name}
+                    {memoUserInfo?.display_name}
                   </span>
                   <span className="text-tiny text-ellipsis line-clamp-1 text-foreground-400 max-w-[100px] sm:max-w-[200px]">
-                    {userInfo?.email}
+                    {memoUserInfo?.email}
                   </span>
                 </div>
               </div>
@@ -374,3 +381,5 @@ export function Sidebar() {
     </>
   );
 }
+
+export const Sidebar = memo(SidebarComponent);

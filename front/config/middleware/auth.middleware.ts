@@ -56,7 +56,7 @@ export const authMiddleware = async (request: NextRequest) => {
   const accessToken = session?.access_token as string;
   const pathname = request.nextUrl.pathname;
   const lang = pathname.split('/')[1];
-  const nextPath = `/${lang}${siteConfig.apps.routes.home}`;
+  const nextPath = `/`;
 
   // Skip auth check for public routes
   if (isPublicRoute(pathname, lang)) {

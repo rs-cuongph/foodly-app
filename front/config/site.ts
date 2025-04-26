@@ -7,7 +7,7 @@ export const siteConfig = {
     description: 'Foodly App',
     routes: {
       home: '/',
-      history: '/my-payment-history',
+      history: '/my-order',
       my_group: '/my-group',
       my_page: '/my-page',
       group: {

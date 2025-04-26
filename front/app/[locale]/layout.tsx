@@ -55,15 +55,6 @@ export default async function RootLayout({
     notFound();
   }
 
-  // Load messages for the current locale
-  let messages;
-
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  } catch {
-    notFound();
-  }
-
   return (
     <html suppressHydrationWarning lang={locale}>
       <head />
@@ -78,7 +69,7 @@ export default async function RootLayout({
             <Providers
               themeProps={{ attribute: 'class', defaultTheme: 'light' }}
             >
-              <NextIntlClientProvider locale={locale} messages={messages}>
+              <NextIntlClientProvider>
                 <div className="relative flex flex-col h-screen overflow-y-hidden bg-center bg-cover bg-banner bg-no-repeat">
                   <Header />
                   <main className="w-full mx-auto pt-16 md:pt-[135px] md:px-8 px-4 md:flex md:gap-4 lg:gap-10">
