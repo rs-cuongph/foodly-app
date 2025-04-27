@@ -1,4 +1,8 @@
 {
+  "loading_screen": {
+    "loading": "Đang tải dữ liệu",
+    "please_wait": "Vui lòng đợi trong giây lát..."
+  },
   "button": {
     "login": "Đăng nhập",
     "close": "Đóng",
@@ -12,19 +16,19 @@
     "order": "Đặt hàng",
     "payment_history": "Lịch sử thanh toán",
     "chat": "Trò chuyện",
-    "delete": "Xóa bỏ",
-    "edit": "Biên tập",
-    "lock": "Khóa",
-    "see_less": "Xem ít hơn",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "lock": "Khóa",
+    "see_less": "Thu gọn",
     "see_more": "Xem thêm",
     "share": "Chia sẻ",
-    "back": "Mặt sau",
-    "i_paid": "Tôi đã trả tiền",
-    "next": "Kế tiếp",
-    "paid": "Chi trả"
+    "back": "Quay lại",
+    "i_paid": "Tôi đã thanh toán",
+    "next": "Tiếp theo",
+    "paid": "Thanh toán"
   },
   "common": {
-    "empty": "Không có dữ liệu có sẵn.",
+    "empty": "Không có dữ liệu.",
     "modal_title": {
       "create_group": "Tạo nhóm",
       "sign_in": "Đăng nhập",
@@ -39,29 +43,29 @@
       "mark_paid": "Đánh dấu đã thanh toán"
     },
     "placeholder": {
-      "select": "Lựa chọn"
+      "select": "Chọn"
     },
     "search_placeholder": "Tìm kiếm",
     "share_scope": {
       "private": "Riêng tư",
-      "public": "Công cộng"
+      "public": "Công khai"
     },
     "modal_description": {
-      "confirm_delete": "Bạn có chắc là bạn muốn xóa nhóm này?",
-      "confirm_lock": "Bạn có chắc là bạn muốn khóa nhóm này?",
-      "confirm_paid": "Bạn có chắc là bạn muốn xác nhận thanh toán này?",
-      "cancel_order": "Bạn có chắc là bạn muốn hủy đơn hàng này?"
+      "confirm_delete": "Bạn có chắc muốn xóa nhóm này không?",
+      "confirm_lock": "Bạn có chắc muốn khóa nhóm này không?",
+      "confirm_paid": "Bạn có chắc muốn xác nhận thanh toán này không?",
+      "cancel_order": "Bạn có chắc muốn hủy đơn hàng này không?"
     },
     "order_table": {
-      "total": "{total} đơn đặt hàng ({amount})"
+      "total": "{total} đơn hàng ({amount})"
     },
     "status": {
       "label": "Trạng thái",
       "order": {
-        "cancelled": "Bị hủy bỏ",
+        "cancelled": "Đã hủy",
         "completed": "Hoàn thành",
         "init": "Khởi tạo",
-        "processing": "Xử lý"
+        "processing": "Đang xử lý"
       }
     },
     "table_column": {
@@ -79,23 +83,23 @@
       "share_scope": "Phạm vi chia sẻ",
       "share_scope_label": {
         "private": "Riêng tư",
-        "public": "Công cộng"
+        "public": "Công khai"
       },
       "status": "Trạng thái",
       "status_label": {
-        "available": "Có sẵn",
+        "available": "Khả dụng",
         "init": "Khởi tạo",
-        "locked": "Khóa",
-        "unavailable": "Không có sẵn"
+        "locked": "Đã khóa",
+        "unavailable": "Không khả dụng"
       }
     }
   },
   "sign_in_modal": {
-    "dont_have_account": "Không có tài khoản?",
-    "email": "E-mail",
+    "dont_have_account": "Chưa có tài khoản?",
+    "email": "Email",
     "forgot_password": "Quên mật khẩu?",
     "now": "Ngay",
-    "or": "hoặc đăng nhập bởi",
+    "or": "hoặc đăng nhập bằng",
     "organization_code": "Mã tổ chức",
     "password": "Mật khẩu",
     "placeholder": {
@@ -108,9 +112,9 @@
   "sign_up_modal": {
     "confirm_password": "Xác nhận mật khẩu",
     "display_name": "Tên hiển thị",
-    "email": "E-mail",
-    "have_account": "Có một tài khoản?",
-    "now": "Hiện nay!",
+    "email": "Email",
+    "have_account": "Đã có tài khoản?",
+    "now": "Ngay!",
     "organization_code": "Mã tổ chức",
     "password": "Mật khẩu",
     "placeholder": {
@@ -126,16 +130,16 @@
     "error": {
       "auth_failed": "Đăng nhập thất bại",
       "signup_failed": "Đăng ký thất bại",
-      "invite_code": "Mời mã không thành công"
+      "invite_code": "Mã mời không hợp lệ"
     },
     "success": {
-      "create_group_success": "Tạo thành công nhóm",
-      "signin_success": "Thành công",
+      "create_group_success": "Tạo nhóm thành công",
+      "signin_success": "Đăng nhập thành công",
       "signup_success": "Đăng ký thành công",
-      "delete_group": "Xóa thành công nhóm",
-      "invite_code_success": "Tham gia thành công nhóm",
-      "lock_group": "Khóa thành công của nhóm",
-      "update_group_success": "Cập nhật thành công nhóm",
+      "delete_group": "Xóa nhóm thành công",
+      "invite_code_success": "Tham gia nhóm thành công",
+      "lock_group": "Khóa nhóm thành công",
+      "update_group_success": "Cập nhật nhóm thành công",
       "create_order": "Tạo đơn hàng thành công",
       "confirm_paid": "Xác nhận thanh toán thành công",
       "cancel_order": "Hủy đơn hàng thành công",
@@ -144,15 +148,15 @@
   },
   "upsert_group_modal": {
     "add_menu": "Thêm menu",
-    "auto": "Tự động",
-    "date_range": "Phạm vi ngày công khai",
+    "auto": "Tự động",
+    "date_range": "Khoảng thời gian công khai",
     "description": {
-      "date_range": "* Chọn phạm vi ngày trước ngày hiện tại"
+      "date_range": "* Chọn khoảng thời gian trước ngày hiện tại"
     },
     "is_same_price": "Cùng giá",
     "manual": "Thủ công",
     "menu_name": "Tên menu",
-    "menu_price": "Giá thực đơn",
+    "menu_price": "Giá menu",
     "name": "Tên nhóm",
     "placeholder": {
       "menu_name": "Nhập tên menu",
@@ -162,49 +166,49 @@
     },
     "price": "Giá",
     "share_scope": "Phạm vi chia sẻ",
-    "type": "Kiểu"
+    "type": "Loại"
   },
   "validation": {
-    "email": "{field} cần phải là một email hợp lệ",
+    "email": "{field} phải là một email hợp lệ",
     "fields": {
       "confirm_password": "Xác nhận mật khẩu",
       "display_name": "Tên hiển thị",
-      "email": "E-mail",
-      "end_date": "Phạm vi ngày công khai",
-      "is_same_price": "Là giá tương tự",
+      "email": "Email",
+      "end_date": "Ngày kết thúc",
+      "is_same_price": "Cùng giá",
       "menu_name": "Tên menu",
-      "menu_price": "Giá thực đơn",
-      "menus": "Thực đơn",
+      "menu_price": "Giá menu",
+      "menus": "Menu",
       "name": "Tên nhóm",
       "organization_code": "Mã tổ chức",
       "password": "Mật khẩu",
       "price": "Giá",
       "share_scope": "Phạm vi chia sẻ",
-      "start_date": "Phạm vi ngày công khai",
-      "type": "Kiểu",
-      "invite_code": "Mời mã",
+      "start_date": "Ngày bắt đầu",
+      "type": "Loại",
+      "invite_code": "Mã mời",
       "account_name": "Tên tài khoản",
       "account_number": "Số tài khoản",
       "note": "Ghi chú",
       "payment_method": "Phương thức thanh toán"
     },
-    "max": "{field} cần nhỏ hơn hoặc bằng {max} ký tự",
-    "max_num": "{field} cần phải nhỏ hơn hoặc bằng {max}",
-    "min": "{field} cần ít nhất {min} ký tự",
-    "min_num": "{field} cần ít nhất {min}",
+    "max": "{field} không được vượt quá {max} ký tự",
+    "max_num": "{field} phải nhỏ hơn hoặc bằng {max}",
+    "min": "{field} phải có ít nhất {min} ký tự",
+    "min_num": "{field} phải lớn hơn hoặc bằng {min}",
     "no_emoji": "{field} không được chứa biểu tượng cảm xúc",
-    "no_special_characters": "{field} không được chứa các ký tự đặc biệt",
-    "numeric": "{field} phải là một số",
+    "no_special_characters": "{field} không được chứa ký tự đặc biệt",
+    "numeric": "{field} phải là số",
     "password": "{field} phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
     "price_validation": "Giá phải từ 1.000 đến 10.000.000",
-    "required": "{field} không thể trống",
+    "required": "{field} không được để trống",
     "sameAs": "{field} và {field2} phải giống nhau",
-    "date_cannot_be_earlier_than_minimum_date": "Ngày không thể sớm hơn ngày tối thiểu",
-    "start_date_must_be_before_end_date": "Ngày bắt đầu phải là trước ngày kết thúc"
+    "date_cannot_be_earlier_than_minimum_date": "Ngày không được sớm hơn ngày tối thiểu",
+    "start_date_must_be_before_end_date": "Ngày bắt đầu phải trước ngày kết thúc"
   },
   "invite_code_modal": {
     "label": {
-      "invite_code": "Mời mã"
+      "invite_code": "Mã mời"
     },
     "placeholder": {
       "invite_code": "Nhập mã mời của bạn"
@@ -213,13 +217,13 @@
   },
   "toast": {
     "share": {
-      "success": "Sao chép vào bảng tạm"
+      "success": "Đã sao chép vào bảng tạm"
     }
   },
   "table": {
     "columns": {
-      "action": "Hoạt động",
-      "created_at": "Được tạo ra tại",
+      "action": "Hành động",
+      "created_at": "Thời gian tạo",
       "menu_name": "Tên menu",
       "no": "STT",
       "note": "Ghi chú",
@@ -227,10 +231,13 @@
       "price": "Giá",
       "quantity": "Số lượng",
       "status": "Trạng thái",
-      "total": "Tổng số tiền",
+      "total": "Tổng tiền",
       "user": {
         "display_name": "Tên"
-      }
+      },
+      "group_code": "Mã nhóm",
+      "group_name": "Tên nhóm",
+      "order_created_by": "Người đặt hàng"
     }
   },
   "order_modal": {
@@ -240,19 +247,19 @@
     "payment_method_placeholder": "Chọn phương thức thanh toán của bạn",
     "step": {
       "note": "Ghi chú",
-      "payment": "Sự chi trả",
-      "select_dishes": "Chọn món ăn"
+      "payment": "Thanh toán",
+      "select_dishes": "Chọn món"
     },
-    "menu": "Thực đơn",
+    "menu": "Menu",
     "quantity": "Số lượng",
     "same_price": "Cùng giá",
-    "scan_with_bank_app": "Sử dụng app ngân hàng để quét mã",
-    "product_info": "Thông Tin",
+    "scan_with_bank_app": "Sử dụng ứng dụng ngân hàng để quét mã",
+    "product_info": "Thông tin",
     "qr_code_not_available": "Mã QR không khả dụng"
   },
   "confirm_modal": {
     "cancel_order": {
-      "reason": "Lý do hủy bỏ",
+      "reason": "Lý do hủy",
       "reason_placeholder": "Nhập lý do của bạn"
     }
   }

@@ -1,8 +1,10 @@
-import { Pagination, User } from '@heroui/react';
+import { Pagination } from '@heroui/react';
 import { cn } from '@heroui/theme';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+
+import OrderActionTable from './order-action';
 
 import { BadgeStatus } from '@/components/atoms/BadgeStatus';
 import MyDatatable, {
@@ -10,38 +12,41 @@ import MyDatatable, {
   MyTableRowProps,
 } from '@/components/atoms/Datatable';
 import MyDropdown from '@/components/atoms/Dropdown';
-import { FilterIcon2, SearchIcon, SettingIcon } from '@/components/atoms/icons';
+import { FilterIcon2, SearchIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
 import { StripContent } from '@/components/molecules/strip-content';
-import OrderActionTable from '@/components/organisms/group-detail/order-action';
 import { ORDER_STATUS_ENUM } from '@/config/constant';
 import { useGetOrderListQuery } from '@/hooks/api/order';
 import { useStateQueryParams } from '@/hooks/query';
+import { Link } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { calculateNo, commaFormat } from '@/shared/helper/format';
 import StatusHelper from '@/shared/helper/status';
 
-export type OrderListClass = {
+export type MyOrderListClass = {
   groupId?: string;
   className: string;
 };
 
-export default function OrderListTable({ className, groupId }: OrderListClass) {
+export default function MyOrderListTable({
+  className,
+  groupId,
+}: MyOrderListClass) {
   const t = useTranslations();
   const { lang } = useParams();
 
   StatusHelper.setTranslation(t);
   const statusOptions = StatusHelper.getStatusOptions();
 
-  const [selectedColumns, setSelectedColumns] = useState<string[]>([
+  const [selectedColumns] = useState<string[]>([
     'no',
-    'name',
+    'group_code',
+    'group_name',
     'menu_name',
-    'quantity',
-    'price',
     'total',
-    'note',
+    'payment_method',
     'status',
+    'created_at',
     'action',
   ]);
 
@@ -49,18 +54,19 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
     group_id: groupId,
     page: 1,
     size: 50,
-    sort: 'created_at:asc',
+    sort: 'created_at:desc',
     keyword: '',
     with_created_by: 1,
     with_group: 1,
+    is_mine: 1,
     statuses: Object.values(ORDER_STATUS_ENUM).map((status) =>
       status.toString(),
     ),
   });
 
   const { data: orderList, isPending } = useGetOrderListQuery(
-    { ...searchParams, group_id: groupId },
-    !!groupId,
+    { ...searchParams },
+    true,
   );
 
   // Define columns for the datatable
@@ -72,8 +78,14 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
       show: true,
     },
     {
-      key: 'name',
-      label: t('table.columns.user.display_name'),
+      key: 'group_code',
+      label: t('table.columns.group_code'),
+      props: {},
+      show: true,
+    },
+    {
+      key: 'group_name',
+      label: t('table.columns.group_name'),
       props: {},
       show: true,
     },
@@ -144,17 +156,19 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
             searchParams.size,
           ),
         },
-        name: {
+        group_code: {
           render: (
-            <User
-              avatarProps={{
-                src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
-              }}
-              description={order.created_by.email}
-              name={order.created_by.display_name}
+            <Link
+              className="text-primary underline"
+              href={`/group/${order.group.id}`}
             >
-              {order.created_by.email}
-            </User>
+              {order.group.code}
+            </Link>
+          ),
+        },
+        group_name: {
+          render: (
+            <StripContent content={order.group.name} maxContentLength={50} />
           ),
         },
         menu_name: {
@@ -196,11 +210,6 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
       };
     }) ?? [];
 
-  const columnsOptions = columns.map((column) => ({
-    uid: column.key,
-    name: column.label as string,
-  }));
-
   const handleStatusChange = (keys: string[]) => {
     setSpecificValue('statuses', keys);
   };
@@ -239,20 +248,6 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
             triggerContent={t('common.status.label').toLowerCase()}
           />
         </div>
-        <MyDropdown
-          columns={columnsOptions}
-          dropdownMenuProps={{
-            selectedKeys: selectedColumns,
-            onSelectionChange: setSelectedColumns,
-          }}
-          myButtonProps={{
-            className: 'min-w-[150px] text-md',
-            startContent: <SettingIcon className="h-5 w-5 text-gray-500" />,
-            color: 'default',
-            size: 'md',
-          }}
-          triggerContent={t('common.table_column.label').toLowerCase()}
-        />
       </div>
       <div className="mb-2">
         {orderList?.total_quantity !== undefined &&

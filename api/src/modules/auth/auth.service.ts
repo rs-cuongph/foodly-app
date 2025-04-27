@@ -314,20 +314,42 @@ export class AuthService {
 
   async getUserInfo(user: RequestWithUser['user']) {
     const maxOrder = user.max_order;
-    const ordersNotPay = await this.prismaService.client.order.findMany({
+
+    const countInitOrder = await this.prismaService.client.order.findMany({
       where: {
         created_by_id: user.id,
-        status: {
-          in: [ORDER_STATUS_ENUM.INIT, ORDER_STATUS_ENUM.PROCESSING],
-        },
+        status: ORDER_STATUS_ENUM.INIT,
+      },
+      select: {
+        id: true,
+        status: true,
       },
     });
 
-    const currentPoint = ordersNotPay.reduce((prev, curr) => {
-      let _curr = 1;
-      if (curr.status === ORDER_STATUS_ENUM.PROCESSING) _curr = 0.5;
-      return prev + _curr;
-    }, 0);
+    const countProcessingOrder = await this.prismaService.client.order.findMany(
+      {
+        where: {
+          created_by_id: user.id,
+          status: ORDER_STATUS_ENUM.PROCESSING,
+        },
+        select: {
+          id: true,
+          status: true,
+        },
+      },
+    );
+
+    const currentPoint = [...countInitOrder, ...countProcessingOrder].reduce(
+      (prev, curr) => {
+        let _curr = 1;
+        if (curr.status === ORDER_STATUS_ENUM.PROCESSING) _curr = 0.5;
+        return prev + _curr;
+      },
+      0,
+    );
+
+    user['count_init_order'] = countInitOrder.length;
+    user['count_processing_order'] = countProcessingOrder.length;
 
     user['can_create_order'] = currentPoint < maxOrder;
 

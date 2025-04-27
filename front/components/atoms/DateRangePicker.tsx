@@ -64,26 +64,6 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
           errorMessage={props.errorMessage}
           isInvalid={!!props.errorMessage}
           minValue={minValue}
-          validate={(value) => {
-            if (!value) return null;
-            const start = value.start.toDate(timezone);
-            const end = value.end.toDate(timezone);
-
-            // Basic validation for start <= end
-            if (start > end) {
-              return t('validation.start_date_must_be_before_end_date');
-            }
-
-            // Custom validation for minValue
-            if (props.minValue && value.start < props.minValue) {
-              return (
-                minValueErrorMessage ||
-                t('validation.date_cannot_be_earlier_than_minimum_date')
-              );
-            }
-
-            return true;
-          }}
           value={value}
           onChange={(e) => {
             if (!e) return;

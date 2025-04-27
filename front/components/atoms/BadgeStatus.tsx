@@ -26,7 +26,7 @@ export const BadgeStatus = (props: BadgeStatusProps) => {
       className={cn(
         props.className,
         mapClass[props.status as ORDER_STATUS_ENUM],
-        'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+        'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium whitespace-nowrap',
       )}
     >
       {statusText}

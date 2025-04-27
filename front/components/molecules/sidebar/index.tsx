@@ -321,7 +321,7 @@ function SidebarComponent() {
           </div>
         </div>
       </div>
-      <div className="md:hidden bg-white rounded-full px-2 py-2 absolute bottom-4 w-[calc(100%-2rem)] mx-auto left-0 right-0 drop-shadow-xl">
+      <div className="md:hidden bg-white rounded-full px-2 py-2 fixed bottom-2 w-[calc(100%-2rem)] mx-auto left-0 right-0 drop-shadow-xl z-50 border border-primary-50">
         <div className="flex gap-2 items-center justify-between">
           <div>
             {isLogin ? (

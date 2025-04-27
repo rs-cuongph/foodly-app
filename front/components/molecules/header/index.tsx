@@ -3,13 +3,13 @@
 import { LanguageIcon } from '@heroicons/react/24/outline';
 import { Button } from '@heroui/react';
 import clsx from 'clsx';
-import { setCookie } from 'cookies-next';
-import { useLocale } from 'next-intl';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
+
 export default function Header() {
-  const locale = useLocale();
+  const { locale } = useParams();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -17,20 +17,15 @@ export default function Header() {
   const toggleLocale = () => {
     const newLocale = locale === 'en' ? 'vi' : 'en';
 
-    // Set cookie to remember user preference
-    setCookie('NEXT_LOCALE', newLocale, {
-      maxAge: 365 * 24 * 60 * 60, // 1 year
-      path: '/',
-    });
-
     // Navigate to new locale
-    router.push(pathname, { locale: newLocale });
+    router.replace(pathname, { locale: newLocale });
   };
 
   return (
     <div
       className={clsx(
-        'w-full absolute top-[10px] right-[50%] transform translate-x-1/2 flex flex-row header-wrapper mx-auto justify-between md:px-8 px-4',
+        'py-2 md:px-8 px-4 sticky top-0 z-50',
+        'w-full flex flex-row header-wrapper mx-auto justify-between',
       )}
     >
       <div className="flex flex-row items-center gap-2 backdrop:blur-md px-2 py-1 backdrop-blur-md bg-[#fe724c91] rounded-[30px]">

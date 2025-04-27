@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
+import OrderActionTable from './order-action';
+
 import { BadgeStatus } from '@/components/atoms/BadgeStatus';
 import MyDatatable, {
   MyTableColumnProps,
@@ -13,20 +15,23 @@ import MyDropdown from '@/components/atoms/Dropdown';
 import { FilterIcon2, SearchIcon, SettingIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
 import { StripContent } from '@/components/molecules/strip-content';
-import OrderActionTable from '@/components/organisms/group-detail/order-action';
 import { ORDER_STATUS_ENUM } from '@/config/constant';
 import { useGetOrderListQuery } from '@/hooks/api/order';
 import { useStateQueryParams } from '@/hooks/query';
+import { Link } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { calculateNo, commaFormat } from '@/shared/helper/format';
 import StatusHelper from '@/shared/helper/status';
 
-export type OrderListClass = {
+export type MyOrderListClass = {
   groupId?: string;
   className: string;
 };
 
-export default function OrderListTable({ className, groupId }: OrderListClass) {
+export default function MyOrderListTable({
+  className,
+  groupId,
+}: MyOrderListClass) {
   const t = useTranslations();
   const { lang } = useParams();
 
@@ -35,13 +40,13 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
 
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'no',
-    'name',
+    'group_code',
+    'order_created_by',
     'menu_name',
-    'quantity',
-    'price',
     'total',
-    'note',
+    'payment_method',
     'status',
+    'created_at',
     'action',
   ]);
 
@@ -49,18 +54,19 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
     group_id: groupId,
     page: 1,
     size: 50,
-    sort: 'created_at:asc',
+    sort: 'created_at:desc',
     keyword: '',
     with_created_by: 1,
     with_group: 1,
+    is_mine_group: 1,
     statuses: Object.values(ORDER_STATUS_ENUM).map((status) =>
       status.toString(),
     ),
   });
 
   const { data: orderList, isPending } = useGetOrderListQuery(
-    { ...searchParams, group_id: groupId },
-    !!groupId,
+    { ...searchParams },
+    true,
   );
 
   // Define columns for the datatable
@@ -72,8 +78,20 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
       show: true,
     },
     {
-      key: 'name',
-      label: t('table.columns.user.display_name'),
+      key: 'group_code',
+      label: t('table.columns.group_code'),
+      props: {},
+      show: true,
+    },
+    {
+      key: 'group_name',
+      label: t('table.columns.group_name'),
+      props: {},
+      show: true,
+    },
+    {
+      key: 'order_created_by',
+      label: t('table.columns.order_created_by'),
       props: {},
       show: true,
     },
@@ -144,7 +162,22 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
             searchParams.size,
           ),
         },
-        name: {
+        group_code: {
+          render: (
+            <Link
+              className="text-primary underline"
+              href={`/group/${order.group.id}`}
+            >
+              {order.group.code}
+            </Link>
+          ),
+        },
+        group_name: {
+          render: (
+            <StripContent content={order.group.name} maxContentLength={50} />
+          ),
+        },
+        order_created_by: {
           render: (
             <User
               avatarProps={{
@@ -246,12 +279,12 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
             onSelectionChange: setSelectedColumns,
           }}
           myButtonProps={{
-            className: 'min-w-[150px] text-md',
+            className: 'text-md',
             startContent: <SettingIcon className="h-5 w-5 text-gray-500" />,
             color: 'default',
             size: 'md',
           }}
-          triggerContent={t('common.table_column.label').toLowerCase()}
+          triggerContent={''}
         />
       </div>
       <div className="mb-2">

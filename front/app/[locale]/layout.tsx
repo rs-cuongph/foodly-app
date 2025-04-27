@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 import clsx from 'clsx';
 import { Metadata, Viewport } from 'next';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { Providers } from '../../providers/hero-ui';
@@ -59,6 +60,8 @@ export default async function RootLayout({
     notFound();
   }
 
+  const messages = await getMessages({ locale });
+
   return (
     <html suppressHydrationWarning lang={locale}>
       <head />
@@ -68,12 +71,12 @@ export default async function RootLayout({
           fontSans.variable,
         )}
       >
-        <NextAuthProvider>
-          <ReactQueryProvider>
-            <Providers
-              themeProps={{ attribute: 'class', defaultTheme: 'light' }}
-            >
-              <NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <NextAuthProvider>
+            <ReactQueryProvider>
+              <Providers
+                themeProps={{ attribute: 'class', defaultTheme: 'light' }}
+              >
                 <div className="relative flex flex-col h-screen overflow-y-hidden bg-center bg-cover bg-banner bg-no-repeat">
                   <Header />
                   <main className="w-full mx-auto pt-16 md:pt-[135px] md:px-8 px-4 md:flex md:gap-4 lg:gap-10">
@@ -87,10 +90,10 @@ export default async function RootLayout({
                 <UpsertGroupModal />
                 <ConfirmModal />
                 <OrderModal />
-              </NextIntlClientProvider>
-            </Providers>
-          </ReactQueryProvider>
-        </NextAuthProvider>
+              </Providers>
+            </ReactQueryProvider>
+          </NextAuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

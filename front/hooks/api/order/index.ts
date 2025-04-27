@@ -90,17 +90,6 @@ export const confirmPaidAllApi = (
   });
 };
 
-export const useCancelMutation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (orderId: string) => cancelApi(orderId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['order-list'] });
-    },
-  });
-};
-
 export const useMarkPaidMutation = () => {
   const queryClient = useQueryClient();
 

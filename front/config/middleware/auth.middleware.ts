@@ -4,6 +4,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { siteConfig } from '../site';
 
 import { apiClient } from '@/plugins/axios';
+
+const getCookieLocale = (request: NextRequest) => {
+  const cookie = request.cookies.get('NEXT_LOCALE');
+
+  return cookie?.value || 'en';
+};
+
 const cookieName = process.env.NEXTAUTH_URL?.startsWith('https://')
   ? '__Secure-next-auth.session-token'
   : 'next-auth.session-token';
@@ -12,7 +19,7 @@ const cookieName = process.env.NEXTAUTH_URL?.startsWith('https://')
 const isPublicRoute = (pathname: string, lang: string): boolean => {
   // Add all your public routes here
   const publicPaths = [
-    '/', // Home page is public
+    '', // Home page is public
     '/home', // Home page is public
   ].map((path) => `/${lang}${path}`);
 
@@ -27,7 +34,7 @@ const isPublicRoute = (pathname: string, lang: string): boolean => {
 };
 
 const getUserInfo = async (accessToken: string) => {
-  console.log('accessToken', accessToken);
+  // console.log('accessToken', accessToken);
 
   try {
     // Fix: apiClient.get instead of post, and headers should be separate parameter
@@ -37,7 +44,7 @@ const getUserInfo = async (accessToken: string) => {
       },
     });
 
-    console.log('response', response);
+    // console.log('response', response);
 
     return response.data;
   } catch {
@@ -55,8 +62,14 @@ export const authMiddleware = async (request: NextRequest) => {
 
   const accessToken = session?.access_token as string;
   const pathname = request.nextUrl.pathname;
-  const lang = pathname.split('/')[1];
+  const lang = getCookieLocale(request);
+
   const nextPath = `/`;
+
+  // Redirect to home page if pathname is empty
+  // if (pathname === '/') {
+  //   return NextResponse.redirect(new URL(`/${lang}`, request.url));
+  // }
 
   // Skip auth check for public routes
   if (isPublicRoute(pathname, lang)) {
