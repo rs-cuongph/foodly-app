@@ -35,7 +35,7 @@ export class MailService {
     try {
       const subject = 'Đặt lại mật khẩu';
       const resetLink = redirectUrl
-        ? `${redirectUrl}?token=${resetToken}`
+        ? `${redirectUrl}?token=${resetToken}&modal=reset_password`
         : `${this.configService.get('mail.frontendUrl')}/reset-password?token=${resetToken}`;
       await this.sendMail({
         to,
