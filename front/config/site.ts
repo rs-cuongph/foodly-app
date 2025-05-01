@@ -18,6 +18,11 @@ export const siteConfig = {
       login: '/auth/sign-in',
       register: '/auth/sign-up',
       my_info: '/auth/user-info',
+      update_user_info: '/auth/user-info',
+      update_password: '/auth/change-password',
+      reset_password: '/auth/reset-password',
+      verify_reset_password: '/auth/verify-reset-password-token',
+      set_first_password: '/auth/set-password',
       webauthn: {
         generate_challenge: '/auth/webauth/register',
         verify_registration: '/auth/webauth/register/verify',

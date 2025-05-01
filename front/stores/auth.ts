@@ -2,22 +2,30 @@ import { create } from 'zustand';
 
 import { useGroupStore } from './group';
 
-import { UserInfoResponse } from '@/hooks/api/auth/type';
+import { PaymentSetting, UserInfoResponse } from '@/hooks/api/auth/type';
 import { OrderListItem } from '@/hooks/api/order/type';
 
-type User = UserInfoResponse;
 interface AuthStore {
   isLoggedIn: boolean;
-  userInfo: User | null;
-  setUserInfo: (userInfo: User) => void;
+  userInfo: UserInfoResponse | null;
+  paymentSettings: () => PaymentSetting[];
+  setUserInfo: (userInfo: UserInfoResponse) => void;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
   isGroupOwner: () => boolean;
-  // isOrderOwner: () => boolean;
+  canCreateOrder: () => boolean;
+  setCountInitOrder: (count: number) => void;
+  setCountProcessingOrder: (count: number) => void;
+  deletePaymentSetting: (index: number) => void;
+  setPaymentSetting: (paymentSetting: PaymentSetting[]) => void;
+  setDisplayName: (displayName: string) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   isLoggedIn: false,
   userInfo: null,
+  paymentSettings: () => {
+    return get().userInfo?.payment_setting ?? [];
+  },
   isGroupOwner: () => {
     const groupInfo = useGroupStore.getState().groupInfo;
 
@@ -28,4 +36,52 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
   setUserInfo: (userInfo) => set({ userInfo }),
   setIsLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
+  canCreateOrder: () => {
+    return get().userInfo?.can_create_order ?? false;
+  },
+  setCountInitOrder: (count) =>
+    set((state) => ({
+      userInfo: state.userInfo
+        ? {
+            ...state.userInfo,
+            count_init_order: count,
+          }
+        : null,
+    })),
+  setCountProcessingOrder: (count) =>
+    set((state) => ({
+      userInfo: state.userInfo
+        ? {
+            ...state.userInfo,
+            count_processing_order: count,
+          }
+        : null,
+    })),
+  deletePaymentSetting: (index: number) =>
+    set((state) => ({
+      userInfo: state.userInfo
+        ? {
+            ...state.userInfo,
+            payment_setting: state.userInfo.payment_setting.filter(
+              (_: PaymentSetting, i: number) => i !== index,
+            ),
+          }
+        : null,
+    })),
+
+  setPaymentSetting: (paymentSetting) =>
+    set((state) => ({
+      userInfo: state.userInfo
+        ? {
+            ...state.userInfo,
+            payment_setting: paymentSetting,
+          }
+        : null,
+    })),
+  setDisplayName: (displayName) =>
+    set((state) => ({
+      userInfo: state.userInfo
+        ? { ...state.userInfo, display_name: displayName }
+        : null,
+    })),
 }));

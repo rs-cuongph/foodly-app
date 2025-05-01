@@ -33,5 +33,6 @@
   "challenge_not_found_or_expired": "Challenge không tồn tại hoặc đã hết hạn.",
   "group_not_found": "Nhóm không tồn tại.",
   "order_over_10_minutes": "Đơn hàng này đã được đặt hơn 10 phút. Bạn không thể tự hủy đơn hàng. Vui lòng liên hệ chủ nhóm để yêu cầu hủy.",
-  "order_has_paid": "Đơn hàng này đã được thanh toán. Bạn không thể tự hủy đơn hàng. Vui lòng liên hệ chủ nhóm để yêu cầu hủy."
+  "order_has_paid": "Đơn hàng này đã được thanh toán. Bạn không thể tự hủy đơn hàng. Vui lòng liên hệ chủ nhóm để yêu cầu hủy.",
+  "password_reset_mail_sent": "Email đặt lại mật khẩu đã được gửi tới email của bạn."
 }

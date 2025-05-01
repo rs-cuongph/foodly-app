@@ -225,7 +225,9 @@ declare const messages: {
     "error": {
       "auth_failed": "Signin Failed",
       "signup_failed": "Signup Failed",
-      "invite_code": "Invite Code Failed"
+      "invite_code": "Invite Code Failed",
+      "create_order_failed": "Create Order Failed",
+      "cannot_create_order": "You have an unpaid order, please pay first!"
     },
     "success": {
       "signin_success": "Signin Success",

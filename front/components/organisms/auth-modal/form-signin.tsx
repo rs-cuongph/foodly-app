@@ -116,7 +116,13 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
           />
         </div>
         <div className="w-full flex justify-end mt-2">
-          <span className="text-sm text-primary underline cursor-pointer">
+          <span
+            className="text-sm text-primary underline cursor-pointer"
+            role="button"
+            onClick={() =>
+              setSelectedForm(FormType.FORGOT_PASSWORD, ModalType.AUTH)
+            }
+          >
             {t('sign_in_modal.forgot_password')}
           </span>
         </div>

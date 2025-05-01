@@ -1,4 +1,4 @@
-import { Pagination, User } from '@heroui/react';
+import { Pagination } from '@heroui/react';
 import { cn } from '@heroui/theme';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
@@ -12,6 +12,7 @@ import MyDatatable, {
 import MyDropdown from '@/components/atoms/Dropdown';
 import { FilterIcon2, SearchIcon, SettingIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
+import UserAvatar from '@/components/atoms/UserAvatar';
 import { StripContent } from '@/components/molecules/strip-content';
 import OrderActionTable from '@/components/organisms/group-detail/order-action';
 import { ORDER_STATUS_ENUM } from '@/config/constant';
@@ -146,15 +147,11 @@ export default function OrderListTable({ className, groupId }: OrderListClass) {
         },
         name: {
           render: (
-            <User
-              avatarProps={{
-                src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
-              }}
+            <UserAvatar
               description={order.created_by.email}
+              id={order.created_by.email}
               name={order.created_by.display_name}
-            >
-              {order.created_by.email}
-            </User>
+            />
           ),
         },
         menu_name: {

@@ -5,6 +5,8 @@ import { ConfirmModalKind } from '@/components/organisms/confirm-modal';
 export enum FormType {
   SIGN_IN = 'signIn',
   SIGN_UP = 'signUp',
+  FORGOT_PASSWORD = 'forgotPassword',
+  RESET_PASSWORD = 'resetPassword',
   CREATE_GROUP = 'createGroup',
   CONFIRM = 'modalConfirm',
   UPDATE_GROUP = 'updateGroup',

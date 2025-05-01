@@ -3,16 +3,16 @@
 import { HomeIcon } from '@heroicons/react/24/outline';
 import {
   Avatar,
+  Chip,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  User,
 } from '@heroui/react';
 import clsx from 'clsx';
 import { signOut, useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { useParams, usePathname } from 'next/navigation';
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
 import {
@@ -22,6 +22,7 @@ import {
   MyGroupIcon,
   SettingIcon,
 } from '@/components/atoms/icons';
+import UserAvatar from '@/components/atoms/UserAvatar';
 import { STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { useGetUserInfoQuery } from '@/hooks/api/auth';
@@ -31,10 +32,10 @@ import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
-function SidebarComponent() {
+export default function Sidebar() {
   const router = useRouter();
   const pathName = usePathname();
-  const { locale } = useParams();
+  const locale = useLocale();
   const t = useTranslations();
   const commonStore = useCommonStore();
   const { data: session, status } = useSession();
@@ -65,6 +66,14 @@ function SidebarComponent() {
     return userInfoFromQuery || storeUserInfo;
   }, [userInfoFromQuery, storeUserInfo]);
 
+  const countInitOrder = useMemo(() => {
+    return currentUserInfo?.count_init_order || 0;
+  }, [currentUserInfo]);
+
+  const countProcessingOrder = useMemo(() => {
+    return currentUserInfo?.count_processing_order || 0;
+  }, [currentUserInfo]);
+
   const menuItems = useMemo(
     () => [
       {
@@ -90,6 +99,30 @@ function SidebarComponent() {
         icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
         pathRegex: '/[a-z]{2}/my-group',
         requiredAuth: true,
+        countRender: () => {
+          let color = 'default';
+          let count: number | string = 0;
+
+          if (countInitOrder <= 0 && countProcessingOrder <= 0) return <></>;
+
+          if (countInitOrder > 0) {
+            color = 'danger';
+            count = countInitOrder;
+          }
+
+          if (!countInitOrder && countProcessingOrder > 0) {
+            color = 'warning';
+            count = countProcessingOrder;
+          }
+
+          if (count > 99) count = '99+';
+
+          return (
+            <Chip color={color as any} size="sm">
+              {count}
+            </Chip>
+          );
+        },
         onClick: () => {
           router.push(siteConfig.apps.routes.my_group);
         },
@@ -104,7 +137,7 @@ function SidebarComponent() {
         },
       },
     ],
-    [t, router],
+    [t, router, countInitOrder, countProcessingOrder],
   );
 
   const isLogin = useMemo(() => {
@@ -217,9 +250,8 @@ function SidebarComponent() {
           {isLogin ? (
             <div className="flex flex-col gap-2 w-full">
               <div className="flex flex-row items-center gap-2 justify-between w-full flex-1">
-                <User
+                <UserAvatar
                   avatarProps={{
-                    src: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
                     classNames: {
                       base: 'min-w-[40px] min-h-[40px]',
                     },
@@ -245,6 +277,7 @@ function SidebarComponent() {
                       </PopoverContent>
                     </Popover>
                   }
+                  id={currentUserInfo?.email}
                   name={
                     <Popover placement="bottom" showArrow={true}>
                       <PopoverTrigger>
@@ -316,6 +349,7 @@ function SidebarComponent() {
                 <span className="text-sm text-ellipsis line-clamp-2 max-sm:hidden">
                   {item.name}
                 </span>
+                {item.countRender && item.countRender()}
               </div>
             ))}
           </div>
@@ -355,7 +389,7 @@ function SidebarComponent() {
                 <div
                   key={index}
                   className={clsx(
-                    'cursor-pointer flex items-center gap-1 md:gap-2 text-sm px-2 py-1 max-md:gap-[5px] max-md:h-auto',
+                    'relative cursor-pointer flex items-center gap-1 md:gap-2 text-sm px-2 py-1 max-md:gap-[5px] max-md:h-auto',
                     isActive
                       ? 'bg-primary-50 text-primary font-bold'
                       : 'text-black',
@@ -371,6 +405,7 @@ function SidebarComponent() {
                   >
                     {item.name}
                   </span>
+                  {item.countRender && item.countRender()}
                 </div>
               );
             })}
@@ -391,5 +426,3 @@ function SidebarComponent() {
     </>
   );
 }
-
-export const Sidebar = memo(SidebarComponent);

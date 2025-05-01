@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation';
 import { Providers } from '../../providers/hero-ui';
 
 import Header from '@/components/molecules/header';
-import { Sidebar } from '@/components/molecules/sidebar';
+import Sidebar from '@/components/molecules/sidebar';
 import SignInUpModal from '@/components/organisms/auth-modal';
 import ConfirmModal from '@/components/organisms/confirm-modal';
 import OrderModal from '@/components/organisms/order-modal';
@@ -77,14 +77,13 @@ export default async function RootLayout({
               <Providers
                 themeProps={{ attribute: 'class', defaultTheme: 'light' }}
               >
-                <div className="relative flex flex-col h-screen overflow-y-hidden bg-center bg-cover bg-banner bg-no-repeat">
+                <div className="w-screen h-screen relative overflow-x-hidden flex flex-col bg-center bg-cover bg-banner bg-no-repeat">
                   <Header />
-                  <main className="w-full mx-auto pt-16 md:pt-[135px] md:px-8 px-4 md:flex md:gap-4 lg:gap-10">
+                  <main className="w-full mx-auto pt-4 md:px-8 px-4 md:flex md:gap-4 lg:gap-10">
                     <Sidebar />
-                    <div className="w-full h-full min-h-screen md:mt-0 mt-[85px] overflow-auto overflow-x-hidden">
-                      {children}
-                    </div>
+                    <div className="w-full h-full">{children}</div>
                   </main>
+                  <div className="h-16 w-full md:h-4" />
                 </div>
                 <SignInUpModal />
                 <UpsertGroupModal />

@@ -30,6 +30,8 @@ const MySelect = forwardRef<HTMLSelectElement, MySelectProps>((props, ref) => {
       placeholder={t('common.placeholder.select')}
       {...props}
       ref={ref}
+      errorMessage={props.errorMessage}
+      isInvalid={!!props.errorMessage}
       renderValue={(items) => {
         return items.map((item) => {
           return (

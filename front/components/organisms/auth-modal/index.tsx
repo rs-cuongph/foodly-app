@@ -16,6 +16,8 @@ import {
   useRef,
 } from 'react';
 
+import ForgotPasswordModalForm from './form-forgot';
+import ResetPasswordModalForm from './form-reset';
 import SignInModalForm from './form-signin';
 import SignUpModalForm from './form-signup';
 
@@ -32,7 +34,8 @@ interface FormConfig {
 export default function SignInUpModal() {
   const t = useTranslations();
   const searchParams = useSearchParams();
-  const { modalAuth, closeModal, setIsOpen } = useCommonStore();
+  const { modalAuth, closeModal, setIsOpen, setIsLoadingConfirm } =
+    useCommonStore();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -45,6 +48,16 @@ export default function SignInUpModal() {
     [FormType.SIGN_UP]: {
       title: t('common.modal_title.sign_up'),
       component: SignUpModalForm,
+      showInNav: true,
+    },
+    [FormType.FORGOT_PASSWORD]: {
+      title: t('common.modal_title.forgot_password'),
+      component: ForgotPasswordModalForm,
+      showInNav: true,
+    },
+    [FormType.RESET_PASSWORD]: {
+      title: t('common.modal_title.reset_password'),
+      component: ResetPasswordModalForm,
       showInNav: true,
     },
   };
@@ -66,15 +79,25 @@ export default function SignInUpModal() {
 
   useEffect(() => {
     const modal = searchParams.get('modal') as FormType;
+    const token = searchParams.get('token');
+
     const organizationCode = searchParams.get('organization_code');
 
     if (modal && [FormType.SIGN_IN, FormType.SIGN_UP].includes(modal)) {
       setIsOpen(true, ModalType.AUTH, modal);
     }
 
+    if (token) {
+      setIsOpen(true, ModalType.AUTH, FormType.RESET_PASSWORD);
+    }
+
     if (organizationCode) {
       localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, organizationCode);
     }
+
+    return () => {
+      setIsLoadingConfirm(false, ModalType.AUTH);
+    };
   }, []);
 
   return (

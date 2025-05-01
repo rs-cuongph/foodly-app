@@ -54,6 +54,8 @@ export type UserInfoResponse = {
   created_at: string;
   updated_at: string;
   can_create_order: boolean;
+  count_init_order: number;
+  count_processing_order: number;
 };
 
 export type WebAuthnVerifyRegistrationDTO = {
@@ -64,4 +66,57 @@ export type WebAuthnVerifyRegistrationDTO = {
 export type WebAuthnVerifyAuthenticationDTO = {
   challenge: string;
   response: AuthenticationResponseJSON;
+};
+
+export type PaymentSetting = {
+  payment_method: string;
+  account_number: string;
+  account_name: string;
+};
+
+export type UpdateUserInfoPayload = {
+  payment_setting?: PaymentSetting[];
+  display_name?: string;
+};
+
+export type UpdateUserInfoResponse = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: string;
+};
+
+export type UpdatePasswordPayload = {
+  password: string;
+  new_password: string;
+};
+
+export type UpdatePasswordResponse = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: string;
+};
+
+export type ResetPasswordPayload = {
+  organization_code: string;
+  email: string;
+  redirect_url: string;
+};
+
+export type ResetPasswordResponse = {
+  id: string;
+};
+
+export type VerifyResetPasswordResponse = {
+  id: string;
+};
+
+export type SetFirstPasswordPayload = {
+  token: string;
+  new_password: string;
+};
+
+export type SetFirstPasswordResponse = {
+  id: string;
 };

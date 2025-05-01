@@ -2,11 +2,20 @@ import { RegistrationInfo } from '@passwordless-id/webauthn/dist/esm/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  ResetPasswordPayload,
+  ResetPasswordResponse,
+  SetFirstPasswordPayload,
+  SetFirstPasswordResponse,
   SignInPayload,
   SignInResponse,
   SignUpPayload,
   SignUpResponse,
+  UpdatePasswordPayload,
+  UpdatePasswordResponse,
+  UpdateUserInfoPayload,
+  UpdateUserInfoResponse,
   UserInfoResponse,
+  VerifyResetPasswordResponse,
   WebAuthnVerifyAuthenticationDTO,
   WebAuthnVerifyRegistrationDTO,
 } from './type';
@@ -106,4 +115,88 @@ export const verifyWebAuthnAuthentication = async ({
   );
 
   return data;
+};
+
+const updateUserInfo = async (payload: UpdateUserInfoPayload) => {
+  const { data } = await apiClient.put<UpdateUserInfoResponse>(
+    siteConfig.apps.apiRoutes.update_user_info,
+    payload,
+  );
+
+  return data;
+};
+
+export const useUpdateUserInfoMutation = () => {
+  return useMutation({
+    mutationKey: ['update-user-info'],
+    mutationFn: (payload: UpdateUserInfoPayload) => updateUserInfo(payload),
+  });
+};
+
+const updatePassword = async (payload: UpdatePasswordPayload) => {
+  const { data } = await apiClient.put<UpdatePasswordResponse>(
+    siteConfig.apps.apiRoutes.update_password,
+    payload,
+  );
+
+  return data;
+};
+
+export const useUpdatePasswordMutation = () => {
+  return useMutation({
+    mutationKey: ['update-password'],
+    mutationFn: (payload: UpdatePasswordPayload) => updatePassword(payload),
+  });
+};
+
+const resetPassword = async (payload: ResetPasswordPayload) => {
+  const { data } = await apiClient.put<ResetPasswordResponse>(
+    siteConfig.apps.apiRoutes.reset_password,
+    payload,
+  );
+
+  return data;
+};
+
+export const useResetPasswordMutation = () => {
+  return useMutation({
+    mutationKey: ['reset-password'],
+    mutationFn: (payload: ResetPasswordPayload) => resetPassword(payload),
+  });
+};
+
+export const verifyResetPasswordApi = async (token: string) => {
+  const { data } = await apiClient.get<VerifyResetPasswordResponse>(
+    siteConfig.apps.apiRoutes.verify_reset_password,
+    {
+      params: {
+        token,
+      },
+    },
+  );
+
+  return data;
+};
+
+export const useVerifyResetPasswordQuery = (token: string) => {
+  return useQuery({
+    queryKey: ['verify-reset-password', token],
+    queryFn: () => verifyResetPasswordApi(token),
+  });
+};
+
+const setFirstPassword = async (payload: SetFirstPasswordPayload) => {
+  const { data } = await apiClient.put<SetFirstPasswordResponse>(
+    siteConfig.apps.apiRoutes.set_first_password,
+    payload,
+  );
+
+  return data;
+};
+
+export const useSetFirstPasswordMutation = () => {
+  return useMutation({
+    mutationKey: ['set-first-password'],
+    mutationFn: (payload: SetFirstPasswordPayload) => setFirstPassword(payload),
+  });
 };

@@ -6,20 +6,17 @@ import * as yup from 'yup';
 import { STORAGE_KEYS } from '@/config/constant';
 import { createI18nYupSchema } from '@/shared/yup-validate/i18n-validate-helper';
 
-export type SignInSchemaType = {
+export type ForgotPasswordSchemaType = {
   email: string;
-  password: string;
-  organization_code?: string;
+  organization_code: string;
 };
 
-export const useSignInSchema = () => {
+export const useForgotPasswordSchema = () => {
   const t = useTranslations();
   const yupInstance = createI18nYupSchema(t);
 
-  // Create a schema that exactly matches SignInSchemaType
   const schema = yupInstance.object().shape({
     email: yupInstance.string().label('email').trim().required().email(),
-    password: yupInstance.string().label('password').trim().required(),
     organization_code: yupInstance
       .string()
       .label('organization_code')
@@ -27,16 +24,15 @@ export const useSignInSchema = () => {
       .required(),
   });
 
-  return schema as yup.ObjectSchema<SignInSchemaType>;
+  return schema as yup.ObjectSchema<ForgotPasswordSchemaType>;
 };
 
-const useSignInForm = () => {
-  const form = useForm<SignInSchemaType>({
+const useForgotPasswordForm = () => {
+  const form = useForm<ForgotPasswordSchemaType>({
     mode: 'onChange',
-    resolver: yupResolver(useSignInSchema()),
+    resolver: yupResolver(useForgotPasswordSchema()),
     defaultValues: {
-      email: 'nhuquynh03@gmail.com',
-      password: 'NhuQuynh2503@',
+      email: '',
       organization_code:
         localStorage.getItem(STORAGE_KEYS.ORGANIZATION_CODE) || '',
     },
@@ -45,4 +41,4 @@ const useSignInForm = () => {
   return form;
 };
 
-export default useSignInForm;
+export default useForgotPasswordForm;

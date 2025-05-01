@@ -274,7 +274,6 @@ export default function ConfirmModal() {
       backdrop="blur"
       isDismissable={false}
       isOpen={isOpen}
-      placement="center"
       size="md"
       onClose={modalConfig?.onCancel}
     >

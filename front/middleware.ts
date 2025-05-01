@@ -12,7 +12,7 @@ const i18nMiddleware = createMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   // Get the pathname from the request
 
-  return chainMiddlewares([authMiddleware, i18nMiddleware])(request);
+  return chainMiddlewares([i18nMiddleware, authMiddleware])(request);
 }
 
 export const config = {

@@ -13,9 +13,11 @@ import {
   TimerIcon,
 } from '@/components/atoms/icons';
 import { siteConfig } from '@/config/site';
+import { useSystemToast } from '@/hooks/toast';
 import { useRouter } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { commaFormat } from '@/shared/helper/format';
+import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 type MenuItem = {
@@ -54,12 +56,16 @@ export default function GroupCardItem(props: GroupCardItemProps) {
   const { status } = useSession();
   const isLoggedIn = status === 'authenticated';
   const commonStore = useCommonStore();
+  const authStore = useAuthStore();
+  const { showError } = useSystemToast();
 
   const isSamePrice = Number(groupPrice) > 0;
   const menuPrice = menuItems.map((item) => Number(item.price));
   const minPrice = Math.min(...menuPrice);
   const maxPrice = Math.max(...menuPrice);
   const [timeCountDown, setTimeCountDown] = useState(0);
+
+  const canCreateOrder = authStore.canCreateOrder();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -104,6 +110,15 @@ export default function GroupCardItem(props: GroupCardItemProps) {
   const openOrderModal = () => {
     if (!isLoggedIn)
       return commonStore.setIsOpen(true, ModalType.AUTH, FormType.SIGN_IN);
+
+    if (!canCreateOrder) {
+      return showError(
+        t('system_message.error.cannot_create_order'),
+        t('system_message.error.create_order_failed'),
+      );
+    }
+
+    commonStore.setIsOpen(true, ModalType.UPSERT_ORDER, FormType.SETTING_ORDER);
   };
 
   return (

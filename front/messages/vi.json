@@ -40,7 +40,9 @@
       "confirm_paid": "Xác nhận thanh toán",
       "cancel_order": "Hủy đơn hàng",
       "qr_code": "Mã QR thanh toán",
-      "mark_paid": "Đánh dấu đã thanh toán"
+      "mark_paid": "Đánh dấu đã thanh toán",
+      "forgot_password": "Quên mật khẩu",
+      "reset_password": "Đặt mật khẩu mới"
     },
     "placeholder": {
       "select": "Chọn"
@@ -130,7 +132,14 @@
     "error": {
       "auth_failed": "Đăng nhập thất bại",
       "signup_failed": "Đăng ký thất bại",
-      "invite_code": "Mã mời không hợp lệ"
+      "set_password_failed": "Đặt mật khẩu thất bại",
+      "invite_code": "Mã mời không hợp lệ",
+      "create_order_failed": "Tạo đơn hàng thất bại",
+      "cannot_create_order": "Bạn có đơn hàng chưa thanh toán, vui lòng thanh toán!",
+      "reset_password_failed": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.",
+      "reset_token_expired": "Liên kết đặt lại mật khẩu đã hết hạn hoặc đã được sử dụng. \nVui lòng thử yêu cầu đặt lại mật khẩu mới.",
+      "change_display_name": "Tên hiển thị không thành công",
+      "update_password": "Cập nhật mật khẩu không thành công"
     },
     "success": {
       "create_group_success": "Tạo nhóm thành công",
@@ -143,7 +152,13 @@
       "create_order": "Tạo đơn hàng thành công",
       "confirm_paid": "Xác nhận thanh toán thành công",
       "cancel_order": "Hủy đơn hàng thành công",
-      "mark_paid": "Đánh dấu thanh toán thành công"
+      "mark_paid": "Đánh dấu thanh toán thành công",
+      "reset_password_email_sent": "Đặt lại mật khẩu thành công. Một email hướng dẫn đã được gửi tới địa chỉ email của bạn.",
+      "set_password_success": "Đặt mật khẩu thành công",
+      "change_display_name": "Tên hiển thị đã thay đổi thành công",
+      "delete_payment_setting": "Cài đặt thanh toán đã bị xóa thành công",
+      "update_password": "Mật khẩu được cập nhật thành công",
+      "update_payment_setting": "Cài đặt thanh toán được cập nhật thành công"
     }
   },
   "upsert_group_modal": {
@@ -190,7 +205,8 @@
       "account_name": "Tên tài khoản",
       "account_number": "Số tài khoản",
       "note": "Ghi chú",
-      "payment_method": "Phương thức thanh toán"
+      "payment_method": "Phương thức thanh toán",
+      "new_password": "Mật khẩu mới"
     },
     "max": "{field} không được vượt quá {max} ký tự",
     "max_num": "{field} phải nhỏ hơn hoặc bằng {max}",
@@ -204,7 +220,8 @@
     "required": "{field} không được để trống",
     "sameAs": "{field} và {field2} phải giống nhau",
     "date_cannot_be_earlier_than_minimum_date": "Ngày không được sớm hơn ngày tối thiểu",
-    "start_date_must_be_before_end_date": "Ngày bắt đầu phải trước ngày kết thúc"
+    "start_date_must_be_before_end_date": "Ngày bắt đầu phải trước ngày kết thúc",
+    "alphanumeric_with_space": "{field} phải là chữ và số với không gian"
   },
   "invite_code_modal": {
     "label": {
@@ -262,5 +279,45 @@
       "reason": "Lý do hủy",
       "reason_placeholder": "Nhập lý do của bạn"
     }
+  },
+  "my_page": {
+    "basic_info": {
+      "title": "Thông tin",
+      "display_name": "Tên hiển thị:",
+      "email": "Email:",
+      "password": "Mật khẩu:",
+      "change": "Đổi"
+    },
+    "payment_settings": {
+      "title": "Cài đặt thanh toán",
+      "add": "Thêm"
+    }
+  },
+  "add_payment_modal": {
+    "account_name": "Tên tài khoản",
+    "account_number": "Số tài khoản",
+    "payment_method": "Phương thức thanh toán",
+    "placeholder": {
+      "account_name": "Nhập tên tài khoản của bạn",
+      "account_number": "Nhập số tài khoản của bạn",
+      "payment_method": "Chọn phương thức thanh toán của bạn"
+    },
+    "title": "Thêm thanh toán"
+  },
+  "change_display_name_modal": {
+    "display_name": "Tên hiển thị",
+    "display_name_placeholder": "Nhập tên hiển thị của bạn",
+    "title": "Thay đổi tên hiển thị"
+  },
+  "change_password_modal": {
+    "confirm_password": "Xác nhận mật khẩu",
+    "new_password": "Mật khẩu mới",
+    "password": "Mật khẩu",
+    "placeholder": {
+      "confirm_password": "Xác nhận mật khẩu mới của bạn",
+      "new_password": "Nhập mật khẩu mới của bạn",
+      "password": "Nhập mật khẩu của bạn"
+    },
+    "title": "Thay đổi mật khẩu"
   }
 }

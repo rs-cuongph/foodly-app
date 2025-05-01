@@ -1,9 +1,6 @@
 'use client';
 
-import './scrollbar.css';
-
 import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
-import { ScrollShadow } from '@heroui/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -31,10 +28,12 @@ import {
 } from '@/config/constant';
 import { siteConfig } from '@/config/site';
 import { checkGroupApi, useGetGroupQuery } from '@/hooks/api/group';
+import { useSystemToast } from '@/hooks/toast';
 import { useWindowSize } from '@/hooks/window-size';
 import { useRouter } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { commaFormat } from '@/shared/helper/format';
+import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 import { useGroupStore } from '@/stores/group';
 
@@ -54,6 +53,8 @@ export default function GroupDetail() {
     allowLoadGroup,
   );
   const { setIsOpen } = useCommonStore();
+  const authStore = useAuthStore();
+  const { showError } = useSystemToast();
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [openInviteCodeModal, setOpenInviteCodeModal] = useState(false);
@@ -61,6 +62,7 @@ export default function GroupDetail() {
   const [showMoreItems, setShowMoreItems] = useState(false);
   const groupPrice = Number(groupInfo?.price ?? 0);
   const isSamePrice = Number(groupInfo?.price ?? 0) > 0;
+  const canCreateOrder = authStore.canCreateOrder();
   const menuPrice = groupInfo?.menu_items.map((item) => Number(item.price));
   const minPrice = useMemo(() => Math.min(...(menuPrice ?? [])), [menuPrice]);
   const maxPrice = useMemo(() => Math.max(...(menuPrice ?? [])), [menuPrice]);
@@ -119,6 +121,15 @@ export default function GroupDetail() {
   };
 
   const openOrderModal = () => {
+    if (!authStore.isLoggedIn)
+      return setIsOpen(true, ModalType.AUTH, FormType.SIGN_IN);
+
+    if (!canCreateOrder) {
+      return showError(
+        t('system_message.error.cannot_create_order'),
+        t('system_message.error.create_order_failed'),
+      );
+    }
     setIsOpen(true, ModalType.UPSERT_ORDER, FormType.SETTING_ORDER);
   };
 
@@ -161,133 +172,124 @@ export default function GroupDetail() {
 
   return (
     <>
-      <ScrollShadow
-        hideScrollBar
-        className="w-full"
-        style={{
-          height: isMobile ? 'calc(100vh - 230px)' : 'calc(100vh - 150px)',
-        }}
-      >
-        <div className="relative">
-          <div className="flex flex-col md:flex-row gap-4">
-            <SkeletonWrapper
-              classNames={{
-                base: 'relative rounded-xl h-auto md:min-w-[238px] md:min-h-[168px]',
-                content:
-                  'relative pb-[55%] md:min-w-[238px] md:min-h-[168px] md:pb-[0%]', // 4:3 aspect ratio (width:height), 3/4 = 75%
-              }}
-              isLoaded={isLoaded}
-            >
-              <Image
-                fill
-                alt="Foodly"
-                className="object-cover rounded-xl"
-                src={'/images/image_default.webp'}
-              />
-            </SkeletonWrapper>
-            <SkeletonWrapper
-              classNames={{
-                base: 'relative rounded-xl w-full',
-                content:
-                  'relative border border-gray-200 rounded-xl w-full bg-white px-4 pt-4 pb-4 min-h-[200px] h-full overflow-auto justify-between',
-              }}
-              isLoaded={isLoaded}
-            >
-              <div className="flex flex-row gap-2 justify-between">
-                <div className="flex flex-row gap-2 flex-start-0">
-                  <div className="flex items-center mr-2">
-                    {renderStatusIcon()}
-                  </div>
-                  <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary shadow-lg shadow-primary">
-                    <HashtagIcon className="h-4 w-4 text-primary" />
-                    <span className="text-black text-sm font-bold">
-                      {groupInfo?.code}
-                    </span>
-                  </div>
-                  <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary min-w-16 shadow-lg shadow-primary">
-                    <UserGroupIcon className="h-4 w-4 text-primary" />
-                    <span className="text-black text-sm font-bold">
-                      {groupInfo?.order_count ?? 0}
-                    </span>
-                  </div>
-                  {timeCountDown > 0 && (
-                    <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary shadow-lg shadow-primary">
-                      <TimerIcon className="h-4 w-4 text-primary" />
-                      <span className="text-black text-sm font-bold">
-                        {formatTimeCountDown()}
-                      </span>
-                    </div>
-                  )}
-                  <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary shadow-lg shadow-primary">
-                    <MoneyIcon className="h-4 w-4 text-primary" />
-                    <span className="font-bold text-sm text-black mr-1">
-                      {isSamePrice
-                        ? commaFormat(Number(groupPrice))
-                        : minPrice === maxPrice
-                          ? commaFormat(minPrice)
-                          : `${commaFormat(minPrice)} ~ ${commaFormat(maxPrice)}`}
-                    </span>
-                  </div>
+      <div className="relative">
+        <div className="flex flex-col md:flex-row gap-4">
+          <SkeletonWrapper
+            classNames={{
+              base: 'relative rounded-xl h-auto md:min-w-[238px] md:min-h-[168px]',
+              content:
+                'relative pb-[55%] md:min-w-[238px] md:min-h-[168px] md:pb-[0%]', // 4:3 aspect ratio (width:height), 3/4 = 75%
+            }}
+            isLoaded={isLoaded}
+          >
+            <Image
+              fill
+              alt="Foodly"
+              className="object-cover rounded-xl"
+              src={'/images/image_default.webp'}
+            />
+          </SkeletonWrapper>
+          <SkeletonWrapper
+            classNames={{
+              base: 'relative rounded-xl w-full',
+              content:
+                'relative border border-gray-200 rounded-xl w-full bg-white px-4 pt-4 pb-4 min-h-[200px] h-full overflow-auto justify-between',
+            }}
+            isLoaded={isLoaded}
+          >
+            <div className="flex flex-row gap-2 justify-between">
+              <div className="flex flex-row gap-2 flex-start-0">
+                <div className="flex items-center mr-2">
+                  {renderStatusIcon()}
                 </div>
-                <MoreActionInGroup />
-              </div>
-              <div className="flex flex-row gap-2 min-h-[calc(100%_-_40px)] w-full">
-                <div className="mt-5 flex-1">
-                  <h3 className="mb-2 text-xl font-bold text-ellipsis line-clamp-1 break-all">
-                    {groupInfo?.name}
-                  </h3>
-                  <div className="flex flex-col">
-                    <div
-                      className={`${showMoreItems ? 'max-h-32 overflow-y-auto pr-2 custom-scrollbar' : ''}`}
-                    >
-                      <ul className="list-inside list-disc space-y-1 pl-4">
-                        {groupInfo?.menu_items
-                          .slice(
-                            0,
-                            showMoreItems ? groupInfo.menu_items.length : 3,
-                          )
-                          .map((item, index) => (
-                            <li
-                              key={index}
-                              className="text-primary text-ellipsis line-clamp-1 break-all"
-                            >
-                              - {item.name}
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                    {groupInfo?.menu_items &&
-                      groupInfo.menu_items.length > 3 && (
-                        <button
-                          className="text-gray-400 text-sm mt-1 self-center hover:underline focus:outline-none"
-                          onClick={() => setShowMoreItems(!showMoreItems)}
-                        >
-                          {showMoreItems
-                            ? t('button.see_less')
-                            : t('button.see_more')}
-                        </button>
-                      )}
-                  </div>
+                <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary shadow-lg shadow-primary">
+                  <HashtagIcon className="h-4 w-4 text-primary" />
+                  <span className="text-black text-sm font-bold">
+                    {groupInfo?.code}
+                  </span>
                 </div>
-
-                {!isLocked && (
-                  <div className="flex flex-row gap-2 items-end">
-                    <MyButton key="sss" className="group/chat" variant="ghost">
-                      <ChatIcon className="h-5 w-5 text-primary group-hover/chat:text-primary-foreground" />
-                      {t('button.chat')}
-                    </MyButton>
-                    <MyButton className="" onPress={openOrderModal}>
-                      <ShoppingBagIcon className="h-5 w-5 text-white " />
-                      {t('button.order')}
-                    </MyButton>
+                <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary min-w-16 shadow-lg shadow-primary">
+                  <UserGroupIcon className="h-4 w-4 text-primary" />
+                  <span className="text-black text-sm font-bold">
+                    {groupInfo?.order_count ?? 0}
+                  </span>
+                </div>
+                {timeCountDown > 0 && (
+                  <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary shadow-lg shadow-primary">
+                    <TimerIcon className="h-4 w-4 text-primary" />
+                    <span className="text-black text-sm font-bold">
+                      {formatTimeCountDown()}
+                    </span>
                   </div>
                 )}
+                <div className="rounded-full bg-white px-3 py-1 flex items-center gap-1 border border-primary shadow-lg shadow-primary">
+                  <MoneyIcon className="h-4 w-4 text-primary" />
+                  <span className="font-bold text-sm text-black mr-1">
+                    {isSamePrice
+                      ? commaFormat(Number(groupPrice))
+                      : minPrice === maxPrice
+                        ? commaFormat(minPrice)
+                        : `${commaFormat(minPrice)} ~ ${commaFormat(maxPrice)}`}
+                  </span>
+                </div>
               </div>
-            </SkeletonWrapper>
-          </div>
+              <MoreActionInGroup />
+            </div>
+            <div className="flex flex-row gap-2 min-h-[calc(100%_-_40px)] w-full">
+              <div className="mt-5 flex-1">
+                <h3 className="mb-2 text-xl font-bold text-ellipsis line-clamp-1 break-all">
+                  {groupInfo?.name}
+                </h3>
+                <div className="flex flex-col">
+                  <div
+                    className={`${showMoreItems ? 'max-h-32 overflow-y-auto pr-2 custom-scrollbar' : ''}`}
+                  >
+                    <ul className="list-inside list-disc space-y-1 pl-4">
+                      {groupInfo?.menu_items
+                        .slice(
+                          0,
+                          showMoreItems ? groupInfo.menu_items.length : 3,
+                        )
+                        .map((item, index) => (
+                          <li
+                            key={index}
+                            className="text-primary text-ellipsis line-clamp-1 break-all"
+                          >
+                            - {item.name}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                  {groupInfo?.menu_items && groupInfo.menu_items.length > 3 && (
+                    <button
+                      className="text-gray-400 text-sm mt-1 self-center hover:underline focus:outline-none"
+                      onClick={() => setShowMoreItems(!showMoreItems)}
+                    >
+                      {showMoreItems
+                        ? t('button.see_less')
+                        : t('button.see_more')}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {!isLocked && (
+                <div className="flex flex-row gap-2 items-end">
+                  <MyButton key="sss" className="group/chat" variant="ghost">
+                    <ChatIcon className="h-5 w-5 text-primary group-hover/chat:text-primary-foreground" />
+                    {t('button.chat')}
+                  </MyButton>
+                  <MyButton className="" onPress={openOrderModal}>
+                    <ShoppingBagIcon className="h-5 w-5 text-white " />
+                    {t('button.order')}
+                  </MyButton>
+                </div>
+              )}
+            </div>
+          </SkeletonWrapper>
         </div>
-        <OrderListTable className="mt-5" groupId={groupInfo?.id} />
-      </ScrollShadow>
+      </div>
+      <OrderListTable className="mt-5" groupId={groupInfo?.id} />
 
       <InviteCodeModal
         isOpen={openInviteCodeModal}

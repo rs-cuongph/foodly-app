@@ -3,13 +3,13 @@
 import { LanguageIcon } from '@heroicons/react/24/outline';
 import { Button } from '@heroui/react';
 import clsx from 'clsx';
+import { useLocale } from 'next-intl';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
 
 export default function Header() {
-  const { locale } = useParams();
+  const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
 

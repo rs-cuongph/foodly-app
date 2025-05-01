@@ -20,7 +20,9 @@
       "confirm_paid": "Confirm Payment",
       "cancel_order": "Cancel Order",
       "qr_code": "QR Payment Code",
-      "mark_paid": "Mark as Paid"
+      "mark_paid": "Mark as Paid",
+      "forgot_password": "Forgot Password",
+      "reset_password": "Set New Password"
     },
     "modal_description": {
       "confirm_delete": "Are you sure you want to delete this group?",
@@ -158,6 +160,33 @@
       "reason_placeholder": "Enter your reason"
     }
   },
+  "add_payment_modal": {
+    "title": "Add Payment",
+    "account_name": "Account name",
+    "account_number": "Account number",
+    "payment_method": "Payment method",
+    "placeholder": {
+      "account_name": "Enter your account name",
+      "account_number": "Enter your account number",
+      "payment_method": "Select your payment method"
+    }
+  },
+  "change_display_name_modal": {
+    "title": "Change Display Name",
+    "display_name": "Display name",
+    "display_name_placeholder": "Enter your display name"
+  },
+  "change_password_modal": {
+    "title": "Change Password",
+    "password": "Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "placeholder": {
+      "password": "Enter your password",
+      "new_password": "Enter your new password",
+      "confirm_password": "Confirm your new password"
+    }
+  },
   "home": {
     "filter": {
       "share_scope": "Share Scope",
@@ -195,6 +224,7 @@
     "max_num": "{field} needs to be less than or equal to {max}",
     "start_date_must_be_before_end_date": "Start date must be before end date",
     "date_cannot_be_earlier_than_minimum_date": "Date cannot be earlier than minimum date",
+    "alphanumeric_with_space": "{field} must be alphanumeric with space",
     "fields": {
       "email": "Email",
       "password": "Password",
@@ -215,14 +245,22 @@
       "note": "Note",
       "account_name": "Account Name",
       "account_number": "Account Number",
-      "payment_method": "Payment Method"
+      "payment_method": "Payment Method",
+      "new_password": "New Password"
     }
   },
   "system_message": {
     "error": {
       "auth_failed": "Signin Failed",
       "signup_failed": "Signup Failed",
-      "invite_code": "Invite Code Failed"
+      "set_password_failed": "Set Password Failed",
+      "invite_code": "Invite Code Failed",
+      "create_order_failed": "Create Order Failed",
+      "cannot_create_order": "You have an unpaid order, please pay first!",
+      "change_display_name": "Display Name Failed",
+      "update_password": "Update Password Failed",
+      "reset_password_failed": "Unable to send password reset email. Please try again later.",
+      "reset_token_expired": "The password reset link has expired or has already been used. \nPlease request a new password reset."
     },
     "success": {
       "signin_success": "Signin Success",
@@ -235,7 +273,13 @@
       "create_order": "Order Created Successfully",
       "confirm_paid": "Payment Confirmed Successfully",
       "cancel_order": "Order Cancelled Successfully",
-      "mark_paid": "Payment Marked as Paid Successfully"
+      "mark_paid": "Payment Marked as Paid Successfully",
+      "update_payment_setting": "Payment Setting Updated Successfully",
+      "delete_payment_setting": "Payment Setting Deleted Successfully",
+      "change_display_name": "Display Name Changed Successfully",
+      "update_password": "Password Updated Successfully",
+      "reset_password_email_sent": "Password reset successful. A guide email has been sent to your email address.",
+      "set_password_success": "Password set successfully"
     }
   },
   "toast": {
@@ -261,6 +305,19 @@
       "group_name": "Group Name",
       "group_code": "Group Code",
       "order_created_by": "Orderer"
+    }
+  },
+  "my_page": {
+    "basic_info": {
+      "title": "Information",
+      "display_name": "Display name:",
+      "email": "Email:",
+      "password": "Password:",
+      "change": "Change"
+    },
+    "payment_settings": {
+      "title": "Payment Settings",
+      "add": "Add"
     }
   }
 }

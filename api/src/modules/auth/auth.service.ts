@@ -19,7 +19,7 @@ import { RequestWithUser } from 'src/types/requests.type';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { ExtendedPrismaClient } from 'src/services/prisma.extension';
 import { omit } from 'lodash';
-import { Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 import * as dayjs from 'dayjs';
 import {
@@ -455,6 +455,10 @@ export class AuthService {
         resetToken,
         body.redirect_url,
       );
+
+      return {
+        message: this.i18n.t('message.password_reset_mail_sent'),
+      };
     } catch (error) {
       throw error;
     }

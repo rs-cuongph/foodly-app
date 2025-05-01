@@ -33,5 +33,6 @@
   "challenge_not_found_or_expired": "Challenge not found or expired",
   "group_not_found": "Group not found",
   "order_over_10_minutes": "This order was placed more than 10 minutes ago. You cannot cancel it yourself. Please contact the group owner to request cancellation.",
-  "order_has_paid": "This order has already been paid. You cannot cancel it yourself. Please contact the group owner to request cancellation."
+  "order_has_paid": "This order has already been paid. You cannot cancel it yourself. Please contact the group owner to request cancellation.",
+  "password_reset_mail_sent": "A password reset email has been sent to your email"
 }
