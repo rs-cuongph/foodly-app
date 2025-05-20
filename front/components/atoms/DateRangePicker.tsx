@@ -1,4 +1,8 @@
-import { DateRangePicker, DateRangePickerProps } from '@heroui/react';
+import {
+  DateRangePicker,
+  DateRangePickerProps,
+  DateValue,
+} from '@heroui/react';
 import { parseAbsolute } from '@internationalized/date';
 import { I18nProvider } from '@react-aria/i18n';
 import { omit } from 'lodash';
@@ -47,7 +51,7 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
     }
 
     const minValue = props.minValue
-      ? parseAbsolute(props.minValue, timezone)
+      ? (parseAbsolute(props.minValue, timezone) as DateValue)
       : undefined;
 
     return (

@@ -26,7 +26,7 @@
     "@heroui/system": "2.4.12",
     "@heroui/theme": "2.4.12",
     "@hookform/resolvers": "^5.0.1",
-    "@internationalized/date": "3.7.0",
+    "@internationalized/date": "3.8.0",
     "@nextui-org/use-aria-button": "^2.2.4",
     "@nextui-org/use-aria-link": "^2.2.5",
     "@passwordless-id/webauthn": "^2.3.0",
