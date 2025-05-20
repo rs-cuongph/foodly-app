@@ -90,15 +90,6 @@ export default function Sidebar() {
         icon: <DocumentIcon className="w-7 h-7 text-primary" />,
         pathRegex: '/[a-z]{2}/my-order',
         requiredAuth: true,
-        onClick: () => {
-          router.push(siteConfig.apps.routes.history);
-        },
-      },
-      {
-        name: t('button.my_group'),
-        icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
-        pathRegex: '/[a-z]{2}/my-group',
-        requiredAuth: true,
         countRender: () => {
           let color = 'default';
           let count: number | string = 0;
@@ -123,6 +114,16 @@ export default function Sidebar() {
             </Chip>
           );
         },
+        onClick: () => {
+          router.push(siteConfig.apps.routes.history);
+        },
+      },
+      {
+        name: t('button.my_group'),
+        icon: <MyGroupIcon className="w-7 h-7 text-primary" />,
+        pathRegex: '/[a-z]{2}/my-group',
+        requiredAuth: true,
+
         onClick: () => {
           router.push(siteConfig.apps.routes.my_group);
         },

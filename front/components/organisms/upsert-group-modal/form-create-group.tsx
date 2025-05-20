@@ -1,7 +1,20 @@
 'use client';
 import { Form } from '@heroui/form';
+import {
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from '@heroui/react';
 import { useTranslations } from 'next-intl';
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { useFieldArray } from 'react-hook-form';
 
 import useCreateGroupForm, {
@@ -20,6 +33,7 @@ import {
   HomeShareIcon,
   SquarePlusIcon,
 } from '@/components/atoms/icons';
+import MyTextarea from '@/components/atoms/Textarea';
 import { GROUP_TYPE_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
 import { useCreateGroupMutation } from '@/hooks/api/group';
 import { CreateGroupParams } from '@/hooks/api/group/type';
@@ -39,6 +53,10 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
     const t = useTranslations();
     const { setIsLoadingConfirm, closeModal } = useCommonStore();
     const { showError, showSuccess } = useSystemToast();
+    const [isOpenImportMenu, setIsOpenImportMenu] = useState(false);
+    const [importMenuDescription, setImportMenuDescription] = useState('');
+    const [errorImportMenu, setErrorImportMenu] = useState<string>('');
+
     const {
       control,
       watch,
@@ -57,6 +75,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
       append: appendMenu,
       remove: removeMenu,
       update: updateMenu,
+      replace: replaceMenu,
     } = useFieldArray({
       control,
       name: 'menu_items',
@@ -105,6 +124,52 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
           updateMenu(index, { name: menu.name, price: price });
         });
         setValue('price', 0);
+      }
+    };
+
+    const handleCloseImportMenu = () => {
+      setIsOpenImportMenu(false);
+      setImportMenuDescription('');
+      setErrorImportMenu('');
+    };
+
+    // Handle import menu
+    const handleImportMenu = () => {
+      if (importMenuDescription === '') {
+        setErrorImportMenu(t('system_message.error.import_menu'));
+
+        return;
+      }
+
+      const menuItems = importMenuDescription
+        .split('\n')
+        .map((item) => {
+          const [name, price] = item.split(':');
+          const nameTrimmed = String(name).replace('-', '').trim();
+
+          if (nameTrimmed === '') {
+            setErrorImportMenu(t('system_message.error.import_menu'));
+
+            return;
+          }
+
+          if (price?.length > 0 && isNaN(Number(price))) {
+            setErrorImportMenu(t('system_message.error.import_menu'));
+
+            return;
+          }
+
+          return {
+            name: nameTrimmed,
+            price: Number(price ?? 1000),
+          };
+        })
+        .filter((item) => item !== undefined);
+
+      if (menuItems.length > 0) {
+        setErrorImportMenu('');
+        setIsOpenImportMenu(false);
+        replaceMenu(menuItems);
       }
     };
 
@@ -263,13 +328,24 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
             name="date_range"
           />
 
-          <MyRadioController
-            control={control}
-            label={t('upsert_group_modal.type')}
-            name="type"
-            options={typeOptions}
-            orientation="horizontal"
-          />
+          <div className="flex flex-row gap-2 justify-between">
+            <MyRadioController
+              control={control}
+              label={t('upsert_group_modal.type')}
+              name="type"
+              options={typeOptions}
+              orientation="horizontal"
+            />
+            <MyButton
+              className=""
+              size="sm"
+              onPress={() => setIsOpenImportMenu(true)}
+            >
+              <span className="group-hover:text-primary-foreground">
+                {t('button.import_menu')}
+              </span>
+            </MyButton>
+          </div>
 
           {wType === GROUP_TYPE_ENUM.MANUAL && renderMenu()}
 
@@ -308,6 +384,42 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
             options={shareScopeOptions}
           />
         </div>
+        <Modal
+          isDismissable={false}
+          isOpen={isOpenImportMenu}
+          onClose={() => setIsOpenImportMenu(false)}
+        >
+          <ModalContent>
+            <ModalHeader className="flex flex-col gap-1 text-center">
+              <h3 className="text-lg font-semibold">
+                {t('upsert_group_modal.import_menu')}
+              </h3>
+            </ModalHeader>
+            <ModalBody className="overflow-hidden">
+              <MyTextarea
+                errorMessage={errorImportMenu}
+                isInvalid={!!errorImportMenu}
+                label={t('upsert_group_modal.import_menu_description')}
+                labelPlacement="outside"
+                minRows={10}
+                name="import_menu_description"
+                placeholder={t(
+                  'upsert_group_modal.placeholder.import_menu_description',
+                )}
+                value={importMenuDescription}
+                onChange={(e) => setImportMenuDescription(e.target.value)}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <MyButton variant="light" onPress={handleCloseImportMenu}>
+                {t('button.close')}
+              </MyButton>
+              <MyButton isLoading={false} onPress={handleImportMenu}>
+                {t('button.confirm')}
+              </MyButton>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Form>
     );
   },

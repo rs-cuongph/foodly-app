@@ -6,7 +6,7 @@ export const routing = defineRouting({
   locales: ['en', 'vi'],
 
   // Used when no locale matches
-  defaultLocale: 'en',
+  defaultLocale: 'vi',
   localeCookie: {
     // Custom cookie name
     name: 'NEXT_LOCALE',

@@ -42,7 +42,6 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
       register,
       handleSubmit,
       formState: { errors },
-      watch,
       setError,
     } = useSignUpForm();
 
@@ -57,7 +56,6 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
         setIsLoadingConfirm(true, ModalType.AUTH);
         const response = await signUpMutation.mutateAsync(data);
 
-        console.log(response);
         if (response.access_token) {
           localStorage.setItem(
             STORAGE_KEYS.ACCESS_TOKEN,
@@ -68,8 +66,9 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
             response.refresh_token,
           );
 
-          signIn('tokenLogin', {
+          await signIn('tokenLogin', {
             ...response,
+            redirect: false,
           });
 
           closeModal(ModalType.AUTH);

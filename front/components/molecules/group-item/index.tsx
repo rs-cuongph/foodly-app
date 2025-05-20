@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useSessionStorage } from 'usehooks-ts';
 
 import { MyButton } from '@/components/atoms/Button';
 import {
@@ -12,13 +13,17 @@ import {
   SquareInformationIcon,
   TimerIcon,
 } from '@/components/atoms/icons';
+import InviteCodeModal from '@/components/organisms/invite-code-modal';
+import { STORAGE_KEYS } from '@/config/constant';
 import { siteConfig } from '@/config/site';
+import { checkGroupApi, useGetGroupQuery } from '@/hooks/api/group';
 import { useSystemToast } from '@/hooks/toast';
 import { useRouter } from '@/i18n/navigation';
 import { DateHelper } from '@/shared/helper/date';
 import { commaFormat } from '@/shared/helper/format';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
+import { useGroupStore } from '@/stores/group';
 
 type MenuItem = {
   name: string;
@@ -58,14 +63,24 @@ export default function GroupCardItem(props: GroupCardItemProps) {
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
   const { showError } = useSystemToast();
+  const { setGroupInfo } = useGroupStore();
+  const [inviteCodes, setInviteCodes] = useSessionStorage<
+    Record<string, string>
+  >(STORAGE_KEYS.GROUP_INVITE_CODE, {});
 
   const isSamePrice = Number(groupPrice) > 0;
   const menuPrice = menuItems.map((item) => Number(item.price));
   const minPrice = Math.min(...menuPrice);
   const maxPrice = Math.max(...menuPrice);
   const [timeCountDown, setTimeCountDown] = useState(0);
-
+  const [allowLoadGroup, setAllowLoadGroup] = useState(false);
+  const [openInviteCodeModal, setOpenInviteCodeModal] = useState(false);
   const canCreateOrder = authStore.canCreateOrder();
+  const { data: groupInfoRes } = useGetGroupQuery(
+    groupId,
+    { invite_code: inviteCodes[groupId] },
+    allowLoadGroup,
+  );
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -107,6 +122,20 @@ export default function GroupCardItem(props: GroupCardItemProps) {
     router.push(siteConfig.apps.routes.group.detail.replace(':id', groupId));
   };
 
+  const handleAcceptInviteCode = async (invite_code: string) => {
+    try {
+      setInviteCodes((prev) => ({ ...prev, [groupId]: invite_code }));
+      setAllowLoadGroup(true);
+      setOpenInviteCodeModal(false);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleCloseInviteCodeModal = () => {
+    setOpenInviteCodeModal(false);
+  };
+
   const openOrderModal = () => {
     if (!isLoggedIn)
       return commonStore.setIsOpen(true, ModalType.AUTH, FormType.SIGN_IN);
@@ -118,11 +147,26 @@ export default function GroupCardItem(props: GroupCardItemProps) {
       );
     }
 
+    checkGroupApi(groupId).then((res) => {
+      const canAccess = res.canAccess;
+      const inviteCode = inviteCodes[groupId];
+
+      if (inviteCode || canAccess) return handleAcceptInviteCode(inviteCode);
+
+      setOpenInviteCodeModal(!canAccess);
+    });
+
     commonStore.setIsOpen(true, ModalType.UPSERT_ORDER, FormType.SETTING_ORDER);
   };
 
+  useEffect(() => {
+    if (groupInfoRes) {
+      setGroupInfo(groupInfoRes);
+    }
+  }, [groupInfoRes]);
+
   return (
-    <div className="relative w-full rounded-3xl bg-white shadow-md max-w-[398px] h-fit drop-shadow-md">
+    <div className="relative w-full rounded-3xl bg-white shadow-md md:max-w-[398px] h-fit drop-shadow-md">
       {/* Image and Overlay Info */}
       <div className="relative mb-4 h-48 w-full overflow-hidden rounded-2xl">
         <Image
@@ -212,6 +256,11 @@ export default function GroupCardItem(props: GroupCardItemProps) {
           </MyButton>
         </div>
       </div>
+      <InviteCodeModal
+        isOpen={openInviteCodeModal}
+        onClose={() => handleCloseInviteCodeModal()}
+        onSubmit={handleAcceptInviteCode}
+      />
     </div>
   );
 }

@@ -64,20 +64,20 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    // CredentialsProvider({
-    //   id: AUTHENTICATION_METHODS.TOKEN.key,
-    //   credentials: AUTHENTICATION_METHODS.TOKEN.credentials,
-    //   async authorize(credentials) {
-    //     if (credentials) {
-    //       return {
-    //         ...credentials,
-    //         id: credentials.user_id,
-    //       };
-    //     }
+    CredentialsProvider({
+      id: AUTHENTICATION_METHODS.TOKEN.key,
+      credentials: AUTHENTICATION_METHODS.TOKEN.credentials,
+      async authorize(credentials) {
+        if (credentials) {
+          return {
+            ...credentials,
+            id: credentials.user_id,
+          };
+        }
 
-    //     return null;
-    //   },
-    // }),
+        return null;
+      },
+    }),
   ],
 
   session: {

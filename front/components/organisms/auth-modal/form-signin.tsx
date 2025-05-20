@@ -9,7 +9,7 @@ import useSignInForm, { SignInSchemaType } from './yup-form/signin.yup';
 import { MyButton } from '@/components/atoms/Button';
 import MyInput from '@/components/atoms/Input';
 import InputPassword from '@/components/atoms/InputPassword';
-import { MailIcon } from '@/components/atoms/icons';
+import { GoogleIcon, KeyIcon, MailIcon } from '@/components/atoms/icons';
 import { STORAGE_KEYS } from '@/config/constant';
 import { useSystemToast } from '@/hooks/toast';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
@@ -146,10 +146,15 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
           </span>
           <div className="h-[1px] w-[100px] bg-primary-200" />
         </div>
-        <div className="w-full flex justify-center mt-2">
-          <MyButton color="danger" role="button" type="button" variant="shadow">
-            <MailIcon className="w-6 h-6 text-white" />
-            {t('button.login_with_code')}
+        <div className="w-full flex justify-center mt-2 gap-2">
+          <MyButton color="default" role="button" type="button" variant="light">
+            <MailIcon className="w-6 h-6 text-red-500" />
+          </MyButton>
+          <MyButton color="default" role="button" type="button" variant="light">
+            <GoogleIcon className="w-6 h-6 " />
+          </MyButton>
+          <MyButton color="default" role="button" type="button" variant="light">
+            <KeyIcon className="w-6 h-6 text-green-700" />
           </MyButton>
         </div>
       </Form>

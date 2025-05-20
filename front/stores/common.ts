@@ -226,13 +226,19 @@ export const useCommonStore = create<CommonStore>((set) => ({
 
       return state;
     }),
-  setModalConfirm: (modalConfirm: Partial<CommonStore['modalConfirm']>) =>
-    set((state) => ({
-      modalConfirm: {
-        ...state.modalConfirm,
-        ...modalConfirm,
-      },
-    })),
+  setModalConfirm: (modalConfirm: Partial<CommonStore['modalConfirm']>) => {
+    set((state) => {
+      console.log(state.modalConfirm);
+      console.log(modalConfirm);
+
+      return {
+        modalConfirm: {
+          ...state.modalConfirm,
+          ...modalConfirm,
+        },
+      };
+    });
+  },
   setDataModalUpsertOrder: (data: any) =>
     set((state) => ({
       modalUpsertOrder: {

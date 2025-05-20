@@ -72,7 +72,8 @@
     "next": "Next",
     "back": "Back",
     "paid": "Pay",
-    "i_paid": "I Paid"
+    "i_paid": "I Paid",
+    "import_menu": "Import"
   },
   "sign_in_modal": {
     "organization_code": "Organization Code",
@@ -118,11 +119,14 @@
     "is_same_price": "Same Price",
     "share_scope": "Share Scope",
     "price": "Price",
+    "import_menu": "Import Menu",
+    "import_menu_description": "Content",
     "placeholder": {
       "name": "Enter your group name",
       "menu_name": "Enter menu name",
       "menu_price": "Enter price",
-      "price": "Enter price"
+      "price": "Enter price",
+      "import_menu_description": "Enter your list of menu items (one per line) \n \nExample: \n- Menu 1:10000\n- Menu 2:20000\n- Menu 3:30000 "
     },
     "description": {
       "date_range": "* Select the date range before the current date"
@@ -260,7 +264,8 @@
       "change_display_name": "Display Name Failed",
       "update_password": "Update Password Failed",
       "reset_password_failed": "Unable to send password reset email. Please try again later.",
-      "reset_token_expired": "The password reset link has expired or has already been used. \nPlease request a new password reset."
+      "reset_token_expired": "The password reset link has expired or has already been used. \nPlease request a new password reset.",
+      "import_menu": "Invalid menu import format. Please check your input and try again"
     },
     "success": {
       "signin_success": "Signin Success",
@@ -309,8 +314,8 @@
   },
   "my_page": {
     "basic_info": {
-      "title": "Information",
-      "display_name": "Display name:",
+      "title": "Basic Information",
+      "display_name": "Display Name:",
       "email": "Email:",
       "password": "Password:",
       "change": "Change"

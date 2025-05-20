@@ -35,8 +35,8 @@ const useSignInForm = () => {
     mode: 'onChange',
     resolver: yupResolver(useSignInSchema()),
     defaultValues: {
-      email: 'nhuquynh03@gmail.com',
-      password: 'NhuQuynh2503@',
+      email: '',
+      password: '',
       organization_code:
         localStorage.getItem(STORAGE_KEYS.ORGANIZATION_CODE) || '',
     },

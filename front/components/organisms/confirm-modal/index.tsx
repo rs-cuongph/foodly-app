@@ -230,7 +230,10 @@ export default function ConfirmModal() {
     return false;
   }, [kind, modalConfirm.data?.orderId, reason]);
 
-  const modalConfig = useMemo(() => getModalConfig(kind), [kind, groupInfo]);
+  const modalConfig = useMemo(
+    () => getModalConfig(kind),
+    [kind, groupInfo, modalConfirm],
+  );
 
   useEffect(() => {
     if (isOpen) {

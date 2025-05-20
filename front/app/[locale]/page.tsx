@@ -106,7 +106,7 @@ export default function Home() {
                     ...searchForm.is_online.split(','),
                   ],
                   shareScope: searchForm.share_scope,
-                  isMine: [searchForm.is_mine.toString()],
+                  isMine: [],
                 }}
                 onChange={onChangeFilter}
               />
@@ -126,7 +126,7 @@ export default function Home() {
           </MyButton>
         </div>
       </div>
-      <div className="my-2">
+      <div className="my-2 flex flex-wrap gap-x-4 gap-y-4">
         <GroupCardList searchForm={searchForm} />
       </div>
     </section>

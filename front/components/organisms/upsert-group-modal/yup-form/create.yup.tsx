@@ -171,7 +171,7 @@ const useCreateGroupForm = () => {
     mode: 'onChange',
     resolver: yupResolver(useCreateGroupSchema()),
     defaultValues: {
-      name: 'Test Group',
+      name: '',
       date_range: {
         start: startDate,
         end: endDate,

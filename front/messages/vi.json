@@ -25,7 +25,8 @@
     "back": "Quay lại",
     "i_paid": "Tôi đã thanh toán",
     "next": "Tiếp theo",
-    "paid": "Thanh toán"
+    "paid": "Thanh toán",
+    "import_menu": "Nhập"
   },
   "common": {
     "empty": "Không có dữ liệu.",
@@ -139,7 +140,8 @@
       "reset_password_failed": "Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.",
       "reset_token_expired": "Liên kết đặt lại mật khẩu đã hết hạn hoặc đã được sử dụng. \nVui lòng thử yêu cầu đặt lại mật khẩu mới.",
       "change_display_name": "Tên hiển thị không thành công",
-      "update_password": "Cập nhật mật khẩu không thành công"
+      "update_password": "Cập nhật mật khẩu không thành công",
+      "import_menu": "Định dạng nhập menu không hợp lệ. \nVui lòng kiểm tra đầu vào của bạn và thử lại"
     },
     "success": {
       "create_group_success": "Tạo nhóm thành công",
@@ -177,11 +179,14 @@
       "menu_name": "Nhập tên menu",
       "menu_price": "Nhập giá",
       "name": "Nhập tên nhóm của bạn",
-      "price": "Nhập giá"
+      "price": "Nhập giá",
+      "import_menu_description": "Nhập danh sách các mục menu của bạn (một trên mỗi dòng) \n \n\nVí dụ: \n\n- Menu 1: 10000\n\n- Menu 2: 2000\n\n- Menu 3: 30000"
     },
     "price": "Giá",
     "share_scope": "Phạm vi chia sẻ",
-    "type": "Loại"
+    "type": "Loại",
+    "import_menu": "Nhập menu",
+    "import_menu_description": "Nội dung"
   },
   "validation": {
     "email": "{field} phải là một email hợp lệ",
@@ -282,8 +287,8 @@
   },
   "my_page": {
     "basic_info": {
-      "title": "Thông tin",
-      "display_name": "Tên hiển thị:",
+      "title": "Thông tin cơ bản",
+      "display_name": "Tên Hiển Thị:",
       "email": "Email:",
       "password": "Mật khẩu:",
       "change": "Đổi"
