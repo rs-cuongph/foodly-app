@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack -p 5200",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 5200",
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
   },
   "dependencies": {
