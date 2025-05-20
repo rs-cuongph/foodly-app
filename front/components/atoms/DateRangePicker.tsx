@@ -51,7 +51,7 @@ const MyDateRangePicker = forwardRef<HTMLInputElement, MyDateRangePickerProps>(
     }
 
     const minValue = props.minValue
-      ? (parseAbsolute(props.minValue, timezone) as DateValue)
+      ? (parseAbsolute(props.minValue, timezone) as unknown as DateValue)
       : undefined;
 
     return (
