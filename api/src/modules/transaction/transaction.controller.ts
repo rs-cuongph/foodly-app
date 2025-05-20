@@ -4,8 +4,8 @@ https://docs.nestjs.com/controllers#controllers
 
 import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
-import { ScanTransactionDTO } from './dto/create.dto';
-import { Public } from '@decorators/auth.decorator';
+// import { ScanTransactionDTO } from './dto/create.dto';
+// import { Public } from '@decorators/auth.decorator';
 
 @Controller('transaction')
 export class TransactionController {
@@ -21,9 +21,9 @@ export class TransactionController {
   // }
 
   // TODO: for testing
-  @Public()
-  @Patch('/scan')
-  scan(@Body() body: ScanTransactionDTO) {
-    return this.transactionService.scan(body);
-  }
+  // @Public()
+  // @Patch('/scan')
+  // scan(@Body() body: ScanTransactionDTO) {
+  //   return this.transactionService.scan(body);
+  // }
 }
