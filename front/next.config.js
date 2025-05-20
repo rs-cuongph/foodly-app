@@ -12,12 +12,16 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
-        port: '3000',
+        port: '5200',
       },
       {
         protocol: 'http',
         hostname: '127.0.0.1',
-        port: '3000',
+        port: '5200',
+      },
+      {
+        protocol: 'https',
+        hostname: 'foodly.talentgrid.io.vn',
       },
     ],
   },
