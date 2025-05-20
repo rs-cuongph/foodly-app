@@ -108,18 +108,19 @@ const ForgotPasswordModalForm = forwardRef<
         </div>
       ) : (
         <div className="w-full flex flex-col gap-4">
-          <MyInput
-            isRequired
-            label={t('sign_in_modal.organization_code')}
-            labelPlacement="outside"
-            maxLength={40}
-            placeholder={t('sign_in_modal.placeholder.organization_code')}
-            type="text"
-            {...register('organization_code')}
-            disabled={!!organizationCode}
-            errorMessage={errors.organization_code?.message}
-            readOnly={!!organizationCode}
-          />
+          {organizationCode && (
+            <MyInput
+              isRequired
+              label={t('sign_in_modal.organization_code')}
+              labelPlacement="outside"
+              maxLength={40}
+              placeholder={t('sign_in_modal.placeholder.organization_code')}
+              type="text"
+              {...register('organization_code')}
+              disabled={!!organizationCode}
+              errorMessage={errors.organization_code?.message}
+            />
+          )}
           <MyInput
             isRequired
             label={t('sign_in_modal.email')}

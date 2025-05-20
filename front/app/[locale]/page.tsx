@@ -3,14 +3,18 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
 import { CreateGroupIcon, FilterIcon } from '@/components/atoms/icons';
 import InputSearch from '@/components/atoms/InputSearch';
 import FilterGroupForm from '@/components/molecules/filter-group';
 import GroupCardList from '@/components/organisms/group-list';
-import { GROUP_STATUS_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
+import {
+  GROUP_STATUS_ENUM,
+  SHARE_SCOPE_ENUM,
+  STORAGE_KEYS,
+} from '@/config/constant';
 import { GroupListParams } from '@/hooks/api/group/type';
 import { useClickOutside } from '@/hooks/click-outside';
 import { useAuthStore } from '@/stores/auth';
@@ -68,6 +72,11 @@ export default function Home() {
   };
 
   useClickOutside(popoverRef, () => setPopoverState(false));
+
+  useEffect(() => {
+    // init set organization
+    localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, 'GMODN');
+  }, []);
 
   return (
     <section className="">

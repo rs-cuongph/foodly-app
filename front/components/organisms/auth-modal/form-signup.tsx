@@ -90,17 +90,18 @@ const SignUpModalForm = forwardRef<SignUpModalFormRef, SignUpModalFormProps>(
     return (
       <Form ref={formRef} className="w-full flex flex-col">
         <div className="w-full flex flex-col gap-4">
-          <MyInput
-            isRequired
-            label={t('sign_up_modal.organization_code')}
-            labelPlacement="outside"
-            maxLength={40}
-            placeholder={t('sign_up_modal.placeholder.organization_code')}
-            {...register('organization_code')}
-            disabled={!!organizationCode}
-            errorMessage={errors.organization_code?.message}
-            readOnly={!!organizationCode}
-          />
+          {!organizationCode && (
+            <MyInput
+              isRequired
+              label={t('sign_up_modal.organization_code')}
+              labelPlacement="outside"
+              maxLength={40}
+              placeholder={t('sign_up_modal.placeholder.organization_code')}
+              {...register('organization_code')}
+              disabled={!!organizationCode}
+              errorMessage={errors.organization_code?.message}
+            />
+          )}
           <MyInput
             isRequired
             label={t('sign_up_modal.email')}
