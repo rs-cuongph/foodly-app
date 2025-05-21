@@ -8,6 +8,7 @@ import {
 import { ORDER_STATUS_ENUM } from '@/config/constant';
 import { OrderListItem } from '@/hooks/api/order/type';
 import { useRole } from '@/hooks/apps/foodly/role';
+import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 type OrderActionTableProps = {
@@ -24,6 +25,7 @@ type Action = {
 
 const OrderActionTable = (props: OrderActionTableProps) => {
   const { order } = props;
+  const { isLoggedIn } = useAuthStore();
   const { setIsOpen, setModalConfirm, setDataModalUpsertOrder } =
     useCommonStore();
   const { isGroupOwner, isOrderOwner, isGroupLocked } = useRole();
@@ -123,6 +125,8 @@ const OrderActionTable = (props: OrderActionTableProps) => {
   ];
 
   const filteredActions = (actions: Action[]) => {
+    if (!isLoggedIn) return [];
+
     return actions.filter((action) => {
       return action.isShow;
     });
