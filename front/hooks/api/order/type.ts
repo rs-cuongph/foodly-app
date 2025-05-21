@@ -52,6 +52,15 @@ export type OrderListItem = {
   };
   transaction: {
     unique_code: string;
+    metadata: {
+      amount: number;
+      quantity: number;
+      payment_setting: {
+        account_name: string;
+        account_number: string;
+        payment_method: string;
+      };
+    };
   };
   created_by: {
     id: string;

@@ -27,6 +27,7 @@ import {
 } from '@/hooks/api/order';
 import { useSystemToast } from '@/hooks/toast';
 import { useRouter } from '@/i18n/navigation';
+import { getVietQRCode } from '@/shared/helper/common';
 import { DateHelper } from '@/shared/helper/date';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { useCommonStore } from '@/stores/common';
@@ -191,6 +192,20 @@ export default function ConfirmModal() {
           },
         };
       case 'qr_code': {
+        const { transaction } = modalConfirm.data;
+        const { amount, payment_setting } = transaction;
+        const { account_name, account_number, payment_method } =
+          payment_setting;
+        const vietQRCode = getVietQRCode(
+          payment_method,
+          account_number,
+          account_name,
+          amount,
+          transaction.unique_code,
+        );
+
+        setVietQRCode(vietQRCode);
+
         return {
           title: t('common.modal_title.qr_code'),
           description: '',

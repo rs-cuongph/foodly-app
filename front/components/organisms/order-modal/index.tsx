@@ -27,6 +27,7 @@ import useSettingOrderForm from './yup-form/setting-order.yup';
 
 import { MyButton } from '@/components/atoms/Button';
 import { useCreateOrderMutation, useMarkPaidMutation } from '@/hooks/api/order';
+import { CreateOrderResponse } from '@/hooks/api/order/type';
 import { useSystemToast } from '@/hooks/toast';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
@@ -68,6 +69,7 @@ export default function OrderModal() {
   const [buttonConfirmText, setButtonConfirmText] = useState(t('button.next'));
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderInfo, setOrderInfo] = useState<CreateOrderResponse | null>(null);
   const [step, setStep] = useState(1);
   const formRegistry: Record<string, FormConfig> = {
     [FormType.SETTING_ORDER]: {
@@ -155,6 +157,7 @@ export default function OrderModal() {
         showSuccess(t('system_message.success.create_order'));
         setOrderId(response.data.id);
         setQrCode(response.data.transaction.unique_code);
+        setOrderInfo(response.data);
         setSelectedForm(FormType.QR_CODE, ModalType.UPSERT_ORDER);
         setButtonCancelText(t('button.close'));
         setButtonConfirmText(t('button.i_paid'));
@@ -247,7 +250,12 @@ export default function OrderModal() {
                 initial="initial"
                 variants={box}
               >
-                <CurrentForm ref={formRef} methods={methods} qrCode={qrCode} />
+                <CurrentForm
+                  ref={formRef}
+                  methods={methods}
+                  orderInfo={orderInfo}
+                  qrCode={qrCode}
+                />
               </motion.div>
             </AnimatePresence>
           </FormProvider>

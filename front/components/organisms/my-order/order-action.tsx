@@ -39,7 +39,12 @@ const OrderActionTable = (props: OrderActionTableProps) => {
           order.status,
         ),
       onPress: () => {
-        console.log(order);
+        const transaction = {
+          unique_code: order.transaction.unique_code,
+          amount: order.transaction.metadata.amount,
+          payment_setting: order.transaction.metadata.payment_setting,
+        };
+
         setModalConfirm({
           isOpen: true,
           kind: 'qr_code',
@@ -47,6 +52,7 @@ const OrderActionTable = (props: OrderActionTableProps) => {
             orderId: order.id,
             qrCode: order.transaction.unique_code,
             orderStatus: order.status,
+            transaction: transaction,
           },
         });
       },
