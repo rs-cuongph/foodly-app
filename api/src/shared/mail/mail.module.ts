@@ -14,7 +14,7 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
     }),
     BullModule.registerQueue({ name: QUEUE_NAME_ENUM.MAIL }),
     BullBoardModule.forFeature({
-      name: 'mail-queue',
+      name: QUEUE_NAME_ENUM.MAIL,
       adapter: BullAdapter,
     }),
   ],
