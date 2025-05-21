@@ -8,8 +8,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres:/var/lib/postgresql/data
-    networks:
-      - nestjs-boilerplate-network
+    # networks:
+    #   - nestjs-boilerplate-network
     ports:
       - '5432:5432'
 
@@ -19,8 +19,8 @@ services:
     restart: always
     ports:
       - '6379:6379'
-    networks:
-      - nestjs-boilerplate-network
+    # networks:
+    #   - nestjs-boilerplate-network
 
   maildev:
     hostname: maildev
@@ -32,8 +32,8 @@ services:
       - 1025:1025
     volumes:
       - maildev_data:/data
-    networks:
-      - nestjs-boilerplate-network
+    # networks:
+    #   - nestjs-boilerplate-network
   api:
     hostname: api
     user: root
@@ -42,13 +42,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - 6100:6100
-    networks:
-      - nestjs-boilerplate-network
+    # networks:
+    #   - nestjs-boilerplate-network
 
 volumes:
   postgres:
   maildev_data:
 
-networks:
-  nestjs-boilerplate-network:
-    external: true
+# networks:
+#   nestjs-boilerplate-network:
+#     external: true
