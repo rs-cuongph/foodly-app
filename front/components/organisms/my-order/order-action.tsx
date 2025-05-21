@@ -39,6 +39,7 @@ const OrderActionTable = (props: OrderActionTableProps) => {
           order.status,
         ),
       onPress: () => {
+        console.log(order);
         setModalConfirm({
           isOpen: true,
           kind: 'qr_code',

@@ -23,6 +23,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'foodly.talentgrid.io.vn',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.vietqr.io',
+      },
     ],
   },
 };

@@ -9,7 +9,7 @@ import {
   ModalHeader,
 } from '@heroui/react';
 import { useTranslations } from 'next-intl';
-import { QRCodeSVG } from 'qrcode.react';
+import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
@@ -78,6 +78,7 @@ export default function ConfirmModal() {
   const [reason, setReason] = useState('');
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [remainingTime, setRemainingTime] = useState(90); // 1 minute and 30 seconds
+  const [vietQRCode, setVietQRCode] = useState('');
 
   const getModalConfig = (
     kind: ConfirmModalKind,
@@ -311,7 +312,7 @@ export default function ConfirmModal() {
                 {DateHelper.formatTime(remainingTime)}
               </div>
               <div className="bg-white p-4 rounded-lg shadow-md w-fit mx-auto">
-                <QRCodeSVG
+                {/* <QRCodeSVG
                   bgColor="#FFFFFF"
                   fgColor="#000000"
                   imageSettings={{
@@ -325,6 +326,13 @@ export default function ConfirmModal() {
                   level="H"
                   size={256}
                   value={modalConfirm.data?.qrCode}
+                /> */}
+                <Image
+                  alt="QR Code"
+                  className="w-full h-full"
+                  height={256}
+                  src={vietQRCode}
+                  width={256}
                 />
               </div>
               <div className="text-center text-white mt-4">

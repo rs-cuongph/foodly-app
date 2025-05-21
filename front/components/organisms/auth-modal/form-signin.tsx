@@ -1,7 +1,7 @@
 'use client';
 import { Form } from '@heroui/form';
 import { signIn } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 
 import useSignInForm, { SignInSchemaType } from './yup-form/signin.yup';
@@ -23,6 +23,7 @@ interface SignInModalFormProps {}
 const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
   (props, ref) => {
     const t = useTranslations();
+    const locale = useLocale();
     const { setSelectedForm, setIsLoadingConfirm, closeModal } =
       useCommonStore();
     const { showError, showSuccess } = useSystemToast();
@@ -46,6 +47,7 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
         email: data.email,
         password: data.password,
         organization_code: data.organization_code,
+        lang: locale,
         redirect: false,
       });
 

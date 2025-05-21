@@ -12,6 +12,7 @@ const AUTHENTICATION_METHODS = {
       email: { type: 'text' },
       password: { type: 'password' },
       organization_code: { type: 'text' },
+      lang: { type: 'text' },
     },
   },
   TOKEN: {
@@ -43,6 +44,11 @@ export const authOptions: NextAuthOptions = {
               email: credentials?.email,
               password: credentials?.password,
               organization_code: credentials?.organization_code,
+            },
+            {
+              headers: {
+                lang: credentials?.lang,
+              },
             },
           );
 

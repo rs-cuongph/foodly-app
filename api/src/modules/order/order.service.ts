@@ -439,6 +439,7 @@ export class OrderService {
       transaction: {
         select: {
           unique_code: true,
+          metadata: true,
         },
       },
       created_by:

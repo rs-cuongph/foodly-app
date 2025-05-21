@@ -29,7 +29,7 @@ const SettingPaymentForm = forwardRef<
 
   const paymentMethods = useMemo(() => {
     return (
-      groupInfo?.created_by?.payment_setting.map((item) => ({
+      groupInfo?.created_by?.payment_setting?.map((item) => ({
         key: JSON.stringify(item),
         label: capitalize(item.payment_method),
       })) ?? []

@@ -1,12 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { QRCodeSVG } from 'qrcode.react';
+import Image from 'next/image';
 import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import { SettingOrderSchemaType } from './yup-form/setting-order.yup';
 
+import { CreateOrderResponse } from '@/hooks/api/order/type';
+import { getVietQRCode } from '@/shared/helper/common';
 import { ModalType, useCommonStore } from '@/stores/common';
 import { useGroupStore } from '@/stores/group';
 
@@ -15,11 +17,12 @@ export interface SettingQRRef {}
 export interface SettingQRProps {
   methods: UseFormReturn<SettingOrderSchemaType, any, SettingOrderSchemaType>;
   qrCode: string | null;
+  orderInfo: CreateOrderResponse | null;
 }
 
 const SettingQR = forwardRef<SettingQRRef, SettingQRProps>((props, ref) => {
   const t = useTranslations();
-  const { methods, qrCode } = props;
+  const { methods, qrCode, orderInfo } = props;
   const { getValues, reset } = methods;
   const { groupInfo } = useGroupStore();
   const { closeModal } = useCommonStore();
@@ -41,6 +44,22 @@ const SettingQR = forwardRef<SettingQRRef, SettingQRProps>((props, ref) => {
 
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
+
+  const vietQRCode = useMemo(() => {
+    const { account_name, account_number, payment_method } = JSON.parse(
+      getValues('payment_setting'),
+    );
+
+    const amount = Number(orderInfo?.amount ?? 0);
+
+    return getVietQRCode(
+      payment_method,
+      account_number,
+      account_name,
+      amount,
+      qrCode ?? '',
+    );
+  }, [groupInfo, getValues, qrCode, orderInfo]);
 
   // Close modal after timer ends
   useEffect(() => {
@@ -87,7 +106,7 @@ const SettingQR = forwardRef<SettingQRRef, SettingQRProps>((props, ref) => {
           {formatTime(remainingTime)}
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md w-fit mx-auto">
-          <QRCodeSVG
+          {/* <QRCodeSVG
             bgColor="#FFFFFF"
             fgColor="#000000"
             imageSettings={{
@@ -101,6 +120,13 @@ const SettingQR = forwardRef<SettingQRRef, SettingQRProps>((props, ref) => {
             level="H"
             size={256}
             value={qrCode}
+          /> */}
+          <Image
+            alt="QR Code"
+            className="w-full h-full"
+            height={256}
+            src={vietQRCode}
+            width={256}
           />
         </div>
         <div className="text-center text-white mt-4">
