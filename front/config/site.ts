@@ -1,10 +1,10 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: 'My Apps',
+  name: 'Foodly',
   apps: {
-    title: 'Foodly',
-    description: 'Foodly App',
+    title: 'Foodly Booking',
+    description: 'Foodly Booking App',
     routes: {
       home: '/',
       history: '/my-order',
