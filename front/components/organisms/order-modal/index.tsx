@@ -117,7 +117,14 @@ export default function OrderModal() {
   const CurrentForm = formRegistry[modalUpsertOrder.selectedForm].component;
 
   const handleCancel = () => {
-    if (modalUpsertOrder.selectedForm === FormType.SETTING_ORDER) {
+    if (
+      modalUpsertOrder.selectedForm === FormType.SETTING_ORDER ||
+      modalUpsertOrder.selectedForm === FormType.QR_CODE
+    ) {
+      setSelectedForm(FormType.SETTING_ORDER, ModalType.UPSERT_ORDER);
+      setButtonCancelText(t('button.close'));
+      setButtonConfirmText(t('button.next'));
+      setStep(1);
       handleCloseModal();
 
       return;
@@ -130,10 +137,6 @@ export default function OrderModal() {
       setStep(1);
 
       return;
-    }
-
-    if (modalUpsertOrder.selectedForm === FormType.QR_CODE) {
-      handleCloseModal();
     }
   };
 
