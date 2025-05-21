@@ -31,6 +31,8 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@bull-board/express": "^6.9.6",
+    "@bull-board/nestjs": "^6.9.6",
     "@faker-js/faker": "^9.6.0",
     "@nest-middlewares/helmet": "^10.0.0",
     "@nestjs-modules/mailer": "^2.0.2",
@@ -57,6 +59,7 @@
     "csv-parser": "^3.0.0",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
+    "express-basic-auth": "^1.2.1",
     "handlebars": "^4.7.8",
     "hbs": "^4.2.0",
     "joi": "^17.13.3",

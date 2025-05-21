@@ -22,6 +22,9 @@ import { CustomPrismaModule, PrismaModule } from 'nestjs-prisma';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard';
 import { ExtendedPrismaConfigService } from './services/prisma-config.service';
+import { BullBoardModule } from '@bull-board/nestjs';
+import { ExpressAdapter } from '@bull-board/express';
+import basicAuth from 'express-basic-auth';
 
 @Module({
   imports: [
@@ -91,6 +94,14 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
         };
       },
       inject: [ConfigService],
+    }),
+    BullBoardModule.forRoot({
+      route: '/monitor/queues',
+      adapter: ExpressAdapter,
+      middleware: basicAuth({
+        challenge: true,
+        users: { admin: 'GmS3k7jRPWwt9ap' },
+      }),
     }),
     ScheduleModule.forRoot(),
     LoggerModule.forRoot({
