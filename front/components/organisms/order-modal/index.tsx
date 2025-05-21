@@ -36,7 +36,11 @@ import { useGroupStore } from '@/stores/group';
 interface FormConfig {
   title: string;
   component: ForwardRefExoticComponent<
-    SettingOrderFormProps & RefAttributes<any> & { qrCode: string | null }
+    SettingOrderFormProps &
+      RefAttributes<any> & {
+        qrCode: string | null;
+        orderInfo: CreateOrderResponse | null;
+      }
   >;
   showInNav?: boolean;
 }
