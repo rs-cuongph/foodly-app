@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@bull-board/api':
+        specifier: ^6.9.6
+        version: 6.9.6(@bull-board/ui@6.9.6)
       '@bull-board/express':
         specifier: ^6.9.6
         version: 6.9.6
