@@ -103,7 +103,7 @@ export default function OrderModal() {
     }
 
     if (modalUpsertOrder.selectedForm === FormType.SETTING_PAYMENT) {
-      return watchPaymentSetting.length === 0;
+      return !watchPaymentSetting?.length;
     }
 
     return false;
@@ -130,6 +130,10 @@ export default function OrderModal() {
       setStep(1);
 
       return;
+    }
+
+    if (modalUpsertOrder.selectedForm === FormType.QR_CODE) {
+      handleCloseModal();
     }
   };
 
