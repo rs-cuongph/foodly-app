@@ -108,7 +108,7 @@ const ForgotPasswordModalForm = forwardRef<
         </div>
       ) : (
         <div className="w-full flex flex-col gap-4">
-          {organizationCode && (
+          {!organizationCode && (
             <MyInput
               isRequired
               label={t('sign_in_modal.organization_code')}
