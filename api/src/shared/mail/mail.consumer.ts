@@ -23,7 +23,7 @@ export class MailConsumer {
       this.logger.error(
         `An error occur while sending email ${
           data.template || ''
-        } with context ${JSON.stringify(data.context) || ''}`,
+        } with context ${JSON.stringify(data.context) || ''} with error ${JSON.stringify(e)}`,
         e,
       );
     }
