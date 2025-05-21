@@ -15,7 +15,7 @@ export class MailConfig implements MailerOptionsFactory {
       transport: {
         host: transportConfig.host,
         port: transportConfig.port,
-        secure: true,
+        secure: transportConfig.secure,
         auth: {
           user: transportConfig.username,
           pass: transportConfig.password,
@@ -42,6 +42,7 @@ export class MailConfig implements MailerOptionsFactory {
         return {
           host: this.configService.get('mail.maildev.host'),
           port: this.configService.get('mail.maildev.port'),
+          secure: false,
           username: this.configService.get('mail.maildev.username'),
           password: this.configService.get('mail.maildev.password'),
         };
@@ -49,6 +50,7 @@ export class MailConfig implements MailerOptionsFactory {
         return {
           host: this.configService.get('mail.gmail.host'),
           port: this.configService.get('mail.gmail.port'),
+          secure: this.configService.get('mail.gmail.secure'),
           username: this.configService.get('mail.gmail.username'),
           password: this.configService.get('mail.gmail.password'),
         };
