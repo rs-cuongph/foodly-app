@@ -24,7 +24,7 @@ import { JwtAccessTokenGuard } from '@modules/auth/guards/jwt-access-token.guard
 import { ExtendedPrismaConfigService } from './services/prisma-config.service';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
-import basicAuth from 'express-basic-auth';
+import * as basicAuth from 'express-basic-auth';
 
 @Module({
   imports: [
