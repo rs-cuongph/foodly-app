@@ -15,6 +15,7 @@ export class MailConfig implements MailerOptionsFactory {
       transport: {
         host: transportConfig.host,
         port: transportConfig.port,
+        secure: true,
         auth: {
           user: transportConfig.username,
           pass: transportConfig.password,
