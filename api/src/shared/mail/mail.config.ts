@@ -10,6 +10,7 @@ export class MailConfig implements MailerOptionsFactory {
 
   createMailerOptions() {
     const transportConfig = this._getTransportConfig();
+    console.log('transportConfig', transportConfig);
     return {
       transport: {
         host: transportConfig.host,
