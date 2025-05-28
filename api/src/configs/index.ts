@@ -55,6 +55,9 @@ const configs = (): Config => {
       rpId: process.env.WEBAUTHN_RP_ID || 'localhost:3000',
       origin: process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000',
     },
+    webhook: {
+      token: process.env.WEBHOOK_TOKEN,
+    },
   };
 };
 

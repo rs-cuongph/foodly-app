@@ -8,6 +8,7 @@ export interface Config {
   aws: AwsConfig;
   prisma: PrismaConfig;
   webauthn: WebauthnConfig;
+  webhook: WebhookConfig;
 }
 
 export interface AwsConfig {
@@ -64,4 +65,8 @@ export interface WebauthnConfig {
   rpName: string;
   rpId: string;
   origin: string;
+}
+
+export interface WebhookConfig {
+  token: string;
 }
