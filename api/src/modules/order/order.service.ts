@@ -98,7 +98,7 @@ export class OrderService {
   private generateUniqueCode() {
     const timestamp = dayjs().format('YYMMDDHHmmss'); // 12 characters
     const randomChars = Math.random().toString(36).substring(2, 10); // 8 characters
-    return `${timestamp}${randomChars}`.toLowerCase(); // total 20 characters
+    return `FDY${timestamp}${randomChars.toUpperCase()}`.toLowerCase(); // total 20 characters
   }
 
   async create(body: CreateOrderDTO, user: RequestWithUser['user']) {

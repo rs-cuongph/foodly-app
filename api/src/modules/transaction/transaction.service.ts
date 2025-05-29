@@ -20,9 +20,15 @@ export class TransactionService {
   ) {}
 
   public async confirmTransaction(body: WebhookResponseDataType) {
-    console.log(body);
+    let transCode = '';
+    const descriptionBank = body.payment.content;
 
-    const transCode = body.payment.content;
+    if (descriptionBank.startsWith('MBVCB.')) {
+      transCode = descriptionBank.split('.')[3].replace(' ', '');
+    } else if (descriptionBank.startsWith('FDY')) {
+      transCode = descriptionBank.slice(0, 23).trim();
+    }
+
     if (!transCode) {
       throw new BadRequestException(
         this.i18n.t('message.trans_code_is_required'),
