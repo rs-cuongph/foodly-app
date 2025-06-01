@@ -285,6 +285,9 @@
       "update_password": "Password Updated Successfully",
       "reset_password_email_sent": "Password reset successful. A guide email has been sent to your email address.",
       "set_password_success": "Password set successfully"
+    },
+    "warning": {
+      "signing_in": "Signing in..."
     }
   },
   "toast": {

@@ -31,8 +31,19 @@ export const useSystemToast = () => {
     });
   };
 
+  const showWarning = (title: string, description?: string) => {
+    addToast({
+      ...baseSettings,
+      title: title,
+      description: description,
+      severity: 'warning',
+      color: 'warning',
+    });
+  };
+
   return {
     showError,
     showSuccess,
+    showWarning,
   };
 };

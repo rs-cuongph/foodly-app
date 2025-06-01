@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -31,11 +32,17 @@ import {
   WebAuthnVerifyAuthenticationDTO,
   WebAuthnVerifyRegistrationDTO,
 } from './dto/webauthn.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Public()
   @Post('sign-up')
@@ -131,5 +138,26 @@ export class AuthController {
   @Post('webauth/authenticate')
   async verifyAuthentication(@Body() body: WebAuthnVerifyAuthenticationDTO) {
     return this.authService.webAuthVerifyAuthentication(body);
+  }
+
+  @Get('google')
+  @Public()
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // Method này không cần implementation code
+    // AuthGuard('google') sẽ tự động:
+    // - Redirect user đến: https://accounts.google.com/oauth/authorize?...
+    // - Bao gồm các parameters: client_id, redirect_uri, scope, response_type
+    // - User sẽ thấy Google consent screen để cấp quyền
+  }
+
+  @Get('google/callback')
+  @Public()
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    const result = await this.authService.googleLogin(req);
+
+    const frontendUrl = `${this.configService.get('app.frontendUrl')}?google_result=${encodeURIComponent(JSON.stringify(result))}`;
+    res.redirect(frontendUrl);
   }
 }

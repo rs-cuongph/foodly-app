@@ -9,7 +9,7 @@ import useSignInForm, { SignInSchemaType } from './yup-form/signin.yup';
 import { MyButton } from '@/components/atoms/Button';
 import MyInput from '@/components/atoms/Input';
 import InputPassword from '@/components/atoms/InputPassword';
-import { GoogleIcon, KeyIcon, MailIcon } from '@/components/atoms/icons';
+import { GoogleIcon } from '@/components/atoms/icons';
 import { STORAGE_KEYS } from '@/config/constant';
 import { useSystemToast } from '@/hooks/toast';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
@@ -59,6 +59,10 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
       }
 
       setIsLoadingConfirm(false, ModalType.AUTH);
+    };
+
+    const handleLoginByGoogle = async () => {
+      window.location.href = process.env.NEXT_PUBLIC_GOOGLE_LOGIN_URL as string;
     };
 
     // expose handleSubmit to parent
@@ -151,15 +155,21 @@ const SignInModalForm = forwardRef<SignInModalFormRef, SignInModalFormProps>(
           <div className="h-[1px] w-[100px] bg-primary-200" />
         </div>
         <div className="w-full flex justify-center mt-2 gap-2">
-          <MyButton color="default" role="button" type="button" variant="light">
+          {/* <MyButton color="default" role="button" type="button" variant="light">
             <MailIcon className="w-6 h-6 text-red-500" />
-          </MyButton>
-          <MyButton color="default" role="button" type="button" variant="light">
+          </MyButton> */}
+          <MyButton
+            color="default"
+            role="button"
+            type="button"
+            variant="light"
+            onPress={handleLoginByGoogle}
+          >
             <GoogleIcon className="w-6 h-6 " />
           </MyButton>
-          <MyButton color="default" role="button" type="button" variant="light">
+          {/* <MyButton color="default" role="button" type="button" variant="light">
             <KeyIcon className="w-6 h-6 text-green-700" />
-          </MyButton>
+          </MyButton> */}
         </div>
       </Form>
     );

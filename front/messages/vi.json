@@ -161,6 +161,9 @@
       "delete_payment_setting": "Cài đặt thanh toán đã bị xóa thành công",
       "update_password": "Mật khẩu được cập nhật thành công",
       "update_payment_setting": "Cài đặt thanh toán được cập nhật thành công"
+    },
+    "warning": {
+      "signing_in": "Đăng nhập ..."
     }
   },
   "upsert_group_modal": {

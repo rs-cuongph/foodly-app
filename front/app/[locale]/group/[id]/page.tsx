@@ -143,7 +143,7 @@ export default function GroupDetail() {
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (id) {
+    if (groupInfo) {
       const oneDay = 24 * 60 * 60 * 1000;
       const diff = calculateTimeCountDown();
 
@@ -156,7 +156,13 @@ export default function GroupDetail() {
           setTimeCountDown(calculateTimeCountDown());
         }
       }
+    }
 
+    return () => clearInterval(interval);
+  }, [groupInfo]);
+
+  useEffect(() => {
+    if (id) {
       checkGroupApi(id).then((res) => {
         const canAccess = res.canAccess;
         const inviteCode = inviteCodes[id as string];
@@ -166,8 +172,6 @@ export default function GroupDetail() {
         setOpenInviteCodeModal(!canAccess);
       });
     }
-
-    return () => clearInterval(interval);
   }, [id]);
 
   return (

@@ -71,6 +71,7 @@ model User {
   Transaction                     Transaction[]
   current_challenge               String?
   webauthn_credential             WebAuthnCredential[]
+  google_id                       String?
 
   @@unique([email, organization_id])
 }

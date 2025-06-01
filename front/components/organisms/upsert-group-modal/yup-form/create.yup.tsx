@@ -164,7 +164,7 @@ export const useCreateGroupSchema = () => {
 const useCreateGroupForm = () => {
   const [isSamePriceValue, setIsSamePriceValue] =
     React.useState<boolean>(false);
-  const startDate = DateHelper.getNow().add(5, 'minute').toISOString();
+  const startDate = DateHelper.getNow().add(0, 'minute').toISOString();
   const endDate = DateHelper.getNow().add(1, 'hour').toISOString();
 
   const form = useForm<CreateGroupSchemaType>({

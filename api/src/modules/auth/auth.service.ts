@@ -42,6 +42,7 @@ import {
   WebAuthnVerifyRegistrationDTO,
 } from './dto/webauthn.dto';
 import { CredentialInfo } from '@passwordless-id/webauthn/dist/esm/types';
+import { GoogleUser } from './strategies/google.strategy';
 
 @Injectable()
 export class AuthService {
@@ -837,5 +838,75 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException(this.i18n.t('message.wrong_account'));
     }
+  }
+
+  async googleLogin(req: any) {
+    if (!req.user) {
+      throw new BadRequestException('No user from google');
+    }
+
+    const { email, first_name, last_name, google_id } = req.user as GoogleUser;
+
+    // Find or create user
+    let user = await this.findUser({ email });
+
+    if (!user) {
+      // Find default organization
+      const organization =
+        await this.prismaService.client.organization.findUnique({
+          where: { code: 'GMODN' },
+        });
+
+      if (!organization) {
+        throw new BadRequestException(
+          this.i18n.t('message.organization_not_found'),
+        );
+      }
+
+      // Create new user if doesn't exist
+      user = await this.prismaService.client.user.create({
+        data: {
+          email,
+          display_name: `${first_name} ${last_name}`,
+          organization_id: organization.id,
+          role: 'USER' as const,
+          google_id: google_id,
+        },
+      });
+    } else {
+      if (!user.google_id) {
+        await this.prismaService.client.user.update({
+          where: { id: user.id },
+          data: { google_id: google_id },
+        });
+      }
+    }
+
+    // Generate tokens
+    const access_token = this.generateAccessToken({
+      userId: user.id,
+    });
+
+    const refresh_token = this.generateRefreshToken({
+      userId: user.id,
+    });
+
+    const decodedToken = this.jwtService.decode(access_token) as {
+      [key: string]: any;
+    };
+    const iat = decodedToken?.iat;
+    const exp = decodedToken?.exp;
+
+    return {
+      iat,
+      exp,
+      type: TokenType.BEARER,
+      user_id: user.id,
+      name: user.display_name,
+      email: user.email,
+      organization_id: user.organization_id,
+      access_token,
+      refresh_token,
+    };
   }
 }

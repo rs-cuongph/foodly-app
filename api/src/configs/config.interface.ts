@@ -9,6 +9,7 @@ export interface Config {
   prisma: PrismaConfig;
   webauthn: WebauthnConfig;
   webhook: WebhookConfig;
+  google: GoogleConfig;
 }
 
 export interface AwsConfig {
@@ -25,6 +26,7 @@ export interface AppConfig {
   headerLanguage: string;
   redisHost: string;
   redisPort: number;
+  frontendUrl: string;
 }
 
 export interface DatabaseConfig {
@@ -69,4 +71,10 @@ export interface WebauthnConfig {
 
 export interface WebhookConfig {
   token: string;
+}
+
+export interface GoogleConfig {
+  clientId: string;
+  clientSecret: string;
+  callbackURL: string;
 }

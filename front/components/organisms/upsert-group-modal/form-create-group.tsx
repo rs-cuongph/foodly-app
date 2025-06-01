@@ -38,7 +38,6 @@ import { GROUP_TYPE_ENUM, SHARE_SCOPE_ENUM } from '@/config/constant';
 import { useCreateGroupMutation } from '@/hooks/api/group';
 import { CreateGroupParams } from '@/hooks/api/group/type';
 import { useSystemToast } from '@/hooks/toast';
-import { DateHelper } from '@/shared/helper/date';
 import { handleErrFromApi } from '@/shared/helper/validation';
 import { ModalType, useCommonStore } from '@/stores/common';
 
@@ -324,7 +323,7 @@ const CreateGroupForm = forwardRef<CreateGroupFormRef, CreateGroupFormProps>(
               errors.date_range?.end?.message
             }
             label={t('upsert_group_modal.date_range')}
-            minValue={DateHelper.getNow().toISOString()}
+            // minValue={DateHelper.getNow().toISOString()}
             name="date_range"
           />
 

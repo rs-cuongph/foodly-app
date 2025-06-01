@@ -1,8 +1,9 @@
 'use client';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
+import { signIn } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
@@ -17,14 +18,17 @@ import {
 } from '@/config/constant';
 import { GroupListParams } from '@/hooks/api/group/type';
 import { useClickOutside } from '@/hooks/click-outside';
+import { useSystemToast } from '@/hooks/toast';
 import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 export default function Home() {
   const { locale } = useParams();
+  const searchParams = useSearchParams();
   const t = useTranslations();
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
+  const { showWarning } = useSystemToast();
 
   const popoverRef = useRef<HTMLFormElement>(null);
   const [popoverState, setPopoverState] = useState(false);
@@ -71,9 +75,30 @@ export default function Home() {
     }
   };
 
+  const getGoogleResult = async () => {
+    const googleResult = searchParams.get('google_result');
+
+    showWarning(t('system_message.warning.signing_in'));
+    if (googleResult) {
+      const parsedGoogleResult = JSON.parse(googleResult);
+
+      await signIn('tokenLogin', {
+        ...parsedGoogleResult,
+        redirect: false,
+      });
+
+      // clear search params has key google_result
+      const url = new URL(window.location.href);
+
+      url.searchParams.delete('google_result');
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
   useClickOutside(popoverRef, () => setPopoverState(false));
 
   useEffect(() => {
+    getGoogleResult();
     // init set organization
     localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, 'GMODN');
   }, []);

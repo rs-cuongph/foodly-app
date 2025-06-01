@@ -13,6 +13,7 @@ const configs = (): Config => {
       headerLanguage: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
       redisHost: process.env.REDIS_HOST || 'localhost',
       redisPort: parseInt(process.env.REDIS_PORT) || 6379,
+      frontendUrl: process.env.FRONTEND_URL,
     },
     database: {
       url: process.env.DATABASE_URL,
@@ -57,6 +58,11 @@ const configs = (): Config => {
     },
     webhook: {
       token: process.env.WEBHOOK_TOKEN,
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
     },
   };
 };
