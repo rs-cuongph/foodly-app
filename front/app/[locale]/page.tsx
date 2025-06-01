@@ -78,8 +78,8 @@ export default function Home() {
   const getGoogleResult = async () => {
     const googleResult = searchParams.get('google_result');
 
-    showWarning(t('system_message.warning.signing_in'));
     if (googleResult) {
+      showWarning(t('system_message.warning.signing_in'));
       const parsedGoogleResult = JSON.parse(googleResult);
 
       await signIn('tokenLogin', {

@@ -163,7 +163,7 @@
       "update_payment_setting": "Cài đặt thanh toán được cập nhật thành công"
     },
     "warning": {
-      "signing_in": "Đăng nhập ..."
+      "signing_in": "Đang Đăng nhập ..."
     }
   },
   "upsert_group_modal": {
