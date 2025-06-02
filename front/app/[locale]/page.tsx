@@ -82,6 +82,7 @@ export default function Home() {
       showWarning(t('system_message.warning.signing_in'));
       const parsedGoogleResult = JSON.parse(googleResult);
 
+      console.log('parsedGoogleResult', parsedGoogleResult);
       await signIn('tokenLogin', {
         ...parsedGoogleResult,
         redirect: false,
