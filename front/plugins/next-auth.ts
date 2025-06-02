@@ -23,8 +23,10 @@ const AUTHENTICATION_METHODS = {
       type: { type: 'text' },
       user_id: { type: 'text' },
       organization_id: { type: 'text' },
-      access_token: { type: 'text' },
+      name: { type: 'text' },
+      email: { type: 'text' },
       refresh_token: { type: 'text' },
+      access_token: { type: 'text' },
     },
   },
 };
@@ -76,7 +78,10 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (credentials) {
           return {
-            ...credentials,
+            name: String(credentials?.name || ''),
+            email: String(credentials?.email),
+            organization_id: String(credentials?.organization_id),
+            access_token: String(credentials?.access_token),
             id: credentials.user_id,
           };
         }

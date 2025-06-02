@@ -21,7 +21,11 @@ import {
   UpdateUserInfoDTO,
   UpdateUserPasswordDTO,
 } from './dto/update-user-info.dto';
-import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
+import {
+  ChangeFirstPasswordDTO,
+  ResetPasswordDTO,
+  SetPasswordDTO,
+} from './dto/reset-password.dto';
 import {
   RequestLoginCodeDTO,
   VerifyLoginCodeDTO,
@@ -100,6 +104,14 @@ export class AuthController {
     @Req() request: RequestWithUser,
   ) {
     return this.authService.updateUserPassword(body, request.user);
+  }
+
+  @Put('change-first-password')
+  changeFirstPassword(
+    @Body() body: ChangeFirstPasswordDTO,
+    @Req() request: RequestWithUser,
+  ) {
+    return this.authService.changeFirstPassword(body, request.user);
   }
 
   @Public()

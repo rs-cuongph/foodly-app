@@ -10,6 +10,8 @@ import {
   SignInResponse,
   SignUpPayload,
   SignUpResponse,
+  UpdateFirstPasswordPayload,
+  UpdateFirstPasswordResponse,
   UpdatePasswordPayload,
   UpdatePasswordResponse,
   UpdateUserInfoPayload,
@@ -140,6 +142,23 @@ const updatePassword = async (payload: UpdatePasswordPayload) => {
   );
 
   return data;
+};
+
+const updateFirstPassword = async (payload: UpdateFirstPasswordPayload) => {
+  const { data } = await apiClient.put<UpdateFirstPasswordResponse>(
+    siteConfig.apps.apiRoutes.update_first_password,
+    payload,
+  );
+
+  return data;
+};
+
+export const useUpdateFirstPasswordMutation = () => {
+  return useMutation({
+    mutationKey: ['update-first-password'],
+    mutationFn: (payload: UpdateFirstPasswordPayload) =>
+      updateFirstPassword(payload),
+  });
 };
 
 export const useUpdatePasswordMutation = () => {

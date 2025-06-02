@@ -15,12 +15,11 @@ export const setHeaderToken = (token: string) => {
 };
 
 export const removeHeaderToken = () => {
+  localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   // trigger custom event to force login
   const event = new CustomEvent('forceLogin');
 
   window.dispatchEvent(event);
-
-  localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
 };
 
 apiClient.interceptors.request.use(async (config) => {

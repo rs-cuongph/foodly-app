@@ -26,7 +26,11 @@ import {
   UpdateUserInfoDTO,
   UpdateUserPasswordDTO,
 } from './dto/update-user-info.dto';
-import { ResetPasswordDTO, SetPasswordDTO } from './dto/reset-password.dto';
+import {
+  ChangeFirstPasswordDTO,
+  ResetPasswordDTO,
+  SetPasswordDTO,
+} from './dto/reset-password.dto';
 import { generateToken } from '@utils/helper';
 import { MailService } from '@shared/mail/mail.service';
 import {
@@ -354,6 +358,8 @@ export class AuthService {
 
     user['can_create_order'] = currentPoint < maxOrder;
 
+    user['empty_password'] = !user.password;
+
     return {
       ...omit(user, ['password']),
     };
@@ -408,6 +414,26 @@ export class AuthService {
       this.SALT_ROUND,
     );
 
+    return this.prismaService.client.user.update({
+      where: { id: user.id },
+      data: { password: hashedNewPassword },
+    });
+  }
+
+  async changeFirstPassword(
+    body: ChangeFirstPasswordDTO,
+    user: RequestWithUser['user'],
+  ) {
+    const { new_password } = body;
+    const currentUser = await this.prismaService.client.user.findUnique({
+      where: { id: user.id, password: null },
+    });
+
+    if (!currentUser) {
+      throw new BadRequestException(this.i18n.t('message.user_not_found'));
+    }
+
+    const hashedNewPassword = await bcrypt.hash(new_password, this.SALT_ROUND);
     return this.prismaService.client.user.update({
       where: { id: user.id },
       data: { password: hashedNewPassword },

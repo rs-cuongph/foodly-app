@@ -16,11 +16,11 @@ export const siteConfig = {
     },
     apiRoutes: {
       login: '/auth/sign-in',
-      google_login: '/auth/google',
       register: '/auth/sign-up',
       my_info: '/auth/user-info',
       update_user_info: '/auth/user-info',
       update_password: '/auth/change-password',
+      update_first_password: '/auth/change-first-password',
       reset_password: '/auth/reset-password',
       verify_reset_password: '/auth/verify-reset-password-token',
       set_first_password: '/auth/set-password',
