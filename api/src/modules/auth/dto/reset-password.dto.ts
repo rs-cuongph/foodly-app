@@ -41,3 +41,13 @@ export class SetPasswordDTO {
   })
   token: string;
 }
+
+export class ChangeFirstPasswordDTO {
+  @StringField({
+    allowEmpty: false,
+    minLength: 6,
+    maxLength: 255,
+    password: true,
+  })
+  new_password: string;
+}

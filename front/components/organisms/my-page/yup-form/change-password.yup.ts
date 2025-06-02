@@ -11,13 +11,15 @@ export type ChangePasswordSchemaType = {
   confirm_password: string;
 };
 
-export const useChangePasswordSchema = () => {
+export const useChangePasswordSchema = (isFirstPassword: boolean) => {
   const t = useTranslations();
   const yupInstance = createI18nYupSchema(t);
 
   // Create a schema that exactly matches SignInSchemaType
   const schema = yupInstance.object().shape({
-    password: yupInstance.string().label('password').trim().required(),
+    password: isFirstPassword
+      ? yupInstance.string().label('password').trim().optional()
+      : yupInstance.string().label('password').trim().required(),
     new_password: yupInstance
       .string()
       .label('new_password')
@@ -35,10 +37,10 @@ export const useChangePasswordSchema = () => {
   return schema as yup.ObjectSchema<ChangePasswordSchemaType>;
 };
 
-const useChangePasswordForm = () => {
+const useChangePasswordForm = (isFirstPassword: boolean) => {
   const form = useForm<ChangePasswordSchemaType>({
     mode: 'onChange',
-    resolver: yupResolver(useChangePasswordSchema()),
+    resolver: yupResolver(useChangePasswordSchema(isFirstPassword)),
     defaultValues: {
       password: '',
       new_password: '',

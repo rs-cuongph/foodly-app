@@ -56,6 +56,7 @@ export type UserInfoResponse = {
   can_create_order: boolean;
   count_init_order: number;
   count_processing_order: number;
+  empty_password: boolean;
 };
 
 export type WebAuthnVerifyRegistrationDTO = {
@@ -91,6 +92,14 @@ export type UpdatePasswordPayload = {
   new_password: string;
 };
 
+export type UpdateFirstPasswordPayload = {
+  new_password: string;
+};
+
+export type UpdateFirstPasswordResponse = {
+  id: string;
+};
+
 export type UpdatePasswordResponse = {
   id: string;
   email: string;
@@ -107,6 +116,8 @@ export type ResetPasswordPayload = {
 export type ResetPasswordResponse = {
   id: string;
 };
+
+e;
 
 export type VerifyResetPasswordResponse = {
   id: string;

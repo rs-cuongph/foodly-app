@@ -14,9 +14,13 @@ import useChangePasswordForm, {
 
 import MyButton from '@/components/atoms/Button';
 import MyInputController from '@/components/atoms/controller/MyInputController';
-import { useUpdatePasswordMutation } from '@/hooks/api/auth';
+import {
+  useUpdateFirstPasswordMutation,
+  useUpdatePasswordMutation,
+} from '@/hooks/api/auth';
 import { useSystemToast } from '@/hooks/toast';
 import { handleErrFromApi } from '@/shared/helper/validation';
+import { useAuthStore } from '@/stores/auth';
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -27,25 +31,40 @@ export default function ChangePasswordModal({
   isOpen,
   onClose,
 }: ChangePasswordModalProps) {
+  const t = useTranslations();
+  const { userInfo } = useAuthStore();
+  const isFirstPassword = userInfo?.empty_password ?? false;
   const {
     control,
     formState: { errors },
     handleSubmit,
     setError,
     reset,
-  } = useChangePasswordForm();
-  const t = useTranslations();
+  } = useChangePasswordForm(isFirstPassword);
+
   const { showSuccess, showError } = useSystemToast();
 
   const { mutateAsync: updatePassword, isPending: isPendingUpdatePassword } =
     useUpdatePasswordMutation();
 
+  const {
+    mutateAsync: updateFirstPassword,
+    isPending: isPendingUpdateFirstPassword,
+  } = useUpdateFirstPasswordMutation();
+
   const onSubmit = async (data: ChangePasswordSchemaType) => {
     try {
-      await updatePassword({
-        password: data.password,
-        new_password: data.new_password,
-      });
+      if (userInfo?.empty_password) {
+        await updateFirstPassword({
+          new_password: data.new_password,
+        });
+      } else {
+        await updatePassword({
+          password: data.password,
+          new_password: data.new_password,
+        });
+      }
+
       showSuccess(t('system_message.success.update_password'));
       onClose?.();
     } catch (error) {
@@ -73,18 +92,18 @@ export default function ChangePasswordModal({
         </ModalHeader>
         <ModalBody>
           <div className="flex flex-col gap-4">
-            <MyInputController
-              isPassword
-              isRequired
-              trim
-              control={control}
-              errorMessage={errors.password?.message}
-              label={t('change_password_modal.password')}
-              labelPlacement="outside"
-              maxLength={100}
-              name="password"
-              placeholder={t('change_password_modal.placeholder.password')}
-            />
+            {!userInfo?.empty_password && (
+              <MyInputController
+                isRequired
+                control={control}
+                errorMessage={errors.password?.message}
+                label={t('change_password_modal.password')}
+                labelPlacement="outside"
+                maxLength={32}
+                name="password"
+                placeholder={t('change_password_modal.placeholder.password')}
+              />
+            )}
             <MyInputController
               isPassword
               isRequired
@@ -126,7 +145,7 @@ export default function ChangePasswordModal({
           </MyButton>
           <MyButton
             className="min-w-24"
-            isLoading={isPendingUpdatePassword}
+            isLoading={isPendingUpdatePassword || isPendingUpdateFirstPassword}
             type="button"
             onPress={() => handleSubmit(onSubmit)()}
           >
