@@ -25,8 +25,9 @@ export class TransactionService {
 
     if (descriptionBank.startsWith('MBVCB.')) {
       transCode = descriptionBank.split('.')[3].replace(' ', '');
-    } else if (descriptionBank.startsWith('FDY')) {
-      transCode = descriptionBank.slice(0, 23).trim();
+    } else {
+      const index = descriptionBank.indexOf('FDY');
+      transCode = descriptionBank.slice(index, index + 23).trim();
     }
 
     if (!transCode) {
