@@ -117,8 +117,6 @@ export type ResetPasswordResponse = {
   id: string;
 };
 
-e;
-
 export type VerifyResetPasswordResponse = {
   id: string;
 };
