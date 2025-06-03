@@ -129,3 +129,37 @@ export type SetFirstPasswordPayload = {
 export type SetFirstPasswordResponse = {
   id: string;
 };
+
+export type RequestSignInByCodePayload = {
+  email: string;
+  organization_code: string;
+};
+
+export type RequestSignInByCodeResponse = {
+  message: string;
+};
+
+export type VerifySignInByCodePayload = {
+  email: string;
+  organization_code: string;
+  code: string;
+};
+
+export type VerifySignInByCodeResponse = {
+  iat: number;
+  exp: number;
+  type: string;
+  user_id: string;
+  organization_id: string;
+  access_token: string;
+  refresh_token: string;
+};
+
+export type ResendSignInByCodePayload = {
+  email: string;
+  organization_code: string;
+};
+
+export type ResendSignInByCodeResponse = {
+  id: string;
+};

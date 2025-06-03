@@ -3,7 +3,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import { signIn } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { MyButton } from '@/components/atoms/Button';
@@ -23,12 +23,11 @@ import { useAuthStore } from '@/stores/auth';
 import { FormType, ModalType, useCommonStore } from '@/stores/common';
 
 export default function Home() {
-  const { locale } = useParams();
   const searchParams = useSearchParams();
   const t = useTranslations();
   const commonStore = useCommonStore();
   const authStore = useAuthStore();
-  const { showWarning } = useSystemToast();
+  const { showWarning, showSuccess } = useSystemToast();
 
   const popoverRef = useRef<HTMLFormElement>(null);
   const [popoverState, setPopoverState] = useState(false);
@@ -38,7 +37,7 @@ export default function Home() {
     size: 999,
     sort: 'created_at:desc',
     is_online: '1',
-    is_mine: 1,
+    is_mine: 0,
     status: [GROUP_STATUS_ENUM.INIT],
     share_scope: [SHARE_SCOPE_ENUM.PUBLIC],
   });
@@ -79,15 +78,16 @@ export default function Home() {
     const googleResult = searchParams.get('google_result');
 
     if (googleResult) {
+      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.GROUP_INVITE_CODE);
       showWarning(t('system_message.warning.signing_in'));
       const parsedGoogleResult = JSON.parse(googleResult);
 
-      // console.log('parsedGoogleResult', parsedGoogleResult);
       await signIn('tokenLogin', {
         ...parsedGoogleResult,
         redirect: false,
       });
-
+      showSuccess(t('system_message.success.signin_success'));
       // clear search params has key google_result
       const url = new URL(window.location.href);
 
@@ -100,8 +100,6 @@ export default function Home() {
 
   useEffect(() => {
     getGoogleResult();
-    // init set organization
-    localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, 'GMODN');
   }, []);
 
   return (

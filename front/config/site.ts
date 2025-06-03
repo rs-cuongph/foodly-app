@@ -24,6 +24,9 @@ export const siteConfig = {
       reset_password: '/auth/reset-password',
       verify_reset_password: '/auth/verify-reset-password-token',
       set_first_password: '/auth/set-password',
+      request_sign_in_by_code: '/auth/sign-in-by-code/request',
+      verify_sign_in_by_code: '/auth/sign-in-by-code/verify',
+      resend_sign_in_by_code: '/auth/sign-in-by-code/resend',
       webauthn: {
         generate_challenge: '/auth/webauth/register',
         verify_registration: '/auth/webauth/register/verify',

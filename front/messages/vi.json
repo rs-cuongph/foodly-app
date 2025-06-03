@@ -43,7 +43,9 @@
       "qr_code": "Mã QR thanh toán",
       "mark_paid": "Đánh dấu đã thanh toán",
       "forgot_password": "Quên mật khẩu",
-      "reset_password": "Đặt mật khẩu mới"
+      "reset_password": "Đặt mật khẩu mới",
+      "verify_sign_in_by_code": "Xác minh mã",
+      "request_sign_in_by_code": "Đăng nhập bằng mã"
     },
     "placeholder": {
       "select": "Chọn"
@@ -141,7 +143,10 @@
       "reset_token_expired": "Liên kết đặt lại mật khẩu đã hết hạn hoặc đã được sử dụng. \nVui lòng thử yêu cầu đặt lại mật khẩu mới.",
       "change_display_name": "Tên hiển thị không thành công",
       "update_password": "Cập nhật mật khẩu không thành công",
-      "import_menu": "Định dạng nhập menu không hợp lệ. \nVui lòng kiểm tra đầu vào của bạn và thử lại"
+      "import_menu": "Định dạng nhập menu không hợp lệ. \nVui lòng kiểm tra đầu vào của bạn và thử lại",
+      "request_sign_in_by_code_failed": "Yêu cầu đăng nhập bằng mã thất bại",
+      "verify_sign_in_by_code_failed": "Xác minh mã thất bại",
+      "resend_sign_in_by_code_failed": "Gửi lại mã thất bại"
     },
     "success": {
       "create_group_success": "Tạo nhóm thành công",
@@ -160,7 +165,10 @@
       "change_display_name": "Tên hiển thị đã thay đổi thành công",
       "delete_payment_setting": "Cài đặt thanh toán đã bị xóa thành công",
       "update_password": "Mật khẩu được cập nhật thành công",
-      "update_payment_setting": "Cài đặt thanh toán được cập nhật thành công"
+      "update_payment_setting": "Cài đặt thanh toán được cập nhật thành công",
+      "resend_sign_in_by_code_success": "Gửi lại mã thành công",
+      "verify_sign_in_by_code_success": "Xác minh mã thành công",
+      "request_sign_in_by_code_success": "Yêu cầu đăng nhập theo mã thành công"
     },
     "warning": {
       "signing_in": "Đang Đăng nhập ..."
@@ -214,7 +222,8 @@
       "account_number": "Số tài khoản",
       "note": "Ghi chú",
       "payment_method": "Phương thức thanh toán",
-      "new_password": "Mật khẩu mới"
+      "new_password": "Mật khẩu mới",
+      "code": "Mã OTP"
     },
     "max": "{field} không được vượt quá {max} ký tự",
     "max_num": "{field} phải nhỏ hơn hoặc bằng {max}",

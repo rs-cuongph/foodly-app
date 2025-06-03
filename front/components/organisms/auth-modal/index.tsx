@@ -17,9 +17,11 @@ import {
 } from 'react';
 
 import ForgotPasswordModalForm from './form-forgot';
+import RequestSignInByCodeForm from './form-request-signin-by-code';
 import ResetPasswordModalForm from './form-reset';
 import SignInModalForm from './form-signin';
 import SignUpModalForm from './form-signup';
+import VerifySignInByCodeForm from './form-verify-signin-by-code';
 
 import { MyButton } from '@/components/atoms/Button';
 import { STORAGE_KEYS } from '@/config/constant';
@@ -60,6 +62,16 @@ export default function SignInUpModal() {
       component: ResetPasswordModalForm,
       showInNav: true,
     },
+    [FormType.REQUEST_SIGN_IN_BY_CODE]: {
+      title: t('common.modal_title.request_sign_in_by_code'),
+      component: RequestSignInByCodeForm,
+      showInNav: true,
+    },
+    [FormType.VERIFY_SIGN_IN_BY_CODE]: {
+      title: t('common.modal_title.verify_sign_in_by_code'),
+      component: VerifySignInByCodeForm,
+      showInNav: true,
+    },
   };
 
   const box = {
@@ -93,6 +105,9 @@ export default function SignInUpModal() {
 
     if (organizationCode) {
       localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, organizationCode);
+    } else {
+      // init set organization
+      localStorage.setItem(STORAGE_KEYS.ORGANIZATION_CODE, 'GMODN');
     }
 
     return () => {

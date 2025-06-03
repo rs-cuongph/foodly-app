@@ -572,7 +572,7 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new BadRequestException(this.i18n.t('message.wrong_account'));
+        throw new BadRequestException(this.i18n.t('message.email_not_found'));
       }
 
       // Check if user is blocked

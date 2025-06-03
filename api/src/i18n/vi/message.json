@@ -36,5 +36,6 @@
   "order_has_paid": "Đơn hàng này đã được thanh toán. Bạn không thể tự hủy đơn hàng. Vui lòng liên hệ chủ nhóm để yêu cầu hủy.",
   "password_reset_mail_sent": "Email đặt lại mật khẩu đã được gửi tới email của bạn.",
   "trans_code_is_required": "Mã giao dịch là bắt buộc",
-  "transaction_not_match": "Giao dịch không khớp"
+  "transaction_not_match": "Giao dịch không khớp",
+  "email_not_found": "Email không tồn tại."
 }

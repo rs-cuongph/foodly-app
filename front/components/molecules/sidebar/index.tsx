@@ -98,7 +98,7 @@ export default function Sidebar() {
 
           if (countInitOrder > 0) {
             color = 'danger';
-            count = countInitOrder;
+            count = countInitOrder + countProcessingOrder;
           }
 
           if (!countInitOrder && countProcessingOrder > 0) {

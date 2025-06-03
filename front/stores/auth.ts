@@ -8,6 +8,7 @@ import { OrderListItem } from '@/hooks/api/order/type';
 interface AuthStore {
   isLoggedIn: boolean;
   userInfo: UserInfoResponse | null;
+  email: string;
   paymentSettings: () => PaymentSetting[];
   setUserInfo: (userInfo: UserInfoResponse) => void;
   setIsLoggedIn: (isLoggedIn: boolean) => void;
@@ -18,11 +19,13 @@ interface AuthStore {
   deletePaymentSetting: (index: number) => void;
   setPaymentSetting: (paymentSetting: PaymentSetting[]) => void;
   setDisplayName: (displayName: string) => void;
+  setEmail: (email: string) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   isLoggedIn: false,
   userInfo: null,
+  email: '',
   paymentSettings: () => {
     return get().userInfo?.payment_setting ?? [];
   },
@@ -84,4 +87,5 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         ? { ...state.userInfo, display_name: displayName }
         : null,
     })),
+  setEmail: (email) => set({ email }),
 }));

@@ -2,6 +2,10 @@ import { RegistrationInfo } from '@passwordless-id/webauthn/dist/esm/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  RequestSignInByCodePayload,
+  RequestSignInByCodeResponse,
+  ResendSignInByCodePayload,
+  ResendSignInByCodeResponse,
   ResetPasswordPayload,
   ResetPasswordResponse,
   SetFirstPasswordPayload,
@@ -18,6 +22,8 @@ import {
   UpdateUserInfoResponse,
   UserInfoResponse,
   VerifyResetPasswordResponse,
+  VerifySignInByCodePayload,
+  VerifySignInByCodeResponse,
   WebAuthnVerifyAuthenticationDTO,
   WebAuthnVerifyRegistrationDTO,
 } from './type';
@@ -217,5 +223,56 @@ export const useSetFirstPasswordMutation = () => {
   return useMutation({
     mutationKey: ['set-first-password'],
     mutationFn: (payload: SetFirstPasswordPayload) => setFirstPassword(payload),
+  });
+};
+
+const requestSignInByCodeApi = async (payload: RequestSignInByCodePayload) => {
+  const { data } = await apiClient.post<RequestSignInByCodeResponse>(
+    siteConfig.apps.apiRoutes.request_sign_in_by_code,
+    payload,
+  );
+
+  return data;
+};
+
+export const useRequestSignInByCodeMutation = () => {
+  return useMutation({
+    mutationKey: ['request-sign-in-by-code'],
+    mutationFn: (payload: RequestSignInByCodePayload) =>
+      requestSignInByCodeApi(payload),
+  });
+};
+
+const verifySignInByCodeApi = async (payload: VerifySignInByCodePayload) => {
+  const { data } = await apiClient.post<VerifySignInByCodeResponse>(
+    siteConfig.apps.apiRoutes.verify_sign_in_by_code,
+    payload,
+  );
+
+  return data;
+};
+
+const resendSignInByCodeApi = async (payload: ResendSignInByCodePayload) => {
+  const { data } = await apiClient.post<ResendSignInByCodeResponse>(
+    siteConfig.apps.apiRoutes.resend_sign_in_by_code,
+    payload,
+  );
+
+  return data;
+};
+
+export const useResendSignInByCodeMutation = () => {
+  return useMutation({
+    mutationKey: ['resend-sign-in-by-code'],
+    mutationFn: (payload: ResendSignInByCodePayload) =>
+      resendSignInByCodeApi(payload),
+  });
+};
+
+export const useVerifySignInByCodeMutation = () => {
+  return useMutation({
+    mutationKey: ['verify-sign-in-by-code'],
+    mutationFn: (payload: VerifySignInByCodePayload) =>
+      verifySignInByCodeApi(payload),
   });
 };

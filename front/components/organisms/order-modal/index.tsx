@@ -191,6 +191,7 @@ export default function OrderModal() {
       } catch (error) {
         handleErrFromApi(error, setError, showError);
       } finally {
+        setIsLoadingConfirm(false, ModalType.UPSERT_ORDER);
         closeModal(ModalType.UPSERT_ORDER);
       }
     }
@@ -208,9 +209,15 @@ export default function OrderModal() {
   };
 
   useEffect(() => {
-    const { data, isOpen } = modalUpsertOrder;
+    const { data, isOpen, selectedForm } = modalUpsertOrder;
 
     if (isOpen) {
+      if (selectedForm === FormType.SETTING_ORDER) {
+        setButtonCancelText(t('button.close'));
+        setButtonConfirmText(t('button.next'));
+        setStep(1);
+      }
+
       if (data) {
         reset({
           menu: data.menuItems.map((item: any) => item.id),

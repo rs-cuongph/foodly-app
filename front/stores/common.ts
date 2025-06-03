@@ -13,6 +13,8 @@ export enum FormType {
   SETTING_ORDER = 'settingOrder',
   SETTING_PAYMENT = 'settingPayment',
   QR_CODE = 'qrCode',
+  REQUEST_SIGN_IN_BY_CODE = 'requestSignInByCode',
+  VERIFY_SIGN_IN_BY_CODE = 'verifySignInByCode',
 }
 
 export enum ModalType {
