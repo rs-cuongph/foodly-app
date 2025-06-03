@@ -2,35 +2,38 @@ services:
   postgres:
     hostname: postgres
     image: postgres:15.2
+    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
-      - foodly-network
+      - nestjs-boilerplate-network
     ports:
       - '5432:5432'
 
   redis:
     hostname: redis
     image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
     networks:
-      - foodly-network
+      - nestjs-boilerplate-network
 
-  # maildev:
-  #   hostname: maildev
-  #   build:
-  #     context: .
-  #     dockerfile: maildev.Dockerfile
-  #   ports:
-  #     - 1080:1080
-  #     - 1025:1025
-  #   volumes:
-  #     - maildev_data:/data
-  # networks:
-  #   - foodly-network
-
+  maildev:
+    hostname: maildev
+    build:
+      context: .
+      dockerfile: maildev.Dockerfile
+    ports:
+      - 1080:1080
+      - 1025:1025
+    volumes:
+      - maildev_data:/data
+    networks:
+      - nestjs-boilerplate-network
   # api:
   #   hostname: api
   #   user: root
@@ -39,13 +42,13 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - 6100:6100
-  # networks:
-  #   - foodly-network
+  #   networks:
+  #     - nestjs-boilerplate-network
 
 volumes:
   postgres:
   maildev_data:
 
 networks:
-  foodly-network:
+  nestjs-boilerplate-network:
     driver: bridge

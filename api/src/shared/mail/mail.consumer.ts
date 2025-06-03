@@ -13,6 +13,7 @@ export class MailConsumer {
   @Process(JOB_NAME_ENUM.SEND_MAIL)
   async sendMail({ data }: Job<ISendMailOptions>) {
     try {
+      this.logger.log(`Sending email ${data.template}`);
       await this.mailService.sendMail(data);
       this.logger.log(
         `Email ${data.template || ''} has been sent with context ${

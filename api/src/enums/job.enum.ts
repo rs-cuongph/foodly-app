@@ -10,4 +10,5 @@ export enum JOB_NAME_ENUM {
 
 export enum QUEUE_NAME_ENUM {
   MAIL = 'MAIL',
+  APP = 'APP',
 }

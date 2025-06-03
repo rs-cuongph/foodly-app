@@ -25,6 +25,7 @@ import { ExtendedPrismaConfigService } from './services/prisma-config.service';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import * as basicAuth from 'express-basic-auth';
+import { QUEUE_NAME_ENUM } from '@enums/job.enum';
 
 @Module({
   imports: [
@@ -75,6 +76,14 @@ import * as basicAuth from 'express-basic-auth';
           redis: {
             host: configService.get('app.redisHost'),
             port: configService.get('app.redisPort'),
+            connectTimeout: 10000,
+            maxRetriesPerRequest: 3,
+            retryStrategy: (times: number) => {
+              if (times > 3) {
+                return null;
+              }
+              return Math.min(times * 1000, 3000);
+            },
           },
           defaultJobOptions: {
             attempts: 3,
@@ -95,6 +104,7 @@ import * as basicAuth from 'express-basic-auth';
       },
       inject: [ConfigService],
     }),
+    BullModule.registerQueue({ name: QUEUE_NAME_ENUM.APP }),
     BullBoardModule.forRoot({
       route: '/monitor/queues',
       adapter: ExpressAdapter,
