@@ -19,6 +19,7 @@ import {
 
 import MyButton from '@/components/atoms/Button';
 import { ResendIcon } from '@/components/atoms/icons';
+import { STORAGE_KEYS } from '@/config/constant';
 import {
   useResendSignInByCodeMutation,
   useVerifySignInByCodeMutation,
@@ -75,6 +76,8 @@ const VerifySignInByCodeForm = forwardRef<
       });
 
       if (res.access_token) {
+        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.GROUP_INVITE_CODE);
         signIn('tokenLogin', {
           ...res,
           redirect: false,
@@ -196,7 +199,7 @@ const VerifySignInByCodeForm = forwardRef<
           className="ml-3"
           color="primary"
           disabled={
-            watch('code').length !== 6 ||
+            (watch('code').length > 0 && watch('code')?.length !== 6) ||
             isLoadingResend ||
             isLoadingVerify ||
             countdown > 0
