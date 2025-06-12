@@ -26,6 +26,7 @@ model Organization {
   Group       Group[]
   Order       Order[]
   Transaction Transaction[]
+  ChatRoom    ChatRoom[]
 }
 
 /**
@@ -72,6 +73,11 @@ model User {
   current_challenge               String?
   webauthn_credential             WebAuthnCredential[]
   google_id                       String?
+  created_chat_rooms              ChatRoom[]            @relation("CreatedBy_ChatRoom")
+  chat_rooms                      ChatRoomParticipant[]
+  sent_messages                   ChatMessage[]         @relation("SentMessages")
+  read_messages                   ChatMessageRead[]      @relation("ReadMessages")
+  chat_preferences                UserChatPreference?
 
   @@unique([email, organization_id])
 }
@@ -255,4 +261,107 @@ enum GroupStatus {
   PROCESSING
   COMPLETED
   CANCELED
+}
+
+model ChatRoom {
+  id            String      @id @default(uuid())
+  name          String      @db.VarChar(255)
+  type          ChatRoomType @default(PRIVATE)
+  organization_id String
+  organization   Organization @relation(fields: [organization_id], references: [id])
+  created_by_id  String
+  created_by     User        @relation("CreatedBy_ChatRoom", fields: [created_by_id], references: [id])
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @updatedAt
+  deleted_at     DateTime?
+  participants   ChatRoomParticipant[]
+  messages       ChatMessage[]
+  last_message   ChatMessage? @relation("LastMessage", fields: [last_message_id], references: [id])
+  last_message_id String?
+
+  @@index([organization_id])
+  @@index([created_by_id])
+}
+
+model ChatRoomParticipant {
+  id          String    @id @default(uuid())
+  room_id     String
+  room        ChatRoom  @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  user_id     String
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role        ChatRole  @default(MEMBER)
+  joined_at   DateTime  @default(now())
+  left_at     DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@unique([room_id, user_id])
+  @@index([user_id])
+}
+
+model ChatMessage {
+  id            String    @id @default(uuid())
+  room_id       String
+  room          ChatRoom  @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  sender_id     String
+  sender        User      @relation("SentMessages", fields: [sender_id], references: [id])
+  content       String    @db.Text
+  type          MessageType @default(TEXT)
+  status        MessageStatus @default(SENT)
+  metadata      Json?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime?
+  read_by       ChatMessageRead[]
+  last_message_rooms ChatRoom[] @relation("LastMessage")
+
+  @@index([room_id])
+  @@index([sender_id])
+}
+
+model ChatMessageRead {
+  id          String      @id @default(uuid())
+  message_id  String
+  message     ChatMessage @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  user_id     String
+  user        User        @relation("ReadMessages", fields: [user_id], references: [id], onDelete: Cascade)
+  read_at     DateTime    @default(now())
+
+  @@unique([message_id, user_id])
+  @@index([user_id])
+}
+
+model UserChatPreference {
+  id                String    @id @default(uuid())
+  user_id           String    @unique
+  user              User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  notifications     Boolean   @default(true)
+  sound_enabled     Boolean   @default(true)
+  last_seen         DateTime  @default(now())
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+}
+
+enum ChatRoomType {
+  PRIVATE
+  GROUP
+}
+
+enum ChatRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
 }
